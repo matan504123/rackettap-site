@@ -18,11 +18,11 @@
 </header>
 
 <main>
-  <section class="intro">
+  <section class="intro scroll-in">
     <p>RacketTap turns your Apple Watch into a wrist-mounted racket-sport scorekeeper. Tap to score, long-press to undo. Two sports: padel and tennis. The iPhone companion turns those matches into something more — sleep-vs-performance correlation, a personalized recap for every match, an AI coach that knows your history, and a daily readiness signal before you step on court. Everything stays on your device.</p>
   </section>
 
-  <section class="gallery">
+  <section class="gallery scroll-in">
     <h2>See it in action</h2>
     <div class="gallery-grid">
       <figure class="gallery-tile is-landscape">
@@ -56,7 +56,7 @@
     </div>
   </section>
 
-  <section class="features">
+  <section class="features scroll-in">
     <h2>What it does</h2>
     <ul class="feature-list">
       <li><strong>Watch-first scoring.</strong> Single tap for your team, double tap for the opponents, long-press to undo. Designed for use while playing.</li>
@@ -83,12 +83,12 @@
     </ul>
   </section>
 
-  <section class="privacy-highlight">
+  <section class="privacy-highlight scroll-in">
     <h2>Privacy-first by design</h2>
     <p>Everything stays on your devices. No accounts. No analytics. No tracking. No third-party SDKs. The AI Coach and Match Recap use Apple's on-device language model — no prompt ever leaves your phone. Health data is read locally and never transmitted. Match history mirrors only to <em>your own</em> private iCloud database so you can re-install on a new device.</p>
   </section>
 
-  <section class="cta">
+  <section class="cta scroll-in">
     <p class="coming-soon">Free to download · Unlock Pro for $2.99 <em>(launch price)</em></p>
   </section>
 </main>
@@ -103,6 +103,29 @@
     <a href="mailto:matan504@gmail.com">Contact</a>
   </nav>
 </footer>
+
+<script>
+  // Tiny scroll-in observer. Adds `.visible` to any `.scroll-in`
+  // element the first time it enters the viewport, then unobserves.
+  // The CSS already handles `prefers-reduced-motion` by forcing
+  // visibility — this script just toggles the fade-up for the rest.
+  (function () {
+    const items = document.querySelectorAll('.scroll-in');
+    if (!('IntersectionObserver' in window)) {
+      items.forEach(el => el.classList.add('visible'));
+      return;
+    }
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+    items.forEach(el => observer.observe(el));
+  })();
+</script>
 
 </body>
 </html>
