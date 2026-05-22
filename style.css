@@ -125,17 +125,21 @@ body {
 
 /* Scroll-in utility — apply `class="scroll-in"` to any element to
    make it fade-up the first time it enters the viewport. The tiny
-   inline observer in index.html toggles `.visible` per element. */
+   inline observer in index.html toggles `.visible` per element.
+   Uses the modern `translate` property (not `transform`) so the
+   animation composes with any `transform` already on the element
+   (e.g. the gallery's `translateX(-50%)` recentering). Supported in
+   all evergreen browsers; falls back gracefully where unsupported. */
 .scroll-in {
   opacity: 0;
-  transform: translateY(24px);
+  translate: 0 24px;
   transition:
     opacity 0.7s var(--ease-smooth),
-    transform 0.7s var(--ease-smooth);
+    translate 0.7s var(--ease-smooth);
 }
 .scroll-in.visible {
   opacity: 1;
-  transform: translateY(0);
+  translate: 0 0;
 }
 
 /* MAIN */
@@ -513,6 +517,7 @@ footer nav a:hover {
   }
   .scroll-in {
     opacity: 1 !important;
+    translate: 0 0 !important;
     transform: none !important;
   }
 }
