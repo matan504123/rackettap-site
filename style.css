@@ -111,15 +111,22 @@ main ul:not(.feature-list) li::before {
   color: var(--accent);
 }
 
-/* GALLERY (screenshots) */
+/* GALLERY (screenshots)
+ *
+ * The gallery breaks out of the 720px <main> column so the grid can
+ * fan out to ~1100px on desktop. The centering pattern is the standard
+ * "viewport-wide break-out" — position relative, shifted half a parent
+ * width left, then transformed back half a viewport-width to recenter
+ * on the page. Resetting `max-width` ensures the inner grid stays
+ * within the cap on huge screens.
+ */
 .gallery {
-  /* Break out of the 720px content cap so the grid has room to breathe. */
-  margin-left: calc(50% - 50vw + 1.25rem);
-  margin-right: calc(50% - 50vw + 1.25rem);
-  max-width: 1100px;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1100px, 100vw - 2.5rem);
   margin-top: 3rem;
   margin-bottom: 3rem;
-  padding-inline: 1.25rem;
 }
 
 .gallery h2 {
@@ -149,9 +156,12 @@ main ul:not(.feature-list) li::before {
   border-radius: 24px;
   box-shadow: 0 12px 32px rgba(15, 43, 116, 0.16);
   background: #000;
-  /* Stable aspect so layout doesn't jump as images stream in. */
+  /* Default = iPhone portrait. Stable aspect so layout doesn't jump as
+     images stream in; `object-fit: contain` is the safer default for
+     marketing screenshots so we never crop content even if the source
+     resolution doesn't match the assumed ratio. */
   aspect-ratio: 1206 / 2622;
-  object-fit: cover;
+  object-fit: contain;
   display: block;
 }
 
@@ -163,6 +173,19 @@ main ul:not(.feature-list) li::before {
   border-radius: 28px;
 }
 
+/* Landscape iPhone shots (e.g. the Live courtside view rendered
+   sideways at the side of the court). Spans 2 grid columns on
+   desktop so the image stays large enough to read, falls back to
+   carousel-width on mobile via the flex media query below. */
+.gallery-tile.is-landscape {
+  grid-column: span 2;
+}
+.gallery-tile.is-landscape img {
+  aspect-ratio: 2868 / 1320;
+  border-radius: 16px;
+  max-width: 100%;
+}
+
 .gallery-caption {
   font-size: 0.9rem;
   color: var(--text-soft);
@@ -172,8 +195,13 @@ main ul:not(.feature-list) li::before {
 
 @media (max-width: 600px) {
   .gallery {
-    /* On phones, fall back to scroll-snap horizontal strip so the
-       tiles don't shrink to thumbnails. */
+    /* On phones the desktop break-out reverts to a simple full-bleed
+       strip — disable the transform-centering trick and let the flex
+       grid below handle its own horizontal scroll. */
+    position: static;
+    left: auto;
+    transform: none;
+    width: auto;
     margin-left: -1.25rem;
     margin-right: -1.25rem;
     padding: 0;
@@ -192,6 +220,9 @@ main ul:not(.feature-list) li::before {
     flex: 0 0 70%;
     scroll-snap-align: center;
   }
+  /* Landscape tile is wider than tall — give it more carousel
+     room so it doesn't read as a tiny thumbnail. */
+  .gallery-tile.is-landscape { flex: 0 0 90%; }
   .gallery-tile.is-watch img { max-width: 90%; }
 }
 
