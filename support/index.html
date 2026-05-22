@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Support — RacketTap</title>
+<link rel="stylesheet" href="/style.css">
+<link rel="icon" type="image/png" href="/icon.png">
+</head>
+<body>
+
+<header class="page-header">
+  <a href="/" class="back-link">← RacketTap</a>
+  <h1>Support</h1>
+</header>
+
+<main class="legal">
+
+  <p>RacketTap is a personal side-project app, maintained by one person. Bug reports, suggestions, and questions are welcome.</p>
+
+  <h2>Contact</h2>
+  <p>Email: <a href="mailto:matan504@gmail.com">matan504@gmail.com</a></p>
+  <p>For bug reports, please include your iPhone and Apple Watch model + their OS versions. A screenshot or the details of the match where the problem happened helps a lot.</p>
+
+  <h2>Frequently asked</h2>
+
+  <h3>How do I get the watch app installed?</h3>
+  <p>If you've installed RacketTap on your iPhone and you have a paired Apple Watch, the watch app installs automatically within a minute or two. If it doesn't appear: open the <em>Watch</em> app on your iPhone → scroll to "Available Apps" → tap "Install" next to RacketTap.</p>
+
+  <h3>How do I start scoring on the watch?</h3>
+  <p>The watch home screen has a small Padel / Tennis switcher at the top. Pick your sport, and the Start buttons underneath fire a match of that type. Single tap for your team, double tap for the opponents, long-press to undo the last point.</p>
+
+  <h3>What sports does RacketTap support?</h3>
+  <p>Padel (the original) and tennis (new in v5). Both use the same watch-first scoring engine; the difference is in the format options. Padel has four formats — Normal (full padel scoring), Mixing (rotating partners, running games), Training (workout-only), and Americano (point-based rounds). Tennis has singles + doubles, best-of-3 or best-of-5, optional final-set match tiebreak to 7 / 10 / 12, and Advantage or No-Ad deuce.</p>
+
+  <h3>How do I configure the tennis format?</h3>
+  <p>On the watch: <em>Settings → Tennis</em>. Pick best-of-3 or best-of-5, toggle "Final-set match tiebreak" on (and choose 7 / 10 / 12) if your league uses one, and pick Advantage or No-Ad for the deuce rule. Star Point is padel-only — it's intentionally not in the tennis list. These settings apply to every tennis match you start; matches in progress are unaffected by changes mid-session.</p>
+
+  <h3>What's the difference between the padel match types?</h3>
+  <ul>
+    <li><strong>Normal</strong> — a full padel match. Standard game/set/match scoring with your chosen deuce rule (Star Point, Golden Point, or Advantage).</li>
+    <li><strong>Mixing</strong> — for casual sessions with rotating partners. Each rally still uses standard game scoring, but games accumulate into a single running tally (no sets, no match winner). End it when you're done playing.</li>
+    <li><strong>Training</strong> — workout only. Starts an Apple Health Tennis workout without any scoring UI. No taps to score; just hit start and end.</li>
+    <li><strong>Americano</strong> — point-counting format. Each tap is one point, and a round ends when the total points reach a cap (default 32, configurable in watch Settings). Multiple rounds make up a session; the summary shows rounds won/lost and total points.</li>
+  </ul>
+
+  <h3>How do I change my Default Match Type or Americano point cap?</h3>
+  <p>On the watch, open <strong>Settings → Default Match Type</strong> to pick the padel format the Start button uses (Normal / Mixing / Training / Americano). For Americano, scroll down in Settings to <em>Americano → Points per round</em> to change the round-point cap.</p>
+
+  <h3>How do I tag players on a match?</h3>
+  <p>On your iPhone, open the History tab, tap a match, then tap each player slot. You can pick from your saved players or add a new one. Tagged player names <em>do</em> sync back to the watch — open the same match on your watch and you'll see the YOU / THEM block under the headline. Edits made while the watch is off your wrist queue up safely and arrive when you put it back on. Training and Americano sessions don't have player slots (training is workout-only; Americano partners rotate every round). Tennis singles matches show one slot per team instead of two.</p>
+
+  <h3>I tagged some matches before the latest update and the names aren't on the watch yet — can I backfill?</h3>
+  <p>Yes. On the iPhone, open <em>Settings tab → "Push player tags &amp; venues to watch"</em>. That queues every match's enrichment back to the watch in one batch. The button shows a spinner and a confirmation alert. Payloads queue safely if the watch is offline.</p>
+
+  <h3>How does the "days played" stat work?</h3>
+  <p>On the iPhone Stats tab you'll see a "days played" total. You can seed the starting number in two places: during watch onboarding (a Stepper page asks "How many days have you played before this app?") or the first time you open the iPhone Stats tab. The value syncs across both devices automatically. From then on, every day you finish at least one match, mixing session, training, or Americano session counts as one more day. You can edit the baseline anytime in iPhone Settings → Activity.</p>
+
+  <h3>Can I rearrange the Stats tab?</h3>
+  <p>Yes. Tap the controls icon in the top right of the Stats tab to open <em>Customize Stats</em>. Drag rows to reorder, toggle to hide sections. The four headline tiles at the top and the lifetime "days played" card stay pinned and always show first.</p>
+
+  <h3>Can I filter Stats by sport?</h3>
+  <p>Yes — the Stats tab has a sport segmented picker right above the time-range picker (All / Padel / Tennis). Switching scopes every section underneath: opponent breakdown, Best Days, Sleep Impact, Physiology Trend, AI Insight, Form &amp; Streaks, and Achievements all become sport-aware automatically.</p>
+
+  <h3>What is the Live tab on the iPhone?</h3>
+  <p>An opt-in courtside scoreboard. When you enable it in <em>iPhone Settings → Live court scoreboard</em>, a Live tab appears between History and Stats. Place the iPhone sideways at the side of the court and it mirrors the watch in real time — big sets / games / current-game points so the score is readable from across the net. You can enable it per format (Normal / Mixing / Americano); Training never appears in Live. The iPhone screen stays awake while the Live tab is open, then resumes normal sleep behaviour when you switch tabs.</p>
+
+  <h3>Can I flip the Live view so the orange (THEM) side is on the left?</h3>
+  <p>Yes. Tap the arrow-swap button centered at the top of the Live view to swap the YOU and THEM cards — they slide across, and team colors travel with the team (blue YOU and orange THEM stay matched, the cards just change position). Useful when you're standing on the right side of the court and want the layout to mirror what you actually see.</p>
+
+  <h3>How is the "Deuces" stat counted?</h3>
+  <p>One count per game that reached 40-40 at least once, credited to whichever side won that game. Multi-cycle deuce battles still count as a single game — a game that swung through 40-40 three times before YOU finally won adds <em>one</em> to YOUR side of the Deuces card, not three. So if you had three games go to deuce in the range and you won two of them, the headline reads "3 games reached deuce · YOU 2 · THEM 1."</p>
+
+  <h3>How do I make the iPhone read the score out loud?</h3>
+  <p>Once the Live tab is on, scroll down in the same Settings section to find <em>Voice</em>. Toggle "Speak the score" on, pick a verbosity level (Full / Highlights / Milestones), and set the volume slider — release it to hear a preview. The voice language is independent from the UI language; the Voice picker offers <em>System</em>, <em>English</em>, <em>Suomi</em>, <em>Español</em>, and <em>עברית</em>. Announcements play through the iPhone speaker even when the silent switch is on, and lower the volume of any music playing. A small speaker icon on the Live view itself lets you mute on the fly without going back to Settings. For a more natural-sounding voice, install an Enhanced or Premium voice from <em>iOS Settings → Accessibility → Spoken Content → Voices</em> in the language of your choice — RacketTap picks the best-quality installed voice automatically.</p>
+
+  <h3>Where do I see the map and weather for a match?</h3>
+  <p>On your iPhone, open the History tab, tap any match — you'll see an embedded map centered on where you played, plus a Weather row in the Stats section (temperature + humidity captured at workout start). Tap the map to open the location in the Maps app. If a match has no map / weather, it usually means the watch didn't get a usable GPS fix at the time (indoor courts, location permission denied, etc.).</p>
+
+  <h3>Can I share a match with a friend who also uses RacketTap?</h3>
+  <p>Yes — on iPhone, open the match in History and tap the Share button (top-right). Choose <em>"Share match file"</em> to send a <code>.rackettap</code> file via AirDrop, Messages, Mail, or Files; the recipient taps the file and it lands in their own match history with all the stats. Only one person needs to actually score the match — share it with everyone afterwards. To send several at once, open History, tap the <strong>…</strong> menu → <em>"Select matches to share"</em>, tick the matches you want, and tap Share at the bottom. Match sharing is a Pro feature.</p>
+
+  <h3>Can I share a match as an image to Messages or Instagram?</h3>
+  <p>Yes — same Share button in match detail, choose <em>"Share as image"</em>. RacketTap renders a polished summary card (format-tinted background, big score, per-set breakdown, date and venue, plus avg heart rate) and hands it to the system share sheet. Tennis matches get a "TENNIS · MATCH" or "TENNIS · SINGLES" badge so the shared image is sport-aware. Send it anywhere — Messages, Mail, Instagram, anywhere that accepts a picture. Pro feature.</p>
+
+  <h3>Which UI languages does RacketTap support?</h3>
+  <p>Five options on both targets: <em>System</em>, <em>English</em>, <em>Suomi</em>, <em>Español</em>, and <em>עברית</em>. On the iPhone, that's in <em>Settings tab → App Language</em>. On the watch, in <em>Settings → App Language</em>. The watch picker is independent so you can mix and match (e.g., Hebrew on iPhone, English on watch) — useful when your watchOS device language doesn't match what you want in RacketTap. RTL layout kicks in automatically when Hebrew is selected. A separate <em>Voice</em> picker inside the iPhone's Live-tab settings controls the courtside voice readout language. More languages can be added per request.</p>
+
+  <h3>What does the AI Match Recap card show?</h3>
+  <p>Every finished match opens with a 2–3 sentence personalized recap at the top of the detail view. It references your score, your effort (duration, avg HR), and — if you've granted Health access — your physiology that day (sleep, HRV). It's free on every device. On iPhone 15 Pro and newer with iOS 26 and Apple Intelligence enabled, the recap is written by Apple's on-device language model. On older iPhones (13, 14, non-Pro 15) you get a clean deterministic summary computed from the same data, no nag, no upsell. Tap the regenerate button on the card to re-roll the recap.</p>
+
+  <h3>What's the AI Coach?</h3>
+  <p>The sparkles icon at the top of the Stats tab opens a chat sheet. Ask anything about your game — "How did I do this month?", "Which partner do I win with the most?", "Is my fitness trending in the right direction?", "What should I work on?". The coach is given a distilled snapshot of your match history and Health signals at the start of the conversation; it answers using Apple's on-device language model. Nothing leaves your phone. Requires Apple Intelligence (iPhone 15 Pro or newer with iOS 26). Pro feature.</p>
+
+  <h3>How does Today's Outlook work?</h3>
+  <p>At the top of the Stats tab there's a small card that reads your morning Health signals — sleep last night, resting heart rate, HRV — and surfaces a one-line verdict: <em>ready</em>, <em>cautious</em>, or <em>rest</em>. It's a quick gut-check before you head to the court. Requires Health access for sleep + HRV; without those it shows the values it has.</p>
+
+  <h3>What does Sleep Impact show?</h3>
+  <p>A bar chart in the Stats tab that buckets your decided matches by hours of sleep the night before (&lt;6h / 6–7h / 7–8h / 8h+) and shows your win rate in each bucket. Underneath, a one-line interpretation calls out your strongest window (e.g., "You play your best on 7–8h of sleep — 67% win rate"). With fewer than 4 sample matches the chart calls itself out as light on data rather than crowning a window prematurely. Requires Health permission for sleep.</p>
+
+  <h3>What does Physiology Trend show?</h3>
+  <p>Two stacked mini-charts — resting heart rate and VO2 max over the time range — with an interpretive verdict underneath each. Resting HR trending down is usually a good aerobic-fitness signal (highlighted green); trending up suggests fatigue or under-recovery (highlighted orange). VO2 max trending up means improving cardio fitness. Both verdicts only fire with 4+ data points so we're not reading into noise.</p>
+
+  <h3>What are the Achievements?</h3>
+  <p>14 unlockable badges in the Stats tab — first match, three matches in one day, your first hour-long match, winning after 7+ hours of sleep, longest win streak, and more. They unlock automatically; tap the row to expand the gallery.</p>
+
+  <h3>What's in the Heart Rate section of a match?</h3>
+  <p>The Heart Rate section mirrors what Apple Health shows for a workout: an "Avg Heart Rate" headline, a candle-bar chart of HR over the match (each bar spans the min–max BPM observed in that time bucket), a five-zone time breakdown with horizontal progress bars (60% / 70% / 80% / 90% of your max HR), and a Post-Workout Heart Rate chart for the two minutes after the match ended — useful for spotting recovery rate. The first time you open a match the iPhone asks for HealthKit permission so it can read your HR samples. Max HR is estimated from your age (220 − age) read from HealthKit; if you haven't set a date of birth there it falls back to age 30.</p>
+
+  <h3>Is my match history backed up?</h3>
+  <p>Yes — your iPhone's match history mirrors to your private iCloud database automatically. Sign in to iCloud in iOS Settings and RacketTap takes care of the rest. If you install RacketTap on a second iPhone or iPad using the same Apple ID, your history shows up there too. The Apple Watch keeps a local copy and re-receives history from the phone after a fresh install via the existing watch sync.</p>
+
+  <h3>A match I played on my watch isn't showing on my iPhone</h3>
+  <p>Watch-to-iPhone sync is automatic when both devices are nearby. If something looks missing, on the iPhone go to <em>Settings tab → "Resync from watch"</em>. The sync is durable: even if the iPhone is off when you finish a match, it'll arrive once they're paired again.</p>
+
+  <h3>The app crashes / behaves strangely</h3>
+  <p>Force-quit RacketTap on both devices and reopen. If it persists, email a short description of what happened and what device(s) you're on. Mid-match crashes are recovered automatically: when you reopen the watch app, you'll be offered to resume the in-progress match.</p>
+
+  <h2>Privacy</h2>
+  <p>See the <a href="/privacy/">Privacy Policy</a>. Short version: nothing leaves your device.</p>
+
+</main>
+
+<footer>
+  <nav>
+    <a href="/">Home</a>
+    <span class="sep">·</span>
+    <a href="/privacy/">Privacy Policy</a>
+  </nav>
+</footer>
+
+</body>
+</html>

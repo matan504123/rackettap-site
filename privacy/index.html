@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — RacketTap</title>
+<link rel="stylesheet" href="/style.css">
+<link rel="icon" type="image/png" href="/icon.png">
+</head>
+<body>
+
+<header class="page-header">
+  <a href="/" class="back-link">← RacketTap</a>
+  <h1>Privacy Policy</h1>
+  <p class="effective-date">Effective May 22, 2026</p>
+</header>
+
+<main class="legal">
+
+  <h2>Summary</h2>
+  <p>RacketTap stores everything on your device. No data leaves your iPhone or Apple Watch. There are no accounts, no analytics, no tracking, and no third-party services.</p>
+
+  <h2>What data RacketTap accesses</h2>
+
+  <h3>Apple Health</h3>
+  <p>With your permission, RacketTap:</p>
+  <ul>
+    <li><strong>Reads on the watch (during a match)</strong> your heart rate and active energy burned, so the live courtside scoreboard and the saved workout show your effort.</li>
+    <li><strong>Reads on the iPhone (around match dates, for analytics correlation)</strong> your sleep duration, resting heart rate, walking heart rate, HR variability (SDNN), VO2 max, blood oxygen saturation, and mindfulness minutes. These drive the Stats tab's Sleep Impact chart, Physiology Trend, and Today's Outlook readiness card. RacketTap may also read your date of birth (if available) to estimate your age-based maximum heart rate for the Heart Rate Zones display.</li>
+    <li><strong>Writes</strong> each match (padel or tennis) as a Tennis workout (including the GPS route when location is granted), so it appears in your Apple Health and Fitness apps alongside your other activity.</li>
+  </ul>
+  <p>All Health data stays on your device — none of it is transmitted anywhere by RacketTap. You can revoke access at any time in <em>Settings → Health → Data Access &amp; Devices → RacketTap</em>; declining or revoking still leaves every non-Health feature working.</p>
+
+  <h3>Location</h3>
+  <p>When you start a workout, RacketTap requests one location sample with "When in Use" permission. That single sample is attached to the Apple Health workout entry as its location, so the workout shows a small map marker indicating roughly where you played. Location is not stored in any other form, is not tracked continuously, and is not shared anywhere.</p>
+
+  <h3>Weather</h3>
+  <p>If a location sample is available, RacketTap fetches the current temperature and humidity at that location via Apple WeatherKit. These values are attached as workout metadata so they appear in the Apple Health workout entry. WeatherKit requests are handled by Apple under their privacy terms; RacketTap does not log or store the values separately.</p>
+
+  <h3>Player names and match data</h3>
+  <p>Player names, team names, set scores, point sequences, sport (padel / tennis), and venue labels are entered by you and stored on your device in Apple's SwiftData on-device store. On the iPhone, that store mirrors to <em>your own</em> private iCloud database (container <code>iCloud.com.matankeret.PadelTap</code>) so your match history survives device migrations and follows your Apple ID. No one but you has access to it — Apple's iCloud privacy terms govern that mirror, and RacketTap has no server-side component to which any of this could be sent. The Apple Watch persists locally only.</p>
+
+  <h3>On-device AI</h3>
+  <p>The Match Recap card and the AI Coach chat sheet use Apple's on-device language model (Apple Intelligence, available on iPhone 15 Pro and newer with iOS 26). Your match history and recent Health signals form the input to the model, which generates responses entirely on your device — no prompt, no match data, and no Health data is sent to Apple, OpenAI, or any other service. On devices without Apple Intelligence, the same surfaces show a deterministic template summary computed locally from the same data.</p>
+
+  <h2>What RacketTap does <em>not</em> do</h2>
+  <ul>
+    <li>No accounts, no sign-in, no profiles.</li>
+    <li>No data is sent to RacketTap servers — there are no RacketTap servers.</li>
+    <li>No analytics, no crash reporting, no usage tracking.</li>
+    <li>No advertising. No advertising identifiers.</li>
+    <li>No third-party SDKs of any kind.</li>
+  </ul>
+
+  <h2>Where your data lives</h2>
+  <ul>
+    <li><strong>On your Apple Watch.</strong> Match data is saved in the watch's own local SwiftData store. It is synced to your paired iPhone using Apple's WatchConnectivity framework, which is a direct local link between your two devices and does not go through any network or cloud service.</li>
+    <li><strong>On your iPhone.</strong> A copy of your match history, plus any player names and venue labels you've added, is stored in the iPhone's local SwiftData store. That store mirrors to <em>your own</em> private iCloud database via CloudKit so re-installing on a new device restores everything via your Apple ID. RacketTap has no servers; the iCloud mirror is direct between your device and Apple's iCloud service.</li>
+    <li><strong>Apple Health.</strong> Workouts and the associated heart rate, calorie, location, and weather data are saved by Apple's HealthKit, governed by Apple's privacy controls — not by RacketTap.</li>
+  </ul>
+
+  <h2>HealthKit data specifically</h2>
+  <p>In accordance with Apple's App Store and HealthKit policies, RacketTap will never share, sell, or use HealthKit data for advertising, marketing, or any purpose other than displaying it in the app itself.</p>
+
+  <h2>In-App Purchase</h2>
+  <p>RacketTap offers an optional one-time purchase called "Unlock Pro" ($2.99 USD or local equivalent), processed entirely by Apple. RacketTap never sees your card or billing details. Apple's privacy policy governs the transaction.</p>
+
+  <h2>How to delete your data</h2>
+  <ul>
+    <li><strong>One match:</strong> open it in the History tab → "Delete match".</li>
+    <li><strong>All iPhone match history:</strong> Settings tab → "Delete all history".</li>
+    <li><strong>Saved players:</strong> Players tab → swipe left on any player.</li>
+    <li><strong>Apple Health workouts:</strong> open Apple Health → Browse → Workouts → tap the workout → Delete. (RacketTap does not control HealthKit data lifecycle.)</li>
+    <li><strong>Everything:</strong> uninstall RacketTap from your iPhone (and from your watch if it doesn't auto-remove) to delete all app-local data.</li>
+  </ul>
+
+  <h2>Children's privacy</h2>
+  <p>RacketTap does not collect personal data and is suitable for users of all ages.</p>
+
+  <h2>Changes to this policy</h2>
+  <p>If this policy changes, the effective date above will be updated. Material changes will also be noted in the app's release notes.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about this policy or about RacketTap in general: <a href="mailto:matan504@gmail.com">matan504@gmail.com</a></p>
+
+</main>
+
+<footer>
+  <nav>
+    <a href="/">Home</a>
+    <span class="sep">·</span>
+    <a href="/support/">Support</a>
+  </nav>
+</footer>
+
+</body>
+</html>
