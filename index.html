@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RacketTap — racket-sport scorekeeping for Apple Watch</title>
-<meta name="description" content="A focused racket-sport scorekeeper for Apple Watch with an iPhone companion. Padel and tennis. Tracks matches, partners, opponents, Apple Health correlation, and on-device AI insights. UI in English, Suomi, Español, עברית.">
+<meta name="description" content="A focused racket-sport scorekeeper for Apple Watch with an iPhone companion. Padel and tennis. Score from the watch, the phone, or a Bluetooth remote. Live Share to a friend's phone over Bluetooth. Apple Health correlation and on-device AI insights. UI in English, Suomi, Español, עברית.">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" type="image/png" href="icon.png">
 </head>
@@ -19,7 +19,7 @@
 
 <main>
   <section class="intro scroll-in">
-    <p>RacketTap turns your Apple Watch into a wrist-mounted racket-sport scorekeeper. Tap to score, long-press to undo. Two sports: padel and tennis. The iPhone companion turns those matches into something more — sleep-vs-performance correlation, a personalized recap for every match, an AI coach that knows your history, and a daily readiness signal before you step on court. Everything stays on your device.</p>
+    <p>RacketTap turns your Apple Watch into a wrist-mounted racket-sport scorekeeper. Tap to score, long-press to undo. Or score on the iPhone — even with a Bluetooth selfie remote. Two sports: padel and tennis. The iPhone companion turns those matches into something more — sleep-vs-performance correlation, a personalized recap for every match, an AI coach that knows your history, and a daily readiness signal before you step on court. Live Share your match to a friend's iPhone over Bluetooth so they can follow along. Everything stays on your device.</p>
   </section>
 
   <section class="gallery scroll-in">
@@ -80,21 +80,17 @@
       <li><strong>Days-played counter.</strong> Asked once during watch onboarding (or in iPhone Settings), then auto-counted from every day you play.</li>
       <li><strong>Four UI languages.</strong> Both the iPhone app and the Apple Watch app have their own in-app language pickers with five options: <em>System</em>, <em>English</em>, <em>Suomi</em>, <em>Español</em>, <em>עברית</em>. Pick one language for the UI and a different one for the voice readout if you like — they're independent. RTL layout kicks in automatically when Hebrew is selected.</li>
       <li><strong>Share matches with anyone.</strong> Send a finished match (or several at once) to another RacketTap user as a <code>.rackettap</code> file via AirDrop, Messages, or Mail — the recipient opens the file and the matches drop into their own history with full stats, no scoring required on their end. Or share a polished match card as an image to any app (Messages, Instagram, etc.), Workouts-style.</li>
+      <li><strong>Phone-only scoring.</strong> Don't have your watch on you? Start and score a match right on the iPhone. Tap the left side for your point, tap the right side for theirs, long-press to undo. A "Quick Score" setup picks sport, format and players in a few seconds.</li>
+      <li><strong>Bluetooth remote support.</strong> Pair a cheap selfie-stick / camera shutter remote (Dispho, AB Shutter 3, generic clickers) and score points hands-free. Single press for your point, double-press for theirs, triple-press or long-press to undo. Mode + diagnostics live in iPhone Settings → Bluetooth Remote.</li>
+      <li><strong>Live Share to a friend's phone (and their watch).</strong> Mirror your live match to a nearby friend's iPhone over Bluetooth — no internet, no accounts. They tap Join, you tap Accept, and the score streams to their phone in real time. If they have RacketTap on their watch, the mirror fans out there too. When the match ends, they can save a copy to their own history with the correct YOU / THEM perspective.</li>
+      <li><strong>Watch complication.</strong> Add the RacketTap chip to your watch face for a one-tap start of your default match type (padel · normal/mixing/training/americano, tennis · singles/doubles). Default is configurable per sport.</li>
+      <li><strong>Venues you've played.</strong> The first time you label a court in History, RacketTap remembers it. The next match at the same spot auto-fills the venue name. A Venues screen in iPhone Settings lets you rename or remove entries once you have any.</li>
     </ul>
   </section>
 
   <section class="privacy-highlight scroll-in">
     <h2>Privacy-first by design</h2>
     <p>Everything stays on your devices. No accounts. No analytics. No tracking. No third-party SDKs. The AI Coach and Match Recap use Apple's on-device language model — no prompt ever leaves your phone. Health data is read locally and never transmitted. Match history mirrors only to <em>your own</em> private iCloud database so you can re-install on a new device.</p>
-  </section>
-
-  <section class="features scroll-in">
-    <h2>Coming soon</h2>
-    <ul class="feature-list">
-      <li><strong>Phone-only scoring.</strong> Score a match on your iPhone screen — no watch needed. Tap left for your point, tap right for theirs, long-press to undo. Works with a Bluetooth selfie remote too. Currently in verification with Apple; landing in a TestFlight build first, then App Store.</li>
-      <li><strong>Live match sharing between devices.</strong> Share your live match with a friend's iPhone over Bluetooth (no internet, no servers). They see your score in real time and can record their own workout alongside. In verification now.</li>
-      <li><strong>Watch complication.</strong> One-tap launcher on your watch face for whichever match type (padel · normal/mixing/training/americano, tennis · singles/doubles) you play most often. In verification now.</li>
-    </ul>
   </section>
 
   <section class="cta scroll-in">

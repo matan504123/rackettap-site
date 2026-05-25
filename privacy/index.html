@@ -57,6 +57,7 @@
     <li><strong>On your Apple Watch.</strong> Match data is saved in the watch's own local SwiftData store. It is synced to your paired iPhone using Apple's WatchConnectivity framework, which is a direct local link between your two devices and does not go through any network or cloud service.</li>
     <li><strong>On your iPhone.</strong> A copy of your match history, plus any player names and venue labels you've added, is stored in the iPhone's local SwiftData store. That store mirrors to <em>your own</em> private iCloud database via CloudKit so re-installing on a new device restores everything via your Apple ID. RacketTap has no servers; the iCloud mirror is direct between your device and Apple's iCloud service.</li>
     <li><strong>Apple Health.</strong> Workouts and the associated heart rate, calorie, location, and weather data are saved by Apple's HealthKit, governed by Apple's privacy controls — not by RacketTap.</li>
+    <li><strong>Live Share (phone-to-phone).</strong> When you share a live match with a nearby friend's iPhone, the two devices connect directly over Bluetooth / peer-to-peer Wi-Fi using Apple's MultipeerConnectivity framework. The connection is encrypted, doesn't go through any server, and only carries the live score — no Apple ID, no Health data, no location. Each guest needs your explicit approval to join. Personal biometrics (heart rate, calories) are stripped from any saved-match copy a guest receives.</li>
   </ul>
 
   <h2>HealthKit data specifically</h2>
