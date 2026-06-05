@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <!-- Lock down the page: scripts only from self + Apple's CloudKit CDN;
+       network only to Apple CloudKit endpoints. (GitHub Pages can't set HTTP
+       headers, so CSP lives here as a meta tag.) -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none';
+                 script-src 'self' https://cdn.apple-cloudkit.com;
+                 connect-src https://*.apple-cloudkit.com https://api.apple-cloudkit.com;
+                 style-src 'self' 'unsafe-inline';
+                 img-src 'self' data:;
+                 base-uri 'none'">
+  <title>RacketTap — Live Score</title>
+  <style>
+    :root { color-scheme: dark; --blue:#0a84ff; --orange:#ff9f0a; --bg:#000; --card:#1c1c1e; --muted:#8e8e93; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100dvh; background:var(--bg); color:#fff;
+           font:-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+           display:flex; flex-direction:column; align-items:center; justify-content:center;
+           padding:24px; gap:18px; text-align:center; }
+    .brand { position:fixed; top:16px; left:0; right:0; font-size:13px; letter-spacing:.08em;
+             color:var(--muted); text-transform:uppercase; }
+    /* state machine: body[data-state] toggles which block shows */
+    #score, #message { display:none; width:100%; max-width:520px; }
+    body[data-state="score"] #score { display:block; }
+    body[data-state="message"] #message { display:block; }
+    .pill { display:inline-block; font-size:13px; font-weight:800; letter-spacing:.1em;
+            padding:5px 12px; border-radius:999px; margin-bottom:18px; }
+    .pill.live { background:#30d158; color:#000; }
+    .pill.final { background:#48484a; color:#fff; }
+    .col-head { display:flex; justify-content:flex-end; gap:14px; color:var(--muted);
+                font-size:12px; letter-spacing:.06em; padding:0 16px 6px; }
+    .col-head .sets,.col-head .games,.col-head .points { width:44px; text-align:center; }
+    .team { display:flex; align-items:center; justify-content:space-between;
+            background:var(--card); border-radius:16px; padding:18px 16px; margin:8px 0;
+            border-left:6px solid transparent; }
+    .team-a { border-left-color:var(--blue); }
+    .team-b { border-left-color:var(--orange); }
+    .team.winner { outline:2px solid #30d158; }
+    .team-name { font-size:22px; font-weight:600; text-align:left; overflow:hidden;
+                 text-overflow:ellipsis; white-space:nowrap; }
+    .team-cols { display:flex; gap:14px; align-items:center; }
+    .team-cols .sets,.team-cols .games { width:44px; text-align:center; font-size:24px;
+                 font-variant-numeric:tabular-nums; color:var(--muted); }
+    .team-cols .points { width:44px; text-align:center; font-size:30px; font-weight:800;
+                 font-variant-numeric:tabular-nums; }
+    #starpoint { margin:14px 0; padding:10px; border-radius:12px; background:#ffd60a; color:#000;
+                 font-weight:800; letter-spacing:.12em; }
+    #starpoint[hidden] { display:none; }
+    #badges { display:flex; gap:8px; justify-content:center; margin-top:14px; flex-wrap:wrap; }
+    #badges[hidden] { display:none; }
+    .badge { font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--muted);
+             border:1px solid #48484a; border-radius:999px; padding:4px 10px; }
+    #updated { margin-top:20px; color:var(--muted); font-size:13px; }
+    #msg-title { font-size:22px; font-weight:600; margin:0 0 8px; }
+    #msg-detail { color:var(--muted); font-size:15px; margin:0; max-width:32ch; display:inline-block; }
+    .foot { position:fixed; bottom:16px; left:0; right:0; color:var(--muted); font-size:12px; }
+    .foot a { color:var(--muted); }
+  </style>
+</head>
+<body data-state="message">
+  <div class="brand">RacketTap · Live</div>
+
+  <main id="score">
+    <span id="status-pill" class="pill live">LIVE</span>
+    <div id="col-head" class="col-head"></div>
+    <div id="teams"></div>
+    <div id="starpoint" hidden>★ STAR POINT</div>
+    <div id="badges" hidden></div>
+    <div id="updated"></div>
+  </main>
+
+  <section id="message">
+    <h1 id="msg-title">Loading…</h1>
+    <p id="msg-detail"></p>
+  </section>
+
+  <div class="foot">Following along — scores are read-only and update automatically.</div>
+
+  <!-- Apple CloudKit JS. NOTE: add Subresource Integrity (integrity="sha384-…")
+       once you've fetched the hash for this exact file; omitted now to avoid a
+       wrong hash blocking the load. -->
+  <script src="https://cdn.apple-cloudkit.com/ck/2/cloudkit.js"></script>
+  <script src="live.js"></script>
+</body>
+</html>
