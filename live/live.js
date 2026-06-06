@@ -15,7 +15,7 @@
  */
 
 const CONTAINER  = "iCloud.com.matankeret.PadelTap";
-const API_TOKEN  = "22674b5f8331cb2542dad1101f5dbed474ab4fdd96aa5680c8daf62e8861b32b"; // public read-only token, origin-locked to matan504123.github.io
+const API_TOKEN  = "a9a5ac5e45445e46e40673a6a02ec6952605957aff96b14b3c4167148477d36a"; // PRODUCTION public read-only token, origin-locked to matan504123.github.io
 const ENVIRONMENT = "production";                          // "development" to test against a debug build
 const RECORD_TYPE = "LiveSession";
 
