@@ -18,7 +18,7 @@
 <main class="legal">
 
   <h2>Summary</h2>
-  <p>RacketTap stores everything on your device. No data leaves your iPhone or Apple Watch. There are no accounts, no analytics, no tracking, and no third-party services.</p>
+  <p>RacketTap stores everything on your device. The only data that leaves your device is what you explicitly choose to share — a match mirrored to a nearby friend's phone, or, if you opt in, a match's live score published to a shareable web link (see <em>Online Live Score</em> below). There are no accounts, no analytics, no tracking, and no third-party services.</p>
 
   <h2>What data RacketTap accesses</h2>
 
@@ -58,6 +58,7 @@
     <li><strong>On your iPhone.</strong> A copy of your match history, plus any player names and venue labels you've added, is stored in the iPhone's local SwiftData store. That store mirrors to <em>your own</em> private iCloud database via CloudKit so re-installing on a new device restores everything via your Apple ID. RacketTap has no servers; the iCloud mirror is direct between your device and Apple's iCloud service.</li>
     <li><strong>Apple Health.</strong> Workouts and the associated heart rate, calorie, location, and weather data are saved by Apple's HealthKit, governed by Apple's privacy controls — not by RacketTap.</li>
     <li><strong>Live Share (phone-to-phone).</strong> When you share a live match with a nearby friend's iPhone, the two devices connect directly over Bluetooth / peer-to-peer Wi-Fi using Apple's MultipeerConnectivity framework. The connection is encrypted, doesn't go through any server, and only carries the live score — no Apple ID, no Health data, no location. Each guest needs your explicit approval to join. Personal biometrics (heart rate, calories) are stripped from any saved-match copy a guest receives.</li>
+    <li><strong>Online Live Score (web link).</strong> Optional and off by default. When you tap "Share online" during a match, RacketTap publishes that match's live score to a record in the public database of the same Apple CloudKit container, addressed by a long, random, unguessable link. Anyone you send the link to can open it in a web browser and follow the score with no app and no account — so, unlike your private history, this record is readable by anyone who has the link. It carries only the running score and the team names you typed: no Apple ID, no Health data (heart rate is removed before publishing), and no location. You can end it at any time with "Stop sharing" (which deletes it immediately), and it is removed automatically a few hours after the match finishes. It still goes only to Apple's CloudKit — there are no RacketTap or third-party servers.</li>
   </ul>
 
   <h2>HealthKit data specifically</h2>
