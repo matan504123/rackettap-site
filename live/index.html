@@ -24,8 +24,8 @@
            padding:24px; gap:18px; text-align:center; }
     .brand { position:fixed; top:20px; left:0; right:0; display:flex; align-items:center;
              justify-content:center; gap:10px; text-decoration:none; color:#fff; }
-    .brand-icon { width:34px; height:34px; border-radius:8px; box-shadow:0 1px 6px rgba(0,0,0,.5); }
-    .brand-name { font-size:23px; font-weight:700; letter-spacing:.01em; }
+    .brand-icon { width:42px; height:42px; border-radius:9px; box-shadow:0 1px 6px rgba(0,0,0,.5); }
+    .brand-name { font-size:30px; font-weight:700; letter-spacing:.01em; }
     .brand:active { opacity:.55; }
     /* state machine: body[data-state] toggles which block shows */
     #score, #message { display:none; width:100%; max-width:520px; }
@@ -64,7 +64,7 @@
     #updated { margin-top:20px; color:var(--muted); font-size:13px; }
     #msg-title { font-size:22px; font-weight:600; margin:0 0 8px; }
     #msg-detail { color:var(--muted); font-size:15px; margin:0; max-width:32ch; display:inline-block; }
-    .foot { position:fixed; bottom:18px; left:0; right:0; color:var(--muted); font-size:13px;
+    .foot { position:fixed; bottom:20px; left:0; right:0; color:var(--muted); font-size:15px;
             display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; padding:0 16px; }
     .foot a { color:var(--blue); text-decoration:none; font-weight:600; }
     .foot a:active { opacity:.55; }
@@ -72,7 +72,7 @@
   </style>
 </head>
 <body data-state="message">
-  <a class="brand" href="../" aria-label="RacketTap home">
+  <a class="brand" href="../" target="_blank" rel="noopener" aria-label="RacketTap home">
     <img class="brand-icon" src="../icon.png" alt="">
     <span class="brand-name">RacketTap</span>
   </a>
@@ -94,7 +94,7 @@
   <div class="foot">
     <span>Live scores, updating automatically.</span>
     <span class="dot">·</span>
-    <a href="../">New here? Discover RacketTap →</a>
+    <a href="../" target="_blank" rel="noopener">New here? Discover RacketTap →</a>
   </div>
 
   <!-- Apple CloudKit JS. NOTE: add Subresource Integrity (integrity="sha384-…")
