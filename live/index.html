@@ -22,8 +22,11 @@
            font:-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
            display:flex; flex-direction:column; align-items:center; justify-content:center;
            padding:24px; gap:18px; text-align:center; }
-    .brand { position:fixed; top:16px; left:0; right:0; font-size:13px; letter-spacing:.08em;
-             color:var(--muted); text-transform:uppercase; }
+    .brand { position:fixed; top:20px; left:0; right:0; display:flex; align-items:center;
+             justify-content:center; gap:10px; text-decoration:none; color:#fff; }
+    .brand-icon { width:34px; height:34px; border-radius:8px; box-shadow:0 1px 6px rgba(0,0,0,.5); }
+    .brand-name { font-size:23px; font-weight:700; letter-spacing:.01em; }
+    .brand:active { opacity:.55; }
     /* state machine: body[data-state] toggles which block shows */
     #score, #message { display:none; width:100%; max-width:520px; }
     body[data-state="score"] #score { display:block; }
@@ -61,12 +64,18 @@
     #updated { margin-top:20px; color:var(--muted); font-size:13px; }
     #msg-title { font-size:22px; font-weight:600; margin:0 0 8px; }
     #msg-detail { color:var(--muted); font-size:15px; margin:0; max-width:32ch; display:inline-block; }
-    .foot { position:fixed; bottom:16px; left:0; right:0; color:var(--muted); font-size:12px; }
-    .foot a { color:var(--muted); }
+    .foot { position:fixed; bottom:18px; left:0; right:0; color:var(--muted); font-size:13px;
+            display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; padding:0 16px; }
+    .foot a { color:var(--blue); text-decoration:none; font-weight:600; }
+    .foot a:active { opacity:.55; }
+    .foot .dot { opacity:.5; }
   </style>
 </head>
 <body data-state="message">
-  <div class="brand">RacketTap · Live</div>
+  <a class="brand" href="../" aria-label="RacketTap home">
+    <img class="brand-icon" src="../icon.png" alt="">
+    <span class="brand-name">RacketTap</span>
+  </a>
 
   <main id="score">
     <span id="status-pill" class="pill live">LIVE</span>
@@ -82,7 +91,11 @@
     <p id="msg-detail"></p>
   </section>
 
-  <div class="foot">Following along — scores are read-only and update automatically.</div>
+  <div class="foot">
+    <span>Live scores, updating automatically.</span>
+    <span class="dot">·</span>
+    <a href="../">New here? Discover RacketTap →</a>
+  </div>
 
   <!-- Apple CloudKit JS. NOTE: add Subresource Integrity (integrity="sha384-…")
        once you've fetched the hash for this exact file; omitted now to avoid a
