@@ -127,11 +127,18 @@ function render(record) {
   // expires — show "no longer available" rather than a stale FINAL.
   if (ended && expired) { showEnded(); return false; }
 
+  // A "live" record that hasn't updated for a few minutes has almost
+  // certainly ended without an explicit end signal (e.g. a partial match
+  // ended on the watch). Show a soft "paused" state rather than a false LIVE;
+  // keep polling so it flips back if play actually resumes.
+  const stale = !ended && (Date.now() - updatedAt.getTime() > 180000);
+
   setState("score");
 
   // Status pill
   const pill = $("status-pill");
   if (ended) { pill.textContent = "FINAL"; pill.className = "pill final"; }
+  else if (stale) { pill.textContent = "PAUSED"; pill.className = "pill stale"; }
   else { pill.textContent = "LIVE"; pill.className = "pill live"; }
 
   // Header columns label (hide sets column for Americano)
@@ -151,7 +158,9 @@ function render(record) {
   $("badges").hidden = b.length === 0;
 
   // Footer status
-  $("updated").textContent = ended ? "Match finished" : ("Updated " + timeAgo(updatedAt));
+  if (ended) $("updated").textContent = "Match finished";
+  else if (stale) $("updated").textContent = "Hasn't updated recently — the match may have finished.";
+  else $("updated").textContent = "Updated " + timeAgo(updatedAt);
   return !ended; // keep polling only while the match is live
 }
 
