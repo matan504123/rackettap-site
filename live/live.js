@@ -25,6 +25,10 @@ const MAX_POLL_MS  = 30000;
 const $ = (id) => document.getElementById(id);
 const POINT_WORDS = ["0", "15", "30", "40", "AD"];
 
+// The host who shares the link is, by the app's convention, Team A ("YOU"),
+// so we badge that team so home viewers know which side the broadcaster is on.
+const BROADCASTER_TEAM = "a";
+
 let pollTimer = null;
 let currentDelay = BASE_POLL_MS;
 
@@ -44,6 +48,13 @@ function showMessage(title, detail) {
   $("msg-detail").textContent = detail || "";
 }
 
+/* Terminal state: the broadcast is over and there's nothing live to show
+   (match finished + result window expired, or the host stopped sharing /
+   the record was pruned). Stops polling. */
+function showEnded() {
+  showMessage("Broadcast ended", "This match has finished — the live view is no longer available.");
+}
+
 function pointDisplay(raw) {
   return POINT_WORDS[raw] != null ? POINT_WORDS[raw] : String(raw);
 }
@@ -57,7 +68,7 @@ function timeAgo(date) {
 }
 
 /* Render one team's row. `s` is the decoded LiveScorePublic. */
-function renderTeam(side, s, ended) {
+function renderTeam(side, s, ended, isBroadcaster) {
   const isA = side === "a";
   const name = (isA ? s.teamAName : s.teamBName) || (isA ? "Team A" : "Team B");
   const sets = isA ? s.setsWonByA : s.setsWonByB;
@@ -73,9 +84,13 @@ function renderTeam(side, s, ended) {
   }
 
   const won = ended && s.winnerRaw === side;
+  const tag = isBroadcaster ? `<span class="bcast">📡 Broadcaster</span>` : "";
   return `
     <div class="team ${isA ? "team-a" : "team-b"} ${won ? "winner" : ""}">
-      <span class="team-name">${escapeText(name)}</span>
+      <span class="team-id">
+        <span class="team-name">${escapeText(name)}</span>
+        ${tag}
+      </span>
       <span class="team-cols">
         ${s.isAmericano ? "" : `<span class="sets">${sets}</span>`}
         <span class="games">${games}</span>
@@ -104,7 +119,13 @@ function render(record) {
   }
   const status = record.fields.status ? record.fields.status.value : "live";
   const updatedAt = record.fields.updatedAt ? new Date(record.fields.updatedAt.value) : new Date();
+  const expiresAtRaw = record.fields.expiresAt ? record.fields.expiresAt.value : null;
+  const expired = expiresAtRaw != null && Date.now() > Number(expiresAtRaw);
   const ended = status === "ended" || s.winnerRaw != null;
+
+  // A finished match stays viewable for a few hours, then its result window
+  // expires — show "no longer available" rather than a stale FINAL.
+  if (ended && expired) { showEnded(); return false; }
 
   setState("score");
 
@@ -118,7 +139,8 @@ function render(record) {
     ? `<span class="games">PTS</span><span class="points">TOT</span>`
     : `<span class="sets">SETS</span><span class="games">GMS</span><span class="points">PTS</span>`;
 
-  $("teams").innerHTML = renderTeam("a", s, ended) + renderTeam("b", s, ended);
+  $("teams").innerHTML = renderTeam("a", s, ended, BROADCASTER_TEAM === "a")
+                       + renderTeam("b", s, ended, BROADCASTER_TEAM === "b");
 
   // Star point banner
   $("starpoint").hidden = !s.isStarPointActive;
@@ -130,6 +152,7 @@ function render(record) {
 
   // Footer status
   $("updated").textContent = ended ? "Match finished" : ("Updated " + timeAgo(updatedAt));
+  return !ended; // keep polling only while the match is live
 }
 
 function escapeText(str) {
@@ -153,19 +176,19 @@ function poll() {
   // Fetch by recordName only — the record type is non-queryable by design,
   // so the unguessable share-id is the sole key.
   db.fetchRecords(id).then((resp) => {
-    if (resp.hasErrors && resp.hasErrors()) {
-      handleFetchError(resp.errors && resp.errors()[0]);
+    const rec = (resp && resp.records && resp.records[0]) || null;
+    // A deleted / never-existed record comes back as a STUB: HTTP 200 with a
+    // per-record NOT_FOUND and NO `.fields`. Detect that and stop — the
+    // broadcast is over (Stop sharing / Discard / pruned after expiry).
+    // (Previously this stub was rendered, threw on `.fields`, and the catch
+    // treated it as transient → endless "Reconnecting…".)
+    if (!rec || !rec.fields || rec.serverErrorCode === "NOT_FOUND") {
+      showEnded();
       return;
     }
-    const rec = (resp.records && resp.records[0]) || null;
-    if (!rec) {
-      showMessage("Match ended", "This match has finished or the link has expired.");
-      return; // stop polling — nothing to wait for
-    }
     currentDelay = BASE_POLL_MS;          // success → reset backoff
-    render(rec);
-    const ended = (rec.fields.status && rec.fields.status.value === "ended");
-    if (!ended) scheduleNext(currentDelay); // keep polling while live
+    const live = render(rec);
+    if (live) scheduleNext(currentDelay);  // keep polling only while live
   }).catch((err) => handleFetchError(err));
 }
 
