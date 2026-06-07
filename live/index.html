@@ -38,7 +38,7 @@
     .pill.final { background:#48484a; color:#fff; }
     .col-head { display:flex; justify-content:flex-end; gap:14px; color:var(--muted);
                 font-size:12px; letter-spacing:.06em; padding:0 16px 6px; }
-    .col-head .sets,.col-head .games,.col-head .points { width:44px; text-align:center; }
+    .col-head .sets,.col-head .games,.col-head .points,.col-head .setcell { width:44px; text-align:center; }
     .team { display:flex; align-items:center; justify-content:space-between;
             background:var(--card); border-radius:16px; padding:18px 16px; margin:8px 0;
             border-left:6px solid transparent; }
@@ -55,6 +55,11 @@
                  font-variant-numeric:tabular-nums; color:var(--muted); }
     .team-cols .points { width:44px; text-align:center; font-size:30px; font-weight:800;
                  font-variant-numeric:tabular-nums; }
+    /* Final set-by-set summary cells (shown only when the match is over). */
+    .team-cols .setcell { width:44px; text-align:center; font-size:28px; font-weight:700;
+                 font-variant-numeric:tabular-nums; color:var(--muted); }
+    .team-cols .setcell.win { color:#fff; }
+    .team-cols .setcell .tb { font-size:11px; font-weight:700; margin-left:1px; vertical-align:super; }
     #starpoint { margin:14px 0; padding:10px; border-radius:12px; background:#ffd60a; color:#000;
                  font-weight:800; letter-spacing:.12em; }
     #starpoint[hidden] { display:none; }

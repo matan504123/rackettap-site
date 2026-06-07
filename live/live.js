@@ -67,35 +67,56 @@ function timeAgo(date) {
   return mins + " min ago";
 }
 
+/* True when the match is over AND we have a per-set breakdown to summarise.
+   (Americano has no sets, so it keeps its live PTS/TOT layout even when
+   ended.) Drives both the column header and each team row. */
+function hasFinalSetSummary(s, ended) {
+  return ended && !s.isAmericano
+      && Array.isArray(s.completedSets) && s.completedSets.length > 0;
+}
+
 /* Render one team's row. `s` is the decoded LiveScorePublic. */
 function renderTeam(side, s, ended, isBroadcaster) {
   const isA = side === "a";
   const name = (isA ? s.teamAName : s.teamBName) || (isA ? "Team A" : "Team B");
-  const sets = isA ? s.setsWonByA : s.setsWonByB;
-  const games = isA ? s.currentSetGamesA : s.currentSetGamesB;
-
-  let points;
-  if (s.isAmericano) {
-    points = isA ? s.americanoTotalPointsA : s.americanoTotalPointsB;
-  } else if (s.isInTiebreak) {
-    points = isA ? s.tiebreakPointsA : s.tiebreakPointsB;
-  } else {
-    points = pointDisplay(isA ? s.currentGamePointsARaw : s.currentGamePointsBRaw);
-  }
-
   const won = ended && s.winnerRaw === side;
   const tag = isBroadcaster ? `<span class="bcast">📡 Broadcaster</span>` : "";
+
+  let cols;
+  if (hasFinalSetSummary(s, ended)) {
+    // FINAL: one cell per completed set showing this team's games (with a
+    // tiebreak marker). The set the team won is highlighted. No stale
+    // current-game point ("40"/"AD") — the match is over.
+    cols = s.completedSets.map((set) => {
+      const g = isA ? set.gamesA : set.gamesB;
+      const setWon = isA ? set.gamesA > set.gamesB : set.gamesB > set.gamesA;
+      const tb = set.wasTiebreak ? `<sup class="tb">TB</sup>` : "";
+      return `<span class="setcell ${setWon ? "win" : ""}">${g}${tb}</span>`;
+    }).join("");
+  } else {
+    // LIVE / PAUSED (or an ended match with no set data): sets · games · pts.
+    const sets = isA ? s.setsWonByA : s.setsWonByB;
+    const games = isA ? s.currentSetGamesA : s.currentSetGamesB;
+    let points;
+    if (s.isAmericano) {
+      points = isA ? s.americanoTotalPointsA : s.americanoTotalPointsB;
+    } else if (s.isInTiebreak) {
+      points = isA ? s.tiebreakPointsA : s.tiebreakPointsB;
+    } else {
+      points = pointDisplay(isA ? s.currentGamePointsARaw : s.currentGamePointsBRaw);
+    }
+    cols = `${s.isAmericano ? "" : `<span class="sets">${sets}</span>`}`
+         + `<span class="games">${games}</span>`
+         + `<span class="points">${points}</span>`;
+  }
+
   return `
     <div class="team ${isA ? "team-a" : "team-b"} ${won ? "winner" : ""}">
       <span class="team-id">
         <span class="team-name">${escapeText(name)}</span>
         ${tag}
       </span>
-      <span class="team-cols">
-        ${s.isAmericano ? "" : `<span class="sets">${sets}</span>`}
-        <span class="games">${games}</span>
-        <span class="points">${points}</span>
-      </span>
+      <span class="team-cols">${cols}</span>
     </div>`;
 }
 
@@ -141,10 +162,16 @@ function render(record) {
   else if (stale) { pill.textContent = "PAUSED"; pill.className = "pill stale"; }
   else { pill.textContent = "LIVE"; pill.className = "pill live"; }
 
-  // Header columns label (hide sets column for Americano)
-  $("col-head").innerHTML = s.isAmericano
-    ? `<span class="games">PTS</span><span class="points">TOT</span>`
-    : `<span class="sets">SETS</span><span class="games">GMS</span><span class="points">PTS</span>`;
+  // Header columns label. FINAL with a set breakdown ⇒ one "SET n" per set;
+  // Americano ⇒ PTS/TOT; otherwise the live SETS/GMS/PTS columns.
+  if (hasFinalSetSummary(s, ended)) {
+    $("col-head").innerHTML = s.completedSets
+      .map((_, i) => `<span class="setcell">SET ${i + 1}</span>`).join("");
+  } else {
+    $("col-head").innerHTML = s.isAmericano
+      ? `<span class="games">PTS</span><span class="points">TOT</span>`
+      : `<span class="sets">SETS</span><span class="games">GMS</span><span class="points">PTS</span>`;
+  }
 
   $("teams").innerHTML = renderTeam("a", s, ended, BROADCASTER_TEAM === "a")
                        + renderTeam("b", s, ended, BROADCASTER_TEAM === "b");
