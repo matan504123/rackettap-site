@@ -75,6 +75,18 @@
     .foot a { color:var(--blue); text-decoration:none; font-weight:600; }
     .foot a:active { opacity:.55; }
     .foot .dot { opacity:.5; }
+    /* Short / landscape viewports: the vertically-centered score otherwise
+       slides under the position:fixed brand header (and the footer), so the
+       LIVE pill collides with the logo. Drop the brand + footer into normal
+       flow and shrink the brand so everything stacks without overlapping.
+       The page scrolls if the content is taller than the viewport. */
+    @media (max-height: 560px) {
+      body { justify-content:flex-start; padding:12px 16px; gap:10px; }
+      .brand { position:static; }
+      .brand-icon { width:30px; height:30px; }
+      .brand-name { font-size:22px; }
+      .foot { position:static; margin-top:10px; }
+    }
   </style>
 </head>
 <body data-state="message">
