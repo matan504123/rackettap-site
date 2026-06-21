@@ -1,12 +1,12 @@
-# padeltap-site
+# rackettap-site
 
-Marketing landing page + legal/support pages for **PadelTap**, hosted on GitHub Pages.
+Marketing landing page + legal/support pages for **RacketTap**, hosted on GitHub Pages.
 
 ## Files
 
 - `index.html` — landing page
-- `privacy.html` — Privacy Policy (linked from App Store Connect)
-- `support.html` — Support page (linked from App Store Connect)
+- `privacy/index.html` — Privacy Policy (linked from App Store Connect)
+- `support/index.html` — Support page (linked from App Store Connect)
 - `style.css` — shared styles
 - `icon.png` — app icon (1024×1024)
 
@@ -24,16 +24,16 @@ python3 -m http.server 8000
 3. Wait ~30–60 seconds. The site goes live at:
 
    ```
-   https://<your-github-username>.github.io/padeltap-site/
+   https://<your-github-username>.github.io/rackettap-site/
    ```
 
    The URLs you give App Store Connect are then:
-   - Privacy Policy: `https://<user>.github.io/padeltap-site/privacy.html`
-   - Support:        `https://<user>.github.io/padeltap-site/support.html`
+   - Privacy Policy: `https://<user>.github.io/rackettap-site/privacy/`
+   - Support:        `https://<user>.github.io/rackettap-site/support/`
 
 ## Custom domain (optional, ~$10/year)
 
-If you later want a prettier URL like `padeltap.app`:
+If you later want a prettier URL like `rackettap.app`:
 
 1. Buy the domain (Namecheap, Cloudflare Registrar, etc.).
 2. Add a `CNAME` file to this repo containing just the domain on one line.

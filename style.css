@@ -86,13 +86,6 @@ body {
     gradientShift 12s ease-in-out infinite;
 }
 
-.formerly {
-  color: var(--text-soft);
-  font-size: 0.95rem;
-  margin-bottom: 1rem;
-  animation: fadeInUp 0.5s var(--ease-smooth) 0.3s both;
-}
-
 .tagline {
   font-size: 1.25rem;
   color: var(--text-soft);
