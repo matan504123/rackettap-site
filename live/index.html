@@ -4,6 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="referrer" content="no-referrer">
+  <!-- iOS Safari shows a native "GET" install banner for spectators on iPhone. -->
+  <meta name="apple-itunes-app" content="app-id=6769837930">
   <!-- Lock down the page: scripts only from self + Apple's CloudKit CDN;
        network only to Apple CloudKit endpoints. (GitHub Pages can't set HTTP
        headers, so CSP lives here as a meta tag.) -->
@@ -75,6 +77,9 @@
     .foot a { color:var(--blue); text-decoration:none; font-weight:600; }
     .foot a:active { opacity:.55; }
     .foot .dot { opacity:.5; }
+    .foot .cta { display:inline-flex; align-items:center; background:var(--blue); color:#fff;
+                 padding:10px 18px; border-radius:999px; font-weight:700; font-size:15px; }
+    .foot .cta:active { opacity:.7; }
     /* Short / landscape viewports: the vertically-centered score otherwise
        slides under the position:fixed brand header (and the footer), so the
        LIVE pill collides with the logo. Drop the brand + footer into normal
@@ -110,9 +115,8 @@
   </section>
 
   <div class="foot">
-    <span>Live scores, updating automatically.</span>
-    <span class="dot">·</span>
-    <a href="../" target="_blank" rel="noopener">New here? Discover RacketTap →</a>
+    <span>Scored live with RacketTap.</span>
+    <a class="cta" href="https://apps.apple.com/app/id6769837930" target="_blank" rel="noopener">Get the app — free</a>
   </div>
 
   <!-- Apple CloudKit JS. NOTE: add Subresource Integrity (integrity="sha384-…")
