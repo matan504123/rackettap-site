@@ -28,13 +28,33 @@
   <p>If you've installed RacketTap on your iPhone and you have a paired Apple Watch, the watch app installs automatically within a minute or two. If it doesn't appear: open the <em>Watch</em> app on your iPhone → scroll to "Available Apps" → tap "Install" next to RacketTap.</p>
 
   <h3>How do I start scoring on the watch?</h3>
-  <p>The watch home screen has a small Padel / Tennis switcher at the top. Pick your sport, and the Start buttons underneath fire a match of that type. Single tap for your team, double tap for the opponents, long-press to undo the last point.</p>
+  <p>The watch home screen has a small Padel / Tennis / Badminton switcher at the top. Pick your sport, and the Start buttons underneath fire a match of that type. Single tap for your team, double tap for the opponents, long-press to undo the last point.</p>
 
   <h3>What sports does RacketTap support?</h3>
-  <p>Padel (the original) and tennis (new in v5). Both use the same watch-first scoring engine; the difference is in the format options. Padel has four formats — Normal (full padel scoring), Mixing (rotating partners, running games), Training (workout-only), and Americano (point-based rounds). Tennis has singles + doubles, best-of-3 or best-of-5, optional final-set match tiebreak to 7 / 10 / 12, and Advantage or No-Ad deuce.</p>
+  <p>Padel (the original), tennis (added in v5), and badminton (added in v6). All three use the same watch-first scoring engine; the difference is in the format options. Padel has five formats — Normal (full padel scoring), Mixing (rotating partners, running games), Training (workout-only), Americano (point-based rounds), and Tiebreak (single standalone tiebreak). Tennis has singles + doubles, best-of-3 or best-of-5, optional final-set match tiebreak to 7 / 10 / 12, and Advantage or No-Ad deuce. Badminton has singles + doubles, best of 1/3/5 games, real BWF rally scoring, and three point formats (21, 15, or 11).</p>
 
   <h3>How do I configure the tennis format?</h3>
   <p>On the watch: <em>Settings → Tennis</em>. Pick best-of-3 or best-of-5, toggle "Final-set match tiebreak" on (and choose 7 / 10 / 12) if your league uses one, and pick Advantage or No-Ad for the deuce rule. Star Point is padel-only — it's intentionally not in the tennis list. These settings apply to every tennis match you start; matches in progress are unaffected by changes mid-session.</p>
+
+  <h3>How do I set who serves first — and see who's serving?</h3>
+  <p>A serving dot on the watch scoreboard marks which team currently holds the serve. Before the match starts — or between games — tap the tennis-ball icon on the scoreboard to hand the serve to the other team. RacketTap then tracks the serving side automatically throughout the match. If you need to correct a mistake mid-game, tap the icon again to flip. Serve tracking is on by default and works in all tennis and padel Normal matches. For badminton-specific serve tracking, see the question below.</p>
+
+  <h3>Which badminton rules does RacketTap use?</h3>
+  <p>RacketTap follows official BWF rules: rally scoring (every rally awards a point regardless of who served); games to 21, win by 2 — at 20-20 play continues until one side leads by two; if it reaches 29-29, the winner of the 30th rally takes the game (golden point cap). Matches are best of 1, 3, or 5 games; the default is best of 3. Singles and doubles are both supported. Service rotation follows BWF convention — serving side changes when the receiving team wins a rally, service court (right or left) is determined by the server's score parity, and between games RacketTap prompts you to confirm the first server. Interval cues fire at official midpoints (11 in a 21-point game, 8 in a 15-point game, 6 in an 11-point game) via haptic and voice.</p>
+
+  <h3>Can I play 11 or 15 point badminton games?</h3>
+  <p>Yes — on the watch, open <em>Settings → Badminton</em>. Three point formats are available:</p>
+  <ul>
+    <li><strong>21</strong> — official BWF. Games to 21, win by 2 at 20-20, golden point at 30.</li>
+    <li><strong>15</strong> — the new official BWF standard arriving January 2027. Games to 15, win by 2 at 14-14, golden point at 21.</li>
+    <li><strong>11</strong> — official BWF short format. Games to 11, sudden death at 10-10 (the winner of the next rally takes the game). A house-rule toggle in Settings switches this to "win by 2, cap 15" if your group prefers that style instead.</li>
+  </ul>
+
+  <h3>How does badminton serve tracking work?</h3>
+  <p>The watch scoreboard shows a serving indicator next to the team currently holding the serve. A small letter — <strong>R</strong> or <strong>L</strong> — shows the active service court: right when the server's score is even, left when odd, per BWF rules. The rally winner always takes the next serve; you don't need to tap anything to transfer it. At the start of each game you set who serves first using the flip control on the watch scoreboard (tap the serving indicator or the dedicated flip button), and RacketTap handles the rest of the service rotation automatically from there.</p>
+
+  <h3>Does badminton count as a workout in Apple Health?</h3>
+  <p>Yes — each badminton match is saved to Apple Health as a <strong>Badminton</strong> workout (HKWorkoutActivityType.badminton), so it appears in your Health app and Fitness Rings with the correct sport label — not as a generic or tennis workout. Heart rate, active calories, duration, and a GPS location marker are logged, the same as for padel and tennis matches.</p>
 
   <h3>What's the difference between the padel match types?</h3>
   <ul>
@@ -64,7 +84,7 @@
   <p>Yes. Tap the controls icon in the top right of the Stats tab to open <em>Customize Stats</em>. Drag rows to reorder, toggle to hide sections. The four headline tiles at the top and the lifetime "days played" card stay pinned and always show first.</p>
 
   <h3>Can I filter Stats by sport?</h3>
-  <p>Yes — the Stats tab has a sport segmented picker right above the time-range picker (All / Padel / Tennis). Switching scopes every section underneath: opponent breakdown, Best Days, Sleep Impact, Physiology Trend, AI Insight, Form &amp; Streaks, and Achievements all become sport-aware automatically.</p>
+  <p>Yes — the Stats tab has a sport segmented picker right above the time-range picker (All / Padel / Tennis / Badminton). Switching scopes every section underneath: opponent breakdown, Best Days, Sleep Impact, Physiology Trend, AI Insight, Form &amp; Streaks, and Achievements all become sport-aware automatically.</p>
 
   <h3>What is the Live tab on the iPhone?</h3>
   <p>An opt-in courtside scoreboard. When you enable it in <em>iPhone Settings → Live court scoreboard</em>, a Live tab appears between History and Stats. Place the iPhone sideways at the side of the court and it mirrors the watch in real time — big sets / games / current-game points so the score is readable from across the net. You can enable it per format (Normal / Mixing / Americano); Training never appears in Live. The iPhone screen stays awake while the Live tab is open, then resumes normal sleep behaviour when you switch tabs.</p>
