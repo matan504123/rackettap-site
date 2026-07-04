@@ -75,6 +75,10 @@ function hasFinalSetSummary(s, ended) {
       && Array.isArray(s.completedSets) && s.completedSets.length > 0;
 }
 
+/* True when the snapshot came from a badminton match. `sportRaw` is optional
+   (nil/absent for legacy padel senders); absent means padel. */
+function isBadminton(s) { return s.sportRaw === "badminton"; }
+
 /* Render one team's row. `s` is the decoded LiveScorePublic. */
 function renderTeam(side, s, ended, isBroadcaster) {
   const isA = side === "a";
@@ -93,6 +97,15 @@ function renderTeam(side, s, ended, isBroadcaster) {
       const tb = set.wasTiebreak ? `<sup class="tb">TB</sup>` : "";
       return `<span class="setcell ${setWon ? "win" : ""}">${g}${tb}</span>`;
     }).join("");
+  } else if (isBadminton(s)) {
+    // BADMINTON LIVE: games won (primary grouping) + rally points (current game).
+    // All badminton games are rally-point; isInTiebreak is always true.
+    // setsWonByA/B = games won; tiebreakPointsA/B = current-game rally points.
+    // No "current-set games" column — rally points IS the game score.
+    const gamesWon = isA ? s.setsWonByA : s.setsWonByB;
+    const rallyPts = isA ? s.tiebreakPointsA : s.tiebreakPointsB;
+    cols = `<span class="sets">${gamesWon}</span>`
+         + `<span class="points">${rallyPts}</span>`;
   } else {
     // LIVE / PAUSED (or an ended match with no set data): sets · games · pts.
     const sets = isA ? s.setsWonByA : s.setsWonByB;
@@ -126,7 +139,9 @@ function badges(s) {
   if (s.isMixing) out.push("MIX");
   if (s.isAmericano) out.push("AMERICANO");
   if (s.isTraining) out.push("TRAINING");
-  if (s.isInTiebreak) out.push("TIEBREAK");
+  // Badminton is always rally-point so isInTiebreak is always true; the badge
+  // would be permanently lit and misleading — suppress it.
+  if (s.isInTiebreak && !isBadminton(s)) out.push("TIEBREAK");
   return out;
 }
 
@@ -162,11 +177,17 @@ function render(record) {
   else if (stale) { pill.textContent = "PAUSED"; pill.className = "pill stale"; }
   else { pill.textContent = "LIVE"; pill.className = "pill live"; }
 
-  // Header columns label. FINAL with a set breakdown ⇒ one "SET n" per set;
-  // Americano ⇒ PTS/TOT; otherwise the live SETS/GMS/PTS columns.
+  // Header columns label.
+  // FINAL with a set breakdown ⇒ one "SET n" (padel/tennis) or "GAME n"
+  // (badminton) per completed game/set; Americano ⇒ PTS/TOT; badminton
+  // live ⇒ GAMES/PTS; otherwise the live SETS/GMS/PTS columns.
   if (hasFinalSetSummary(s, ended)) {
+    const unitLabel = isBadminton(s) ? "GAME" : "SET";
     $("col-head").innerHTML = s.completedSets
-      .map((_, i) => `<span class="setcell">SET ${i + 1}</span>`).join("");
+      .map((_, i) => `<span class="setcell">${unitLabel} ${i + 1}</span>`).join("");
+  } else if (isBadminton(s)) {
+    $("col-head").innerHTML =
+      `<span class="sets">GAMES</span><span class="points">PTS</span>`;
   } else {
     $("col-head").innerHTML = s.isAmericano
       ? `<span class="games">PTS</span><span class="points">TOT</span>`
