@@ -32,6 +32,11 @@ const BROADCASTER_TEAM = "a";
 let pollTimer = null;
 let currentDelay = BASE_POLL_MS;
 
+// Side-out detection: persisted across polls to compare consecutive snapshots.
+let prevSnapshot  = null;   // LiveScorePublic from the previous successful render
+let prevUpdatedAt = null;   // Date of that render's record.fields.updatedAt
+let sideOutTimer  = null;   // setTimeout handle for hiding the flash
+
 function shareIDFromURL() {
   // Prefer the fragment (#id); tolerate ?s=id as a fallback.
   const frag = (location.hash || "").replace(/^#/, "").trim();
@@ -67,6 +72,15 @@ function timeAgo(date) {
   return mins + " min ago";
 }
 
+/* Show the SIDE OUT flash for ~2 s, then hide it. Re-arming while visible
+   is safe: the timeout is reset rather than stacked. */
+function flashSideOut() {
+  const el = $("sideout");
+  el.hidden = false;
+  if (sideOutTimer) clearTimeout(sideOutTimer);
+  sideOutTimer = setTimeout(() => { el.hidden = true; }, 2000);
+}
+
 /* True when the match is over AND we have a per-set breakdown to summarise.
    (Americano has no sets, so it keeps its live PTS/TOT layout even when
    ended.) Drives both the column header and each team row. */
@@ -77,7 +91,14 @@ function hasFinalSetSummary(s, ended) {
 
 /* True when the snapshot came from a badminton match. `sportRaw` is optional
    (nil/absent for legacy padel senders); absent means padel. */
-function isBadminton(s) { return s.sportRaw === "badminton"; }
+function isBadminton(s)  { return s.sportRaw === "badminton"; }
+
+/* True for any rally-point sport (badminton or pickleball).
+   Used wherever both sports share the same column layout / badge suppressions. */
+function isRallySport(s) { return s.sportRaw === "badminton" || s.sportRaw === "pickleball"; }
+
+/* True when the snapshot came from a pickleball match. */
+function isPickleball(s) { return s.sportRaw === "pickleball"; }
 
 /* Render one team's row. `s` is the decoded LiveScorePublic. */
 function renderTeam(side, s, ended, isBroadcaster) {
@@ -97,9 +118,9 @@ function renderTeam(side, s, ended, isBroadcaster) {
       const tb = set.wasTiebreak ? `<sup class="tb">TB</sup>` : "";
       return `<span class="setcell ${setWon ? "win" : ""}">${g}${tb}</span>`;
     }).join("");
-  } else if (isBadminton(s)) {
-    // BADMINTON LIVE: games won (primary grouping) + rally points (current game).
-    // All badminton games are rally-point; isInTiebreak is always true.
+  } else if (isRallySport(s)) {
+    // RALLY-POINT LIVE (badminton / pickleball): games won + current-game points.
+    // isInTiebreak is always true for these sports.
     // setsWonByA/B = games won; tiebreakPointsA/B = current-game rally points.
     // No "current-set games" column — rally points IS the game score.
     const gamesWon = isA ? s.setsWonByA : s.setsWonByB;
@@ -135,13 +156,16 @@ function renderTeam(side, s, ended, isBroadcaster) {
 
 /* Build badge labels for the match mode. */
 function badges(s) {
+  // Items are {text, cls?}; cls is an optional extra CSS class on .badge.
   const out = [];
-  if (s.isMixing) out.push("MIX");
-  if (s.isAmericano) out.push("AMERICANO");
-  if (s.isTraining) out.push("TRAINING");
-  // Badminton is always rally-point so isInTiebreak is always true; the badge
-  // would be permanently lit and misleading — suppress it.
-  if (s.isInTiebreak && !isBadminton(s)) out.push("TIEBREAK");
+  if (s.isMixing)   out.push({ text: "MIX" });
+  if (s.isAmericano) out.push({ text: "AMERICANO" });
+  if (s.isTraining)  out.push({ text: "TRAINING" });
+  // Rally-point sports are always "in tiebreak"; suppress the misleading badge.
+  if (s.isInTiebreak && !isRallySport(s)) out.push({ text: "TIEBREAK" });
+  // Sport name badge with sport-specific accent colour (sport CSS variable).
+  if (isBadminton(s))  out.push({ text: "BADMINTON",  cls: "sport" });
+  if (isPickleball(s)) out.push({ text: "PICKLEBALL", cls: "sport" });
   return out;
 }
 
@@ -177,15 +201,18 @@ function render(record) {
   else if (stale) { pill.textContent = "PAUSED"; pill.className = "pill stale"; }
   else { pill.textContent = "LIVE"; pill.className = "pill live"; }
 
+  // Sport data attribute drives CSS --sport-accent variable for colour theming.
+  $("score").dataset.sport = s.sportRaw || "";
+
   // Header columns label.
   // FINAL with a set breakdown ⇒ one "SET n" (padel/tennis) or "GAME n"
-  // (badminton) per completed game/set; Americano ⇒ PTS/TOT; badminton
-  // live ⇒ GAMES/PTS; otherwise the live SETS/GMS/PTS columns.
+  // (badminton/pickleball) per completed game/set; Americano ⇒ PTS/TOT;
+  // rally-sport live ⇒ GAMES/PTS; otherwise the live SETS/GMS/PTS columns.
   if (hasFinalSetSummary(s, ended)) {
-    const unitLabel = isBadminton(s) ? "GAME" : "SET";
+    const unitLabel = isRallySport(s) ? "GAME" : "SET";
     $("col-head").innerHTML = s.completedSets
       .map((_, i) => `<span class="setcell">${unitLabel} ${i + 1}</span>`).join("");
-  } else if (isBadminton(s)) {
+  } else if (isRallySport(s)) {
     $("col-head").innerHTML =
       `<span class="sets">GAMES</span><span class="points">PTS</span>`;
   } else {
@@ -202,8 +229,34 @@ function render(record) {
 
   // Badges
   const b = badges(s);
-  $("badges").innerHTML = b.map((x) => `<span class="badge">${x}</span>`).join("");
+  $("badges").innerHTML = b.map((x) => `<span class="badge ${x.cls || ""}">${x.text}</span>`).join("");
   $("badges").hidden = b.length === 0;
+
+  // Server-number chip (pickleball doubles side-out only; hidden when ended).
+  const chip = $("server-chip");
+  if (!ended && isPickleball(s) && s.serverNumberRaw != null) {
+    chip.textContent = `Server ${s.serverNumberRaw}`;
+    chip.hidden = false;
+  } else {
+    chip.hidden = true;
+  }
+
+  // Side-out flash: fires when two consecutive live records share the same
+  // score (no point was awarded) but the record was actually updated AND
+  // sideOutRaw is true — the serve changed sides without a score change.
+  if (!ended && isPickleball(s) && s.sideOutRaw === true && prevSnapshot != null) {
+    const sameScore =
+      s.tiebreakPointsA === prevSnapshot.tiebreakPointsA &&
+      s.tiebreakPointsB === prevSnapshot.tiebreakPointsB &&
+      s.setsWonByA     === prevSnapshot.setsWonByA &&
+      s.setsWonByB     === prevSnapshot.setsWonByB;
+    const recordChanged = prevUpdatedAt != null &&
+      updatedAt.getTime() !== prevUpdatedAt.getTime();
+    if (sameScore && recordChanged) flashSideOut();
+  }
+  // Persist snapshot for next poll comparison.
+  prevSnapshot  = s;
+  prevUpdatedAt = updatedAt;
 
   // Footer status
   if (ended) $("updated").textContent = "Match finished";

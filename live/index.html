@@ -19,6 +19,12 @@
   <title>RacketTap — Live Score</title>
   <style>
     :root { color-scheme: dark; --blue:#0a84ff; --orange:#ff9f0a; --bg:#000; --card:#1c1c1e; --muted:#8e8e93; }
+    /* Sport accent — driven by data-sport attribute set on #score by live.js.
+       Defaults to muted so sport-keyed elements blend in if the attribute is
+       absent (padel/tennis don't render sport-specific elements at all). */
+    #score { --sport-accent: var(--muted); }
+    #score[data-sport="badminton"]  { --sport-accent: #5ac8fa; } /* teal  */
+    #score[data-sport="pickleball"] { --sport-accent: #30d158; } /* green */
     * { box-sizing: border-box; }
     body { margin:0; min-height:100dvh; background:var(--bg); color:#fff;
            font:-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
@@ -69,6 +75,19 @@
     #badges[hidden] { display:none; }
     .badge { font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--muted);
              border:1px solid #48484a; border-radius:999px; padding:4px 10px; }
+    /* Sport name badge uses the sport accent colour (BADMINTON=teal, PICKLEBALL=green). */
+    .badge.sport { color:var(--sport-accent); border-color:var(--sport-accent); }
+    /* Server-number chip (pickleball doubles): shown inline below the score grid. */
+    #server-chip { display:inline-block; margin:10px 0; padding:6px 14px;
+                   border-radius:999px; border:1px solid var(--sport-accent);
+                   color:var(--sport-accent); font-size:13px; font-weight:700;
+                   letter-spacing:.08em; }
+    #server-chip[hidden] { display:none; }
+    /* Side-out flash: transient cyan overlay, styled like ★ STAR POINT. */
+    #sideout { margin:14px 0; padding:10px; border-radius:12px;
+               background:rgba(0,212,255,.12); color:#00d4ff;
+               font-weight:800; letter-spacing:.12em; border:1px solid #00d4ff; }
+    #sideout[hidden] { display:none; }
     #updated { margin-top:20px; color:var(--muted); font-size:13px; }
     #msg-title { font-size:22px; font-weight:600; margin:0 0 8px; }
     #msg-detail { color:var(--muted); font-size:15px; margin:0; max-width:32ch; display:inline-block; }
@@ -105,6 +124,8 @@
     <div id="col-head" class="col-head"></div>
     <div id="teams"></div>
     <div id="starpoint" hidden>★ STAR POINT</div>
+    <div id="server-chip" hidden></div>
+    <div id="sideout" hidden>SIDE OUT</div>
     <div id="badges" hidden></div>
     <div id="updated"></div>
   </main>
