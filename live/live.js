@@ -34,7 +34,6 @@ let currentDelay = BASE_POLL_MS;
 
 // Side-out detection: persisted across polls to compare consecutive snapshots.
 let prevSnapshot  = null;   // LiveScorePublic from the previous successful render
-let prevUpdatedAt = null;   // Date of that render's record.fields.updatedAt
 let sideOutTimer  = null;   // setTimeout handle for hiding the flash
 
 function shareIDFromURL() {
@@ -79,6 +78,51 @@ function flashSideOut() {
   el.hidden = false;
   if (sideOutTimer) clearTimeout(sideOutTimer);
   sideOutTimer = setTimeout(() => { el.hidden = true; }, 2000);
+}
+
+/* Determine what action (if any) to take for a potential side-out event.
+ * Returns "flash" | "handoff" | "none".
+ *
+ * sideOutRaw: static format flag (true = pickleball format uses side-out scoring).
+ * It is NOT an event flag — it does not toggle on side-out transitions.
+ * Use pointsCount delta to detect real rallies before checking sideOutRaw.
+ *
+ * If pointsCount is absent on either snapshot (old app build ≤191), always
+ * returns "none" — safe degradation: never flash without a verified rally.
+ */
+function decideSideOutAction(prev, current) {
+  // Gate on a real rally: pointsCount must increase.
+  const hasRealRally =
+    Number.isFinite(current.pointsCount) &&
+    Number.isFinite(prev.pointsCount) &&
+    current.pointsCount > prev.pointsCount;
+  if (!hasRealRally) return "none";
+
+  // If the score changed, a point was awarded — not a side-out.
+  const scoreChanged =
+    current.tiebreakPointsA !== prev.tiebreakPointsA ||
+    current.tiebreakPointsB !== prev.tiebreakPointsB ||
+    current.setsWonByA      !== prev.setsWonByA      ||
+    current.setsWonByB      !== prev.setsWonByB;
+  if (scoreChanged) return "none";
+
+  // sideOutRaw is a static format flag — only pickleball sets this true.
+  if (current.sideOutRaw !== true) return "none";
+
+  // Doubles intra-team server handoff (server 1 → 2, same team): no SIDE OUT.
+  if (prev.serverNumberRaw === 1 && current.serverNumberRaw === 2) return "handoff";
+
+  // All other cases (singles null→null, doubles across teams 2→1): real SIDE OUT.
+  return "flash";
+}
+
+/* Briefly highlight the server chip on an intra-team server handoff.
+ * Adds the "server-handoff" CSS class for 1.5s then removes it. */
+function triggerServerHandoffHighlight() {
+  const chip = $("server-chip");
+  if (!chip || chip.hidden) return;
+  chip.classList.add("server-handoff");
+  setTimeout(() => chip.classList.remove("server-handoff"), 1500);
 }
 
 /* True when the match is over AND we have a per-set breakdown to summarise.
@@ -183,6 +227,10 @@ function render(record) {
   const expired = expiresAtRaw != null && Date.now() > Number(expiresAtRaw);
   const ended = status === "ended" || s.winnerRaw != null;
 
+  // pointsCount: published by app builds ≥192; absent (null) on older builds.
+  // Attach to the snapshot object so decideSideOutAction can compare cleanly.
+  s.pointsCount = record.fields.pointsCount != null ? Number(record.fields.pointsCount.value) : null;
+
   // A finished match stays viewable for a few hours, then its result window
   // expires — show "no longer available" rather than a stale FINAL.
   if (ended && expired) { showEnded(); return false; }
@@ -229,7 +277,7 @@ function render(record) {
 
   // Badges
   const b = badges(s);
-  $("badges").innerHTML = b.map((x) => `<span class="badge ${x.cls || ""}">${x.text}</span>`).join("");
+  $("badges").innerHTML = b.map((x) => `<span class="${["badge", x.cls].filter(Boolean).join(" ")}">${x.text}</span>`).join("");
   $("badges").hidden = b.length === 0;
 
   // Server-number chip (pickleball doubles side-out only; hidden when ended).
@@ -241,22 +289,17 @@ function render(record) {
     chip.hidden = true;
   }
 
-  // Side-out flash: fires when two consecutive live records share the same
-  // score (no point was awarded) but the record was actually updated AND
-  // sideOutRaw is true — the serve changed sides without a score change.
-  if (!ended && isPickleball(s) && s.sideOutRaw === true && prevSnapshot != null) {
-    const sameScore =
-      s.tiebreakPointsA === prevSnapshot.tiebreakPointsA &&
-      s.tiebreakPointsB === prevSnapshot.tiebreakPointsB &&
-      s.setsWonByA     === prevSnapshot.setsWonByA &&
-      s.setsWonByB     === prevSnapshot.setsWonByB;
-    const recordChanged = prevUpdatedAt != null &&
-      updatedAt.getTime() !== prevUpdatedAt.getTime();
-    if (sameScore && recordChanged) flashSideOut();
+  // Side-out flash: only fires on a real rally (pointsCount increased) where
+  // the score didn't change — meaning the serve switched without a point.
+  // Heartbeat writes (same pointsCount) and score changes are both excluded.
+  // Absent pointsCount (app build ≤191) → never flash (safe degradation).
+  if (!ended && isPickleball(s) && prevSnapshot != null) {
+    const action = decideSideOutAction(prevSnapshot, s);
+    if (action === "flash") flashSideOut();
+    else if (action === "handoff") triggerServerHandoffHighlight();
   }
   // Persist snapshot for next poll comparison.
-  prevSnapshot  = s;
-  prevUpdatedAt = updatedAt;
+  prevSnapshot = s;
 
   // Footer status
   if (ended) $("updated").textContent = "Match finished";
