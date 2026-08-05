@@ -1,16 +1,29 @@
-:root {
-  --bg: #fafbfd;
-  --bg-alt: #f5f7fa;
-  --text: #1a1a1a;
-  --text-soft: #4a5568;
-  --accent: #0F2B74;
-  --accent-light: #1e4d99;
-  --accent-soft: #e8eef9;
-  --max-width: 720px;
+/* RacketTap site styles.
+ *
+ * Palette is the app's own two-team coding: blue = YOU, orange = THEM.
+ * Used as accents against a near-white page, never as flat fills — the
+ * app is dark, the site is light, and the two colours are the bridge.
+ *
+ * Motion is decorative only. Every animation is disabled wholesale under
+ * `prefers-reduced-motion` at the bottom of this file; nothing about the
+ * page's meaning depends on movement.
+ */
 
-  /* Easings used across motion. The "spring" curve gives a gentle
-     overshoot for tile pop-ins; the "smooth" curve is the standard
-     scroll-in fade-up. */
+:root {
+  --blue: #0a6fe0;
+  --blue-bright: #0a84ff;
+  --orange: #f08300;
+  --orange-bright: #ff9f0a;
+
+  --ink: #10203a;
+  --text: #1f2937;
+  --text-soft: #55637a;
+  --line: rgba(16, 32, 58, 0.10);
+  --card: #ffffff;
+
+  --max-width: 760px;
+  --wide: 1120px;
+
   --ease-spring: cubic-bezier(0.2, 0.85, 0.4, 1.05);
   --ease-smooth: cubic-bezier(0.2, 0.6, 0.4, 1);
 }
@@ -27,499 +40,439 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, sans-serif;
   color: var(--text);
   line-height: 1.55;
-  padding: 0 1.25rem;
-  /* Multi-stop radial mesh in the brand color. Subtle on purpose —
-     decorative, not noisy. `fixed` attachment so the mesh stays put
-     as the user scrolls, giving the page a sense of depth without
-     parallax math. */
   background:
-    radial-gradient(ellipse 90% 60% at 50% -10%, rgba(15, 43, 116, 0.10), transparent 65%),
-    radial-gradient(circle 700px at 5% 30%, rgba(30, 77, 153, 0.07), transparent 70%),
-    radial-gradient(circle 800px at 95% 70%, rgba(15, 43, 116, 0.06), transparent 70%),
-    linear-gradient(180deg, #fafbfd 0%, #f3f6fb 100%);
+    radial-gradient(ellipse 80% 50% at 15% -5%, rgba(10, 111, 224, 0.13), transparent 60%),
+    radial-gradient(ellipse 70% 45% at 90% 8%, rgba(240, 131, 0, 0.10), transparent 62%),
+    linear-gradient(180deg, #fbfcfe 0%, #f2f5fa 100%);
   background-attachment: fixed;
   background-repeat: no-repeat;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "kern", "liga", "calt";
+  /* Guard rail: no section may push the page sideways on a phone. This is
+     the class of bug that made the old gallery unreadable on mobile. */
+  overflow-x: hidden;
 }
 
-/* HERO (landing) */
+h1, h2, h3 { color: var(--ink); line-height: 1.2; letter-spacing: -0.02em; }
+
+a { color: var(--blue); }
+
+/* ---------------------------------------------------------------- NAV */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem max(1.1rem, calc((100vw - var(--wide)) / 2));
+  background: rgba(251, 252, 254, 0.82);
+  backdrop-filter: saturate(180%) blur(14px);
+  -webkit-backdrop-filter: saturate(180%) blur(14px);
+  border-bottom: 1px solid var(--line);
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  color: var(--ink);
+  text-decoration: none;
+  margin-right: auto;
+  font-size: 1.02rem;
+}
+.nav-brand img { width: 28px; height: 28px; border-radius: 7px; display: block; }
+
+.nav a.nav-link {
+  color: var(--text-soft);
+  text-decoration: none;
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.35rem 0.5rem;
+  border-radius: 8px;
+}
+.nav a.nav-link:hover { color: var(--blue); background: rgba(10, 111, 224, 0.07); }
+
+/* App Store button — the page's one loud element, on purpose. */
+.btn-store {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: linear-gradient(135deg, var(--blue-bright), var(--blue));
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.92rem;
+  padding: 0.5rem 0.95rem;
+  border-radius: 999px;
+  box-shadow: 0 6px 18px rgba(10, 111, 224, 0.32);
+  transition: transform 0.25s var(--ease-spring), box-shadow 0.25s var(--ease-smooth);
+  white-space: nowrap;
+}
+.btn-store:hover { transform: translateY(-2px); box-shadow: 0 10px 26px rgba(10, 111, 224, 0.40); }
+.btn-store svg { width: 17px; height: 17px; fill: currentColor; flex: none; }
+.btn-store.lg { font-size: 1.06rem; padding: 0.85rem 1.7rem; }
+.btn-store.lg svg { width: 21px; height: 21px; }
+
+/* -------------------------------------------------------------- LAYOUT */
+
+main { padding: 0 1.25rem; }
+.wrap { max-width: var(--max-width); margin: 0 auto; }
+.wrap-wide { max-width: var(--wide); margin: 0 auto; }
+
+section { margin: 4.5rem auto; }
+/* The sports strip is the first thing under the hero CTA and needs air
+   above it, and the gallery heading needs air below it. */
+#sports { margin-top: 3rem; margin-bottom: 5rem; }
+
+/* ---------------------------------------------------------------- HERO */
+
 .hero {
   text-align: center;
-  padding: 5rem 0 3rem;
+  padding: 3.5rem 1.25rem 1rem;
   max-width: var(--max-width);
   margin: 0 auto;
+  position: relative;
 }
 
 .app-icon {
-  width: 120px;
-  height: 120px;
-  border-radius: 28px;
-  box-shadow: 0 8px 32px rgba(15, 43, 116, 0.18);
-  margin-bottom: 1.5rem;
-  /* Entrance + a gentle ambient glow that breathes once per ~5 seconds.
-     The breathing pulse runs forever but is so soft it's only noticed
-     if the visitor is staring at the icon — it adds a touch of life
-     without being a distraction while reading. */
-  animation:
-    scaleIn 0.7s var(--ease-spring) both,
-    iconBreath 5s ease-in-out 1.5s infinite;
+  width: 108px;
+  height: 108px;
+  border-radius: 25px;
+  box-shadow: 0 14px 40px rgba(10, 111, 224, 0.28);
+  animation: icon-in 0.9s var(--ease-spring) both;
+}
+@keyframes icon-in {
+  from { opacity: 0; transform: translateY(18px) scale(0.9); }
+  to   { opacity: 1; transform: none; }
 }
 
 .hero h1 {
-  font-size: 3rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 0.75rem;
-  /* Brand gradient on the title — same accent palette, just lifted
-     a notch so the headline reads as the "richest" element. */
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 70%, #2c63b4 100%);
-  background-size: 200% 200%;
+  font-size: clamp(2.6rem, 9vw, 4rem);
+  margin: 1.1rem 0 0.6rem;
+  background: linear-gradient(100deg, var(--blue) 0%, var(--blue-bright) 42%, var(--orange) 100%);
   -webkit-background-clip: text;
-          background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: var(--accent); /* fallback for very old browsers */
-  animation:
-    fadeInUp 0.6s var(--ease-smooth) 0.15s both,
-    gradientShift 12s ease-in-out infinite;
+  background-clip: text;
+  color: transparent;
+  animation: rise 0.8s var(--ease-smooth) 0.1s both;
 }
 
 .tagline {
-  font-size: 1.25rem;
+  font-size: clamp(1.05rem, 3.4vw, 1.28rem);
   color: var(--text-soft);
-  max-width: 480px;
-  margin: 0 auto;
-  animation: fadeInUp 0.5s var(--ease-smooth) 0.45s both;
+  max-width: 30ch;
+  margin: 0 auto 1.8rem;
+  animation: rise 0.8s var(--ease-smooth) 0.2s both;
 }
 
-/* ─────── Motion keyframes (used across the site) ─────── */
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.85); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-@keyframes iconBreath {
-  0%, 100% { box-shadow: 0 8px 32px rgba(15, 43, 116, 0.18); }
-  50%      { box-shadow: 0 14px 48px rgba(15, 43, 116, 0.30); }
-}
-
-@keyframes gradientShift {
-  0%, 100% { background-position: 0% 50%; }
-  50%      { background-position: 100% 50%; }
-}
-
-/* Scroll-in utility — apply `class="scroll-in"` to any element to
-   make it fade-up the first time it enters the viewport. The tiny
-   inline observer in index.html toggles `.visible` per element.
-   Uses the modern `translate` property (not `transform`) so the
-   animation composes with any `transform` already on the element
-   (e.g. the gallery's `translateX(-50%)` recentering). Supported in
-   all evergreen browsers; falls back gracefully where unsupported. */
-.scroll-in {
-  opacity: 0;
-  translate: 0 24px;
-  transition:
-    opacity 0.7s var(--ease-smooth),
-    translate 0.7s var(--ease-smooth);
-}
-.scroll-in.visible {
-  opacity: 1;
-  translate: 0 0;
-}
-
-/* MAIN */
-main {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding-bottom: 4rem;
-}
-
-section { margin: 3rem 0; }
-
-.intro p {
-  font-size: 1.125rem;
+.hero-cta { animation: rise 0.8s var(--ease-smooth) 0.3s both; }
+.hero-note {
+  margin-top: 0.85rem;
+  font-size: 0.86rem;
   color: var(--text-soft);
 }
 
-h2 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: var(--accent);
+@keyframes rise {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: none; }
 }
 
-h3 {
-  font-size: 1.05rem;
-  font-weight: 600;
-  margin-top: 1.75rem;
-  margin-bottom: 0.5rem;
-}
-
-.feature-list {
-  list-style: none;
-  padding: 0;
-}
-
-.feature-list li {
-  padding: 1rem;
-  border-bottom: 1px solid #ececec;
-  border-radius: 10px;
-  transition: background 0.25s var(--ease-smooth),
-              transform 0.25s var(--ease-smooth);
-}
-
-.feature-list li:last-child {
-  border-bottom: none;
-}
-
-.feature-list li:hover {
-  background: rgba(232, 238, 249, 0.55);
-  transform: translateX(4px);
-}
-
-.feature-list li strong {
-  color: var(--accent);
-}
-
-main ul:not(.feature-list) li {
-  margin-bottom: 0.5rem;
-  padding-left: 1.25rem;
-  position: relative;
-  list-style: none;
-}
-
-main ul:not(.feature-list) li::before {
-  content: "•";
+/* Decorative ball drifting behind the hero. Absolutely positioned and
+   pointer-events:none so it can never intercept a tap. */
+.hero-orb {
   position: absolute;
-  left: 0;
-  color: var(--accent);
+  border-radius: 50%;
+  filter: blur(1px);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: -1;
+}
+.hero-orb.b1 {
+  width: 88px; height: 88px; left: 4%; top: 18%;
+  background: radial-gradient(circle at 34% 30%, #7cc0ff, var(--blue));
+  animation: float-a 9s ease-in-out infinite;
+}
+.hero-orb.b2 {
+  width: 62px; height: 62px; right: 6%; top: 44%;
+  background: radial-gradient(circle at 34% 30%, #ffd08a, var(--orange));
+  animation: float-b 11s ease-in-out infinite;
+}
+@keyframes float-a {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(14px, -26px); }
+}
+@keyframes float-b {
+  0%, 100% { transform: translate(0, 0); }
+  50%      { transform: translate(-18px, 22px); }
 }
 
-/* GALLERY (screenshots)
- *
- * The gallery breaks out of the 720px <main> column so the grid can
- * fan out to ~1100px on desktop. The centering pattern is the standard
- * "viewport-wide break-out" — position relative, shifted half a parent
- * width left, then transformed back half a viewport-width to recenter
- * on the page. Resetting `max-width` ensures the inner grid stays
- * within the cap on huge screens.
- */
-.gallery {
-  position: relative;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(1100px, 100vw - 2.5rem);
-  margin-top: 3rem;
-  margin-bottom: 3rem;
+/* -------------------------------------------------------------- SPORTS */
+
+.sports {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.9rem;
+  max-width: 680px;
+  margin: 0 auto;
 }
 
-.gallery h2 {
+.sport {
   text-align: center;
-  margin-bottom: 1.5rem;
+  padding: 1.1rem 0.4rem 0.9rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 4px 14px rgba(16, 32, 58, 0.05);
+  transition: transform 0.3s var(--ease-spring), box-shadow 0.3s var(--ease-smooth);
+}
+.sport:hover { transform: translateY(-4px); box-shadow: 0 12px 26px rgba(16, 32, 58, 0.10); }
+
+.sport svg { width: 40px; height: 40px; display: block; margin: 0 auto 0.5rem; }
+.sport span {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--ink);
+  letter-spacing: -0.01em;
 }
 
+/* Each sport's motif animates on its own rhythm so the row never
+   pulses in unison, which would read as a loading state. */
+.anim-bounce  { animation: bounce 2.4s ease-in-out infinite; transform-origin: center; }
+.anim-spin    { animation: spin 6s linear infinite; transform-origin: center; }
+.anim-fall    { animation: fall 3.1s ease-in-out infinite; transform-origin: center; }
+.anim-wobble  { animation: wobble 2.8s ease-in-out infinite; transform-origin: center; }
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-7px); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fall {
+  0%, 100% { transform: translateY(-4px) rotate(-8deg); }
+  50%      { transform: translateY(5px) rotate(8deg); }
+}
+@keyframes wobble {
+  0%, 100% { transform: rotate(-9deg); }
+  50%      { transform: rotate(9deg); }
+}
+
+/* ------------------------------------------------------------- GALLERY */
+
+.gallery-head { text-align: center; margin-bottom: 1.6rem; }
+.gallery-head h2 { font-size: clamp(1.6rem, 5vw, 2.1rem); }
+
+/* Four equal columns, with the landscape shot on its own full-width row.
+   Every portrait tile renders its image at the SAME fixed height with
+   `object-fit: contain`, so the row of devices lines up and the captions
+   below them sit on a shared baseline. Sizing by height rather than width
+   is what keeps a watch screenshot and a phone screenshot visually
+   comparable instead of the watch ballooning to fill its column. */
 .gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
-  align-items: end;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.8rem 1.4rem;
+  align-items: start;
 }
 
-.gallery-tile {
+.tile {
   margin: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
   text-align: center;
-  transition:
-    transform 0.35s var(--ease-spring),
-    filter 0.35s var(--ease-smooth);
+  transition: transform 0.35s var(--ease-spring);
 }
-.gallery-tile:hover {
-  transform: translateY(-6px);
-}
-.gallery-tile:hover img {
-  box-shadow: 0 22px 48px rgba(15, 43, 116, 0.28);
-}
+.tile:hover { transform: translateY(-6px); }
 
-.gallery-tile img {
-  width: 100%;
-  height: auto;
-  border-radius: 24px;
-  box-shadow: 0 12px 32px rgba(15, 43, 116, 0.16);
-  background: #000;
-  /* Default = iPhone portrait. Stable aspect so layout doesn't jump as
-     images stream in; `object-fit: contain` is the safer default for
-     marketing screenshots so we never crop content even if the source
-     resolution doesn't match the assumed ratio. */
-  aspect-ratio: 1206 / 2622;
-  object-fit: contain;
-  display: block;
-  transition: box-shadow 0.35s var(--ease-smooth);
-}
-
-/* Watch tile has a different aspect ratio and gets a tighter max-width
-   so it sits visually balanced alongside the taller iPhone tiles. */
-.gallery-tile.is-watch img {
-  aspect-ratio: 422 / 514;
-  max-width: 70%;
-  border-radius: 28px;
-}
-
-/* Landscape iPhone shots (e.g. the Live courtside view rendered
-   sideways at the side of the court). Spans 2 grid columns on
-   desktop so the image stays large enough to read, falls back to
-   carousel-width on mobile via the flex media query below. */
-.gallery-tile.is-landscape {
-  grid-column: span 2;
-}
-.gallery-tile.is-landscape img {
-  aspect-ratio: 2868 / 1320;
-  border-radius: 16px;
+.tile img {
+  height: 340px;
+  width: auto;
   max-width: 100%;
+  object-fit: contain;
+  border-radius: 18px;
+  box-shadow: 0 14px 34px rgba(16, 32, 58, 0.18);
+  background: #000;
+  display: block;
 }
+/* The watch shot is deliberately shorter than the phones, but its caption
+   must still sit on the same baseline as theirs — so pad the difference
+   above it. 340 (phone) - 250 (watch) = 90. */
+.tile.watch img { height: 250px; margin-top: 90px; border-radius: 24px; }
 
-.gallery-caption {
+.tile.wide {
+  grid-column: 1 / -1;
+  margin-bottom: 0.6rem;
+}
+.tile.wide img { height: auto; width: min(100%, 760px); border-radius: 14px; }
+
+/* Caption sits in normal flow directly under the image, with its own
+   top margin — never absolutely positioned, never height-constrained,
+   so it cannot be clipped or pushed out of an image's aspect box. */
+.tile figcaption {
+  margin-top: 0.8rem;
   font-size: 0.9rem;
+  line-height: 1.45;
   color: var(--text-soft);
-  line-height: 1.4;
-  max-width: 240px;
+  max-width: 30ch;
+}
+.tile figcaption strong { color: var(--ink); display: block; font-size: 0.95rem; }
+
+/* --------------------------------------------------------------- CARDS */
+
+/* Three columns exactly: six cards fill two full rows with no orphan.
+   `auto-fit` produced a 4+2 split at desktop width, which read as a gap. */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.1rem;
 }
 
-@media (max-width: 600px) {
-  .gallery {
-    /* On phones the desktop break-out reverts to a simple full-bleed
-       strip — disable the transform-centering trick and let the flex
-       grid below handle its own horizontal scroll. */
-    position: static;
-    left: auto;
-    transform: none;
-    width: auto;
-    margin-left: -1.25rem;
-    margin-right: -1.25rem;
-    padding: 0;
-  }
-  .gallery h2 { margin: 0 1.25rem 1rem; }
-  .gallery-grid {
-    grid-template-columns: none;
-    display: flex;
-    overflow-x: auto;
-    gap: 1rem;
-    padding: 0 1.25rem 1rem;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-  }
-  .gallery-tile {
-    flex: 0 0 70%;
-    scroll-snap-align: center;
-  }
-  /* Landscape tile is wider than tall — give it more carousel
-     room so it doesn't read as a tiny thumbnail. */
-  .gallery-tile.is-landscape { flex: 0 0 90%; }
-  .gallery-tile.is-watch img { max-width: 90%; }
-}
-
-.privacy-highlight {
-  background: linear-gradient(135deg, var(--accent-soft) 0%, #f1f6fc 100%);
-  padding: 2rem;
-  border-radius: 16px;
-  margin: 3rem 0;
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 1.5rem 1.4rem;
+  box-shadow: 0 4px 16px rgba(16, 32, 58, 0.05);
   position: relative;
   overflow: hidden;
-  /* Soft brand-color ring around the card, achieved with two shadows
-     (inner accent + outer ambient) rather than a hard border. */
-  box-shadow:
-    inset 0 0 0 1px rgba(15, 43, 116, 0.12),
-    0 8px 32px rgba(15, 43, 116, 0.08);
+  transition: transform 0.3s var(--ease-spring), box-shadow 0.3s var(--ease-smooth);
 }
-
-.privacy-highlight h2 {
-  margin-top: 0;
-}
-
-/* Decorative shield glyph in the corner. SVG-via-CSS, low opacity. */
-.privacy-highlight::before {
+.card:hover { transform: translateY(-4px); box-shadow: 0 14px 30px rgba(16, 32, 58, 0.11); }
+/* Accent rule along the top edge, alternating team colours down the grid. */
+.card::before {
   content: "";
   position: absolute;
-  top: -20px;
-  right: -20px;
-  width: 140px;
-  height: 140px;
-  background: radial-gradient(circle, rgba(15, 43, 116, 0.10) 0%, transparent 65%);
-  border-radius: 50%;
-  pointer-events: none;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--blue-bright), var(--blue));
 }
+.card:nth-child(even)::before {
+  background: linear-gradient(90deg, var(--orange-bright), var(--orange));
+}
+.card h3 { font-size: 1.08rem; margin-bottom: 0.4rem; }
+.card p { font-size: 0.95rem; color: var(--text-soft); }
 
-.cta {
+.section-head { text-align: center; margin-bottom: 1.8rem; }
+.section-head h2 { font-size: clamp(1.6rem, 5vw, 2.1rem); }
+.section-head p { color: var(--text-soft); margin-top: 0.4rem; }
+
+/* ------------------------------------------------------------- PRIVACY */
+
+.privacy-band {
+  background: linear-gradient(135deg, rgba(10, 111, 224, 0.07), rgba(240, 131, 0, 0.07));
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 2.2rem 1.8rem;
   text-align: center;
-  padding: 2rem 0 3rem;
 }
+.privacy-band h2 { font-size: clamp(1.5rem, 4.6vw, 1.9rem); margin-bottom: 0.6rem; }
+.privacy-band p { color: var(--text-soft); max-width: 52ch; margin: 0 auto; }
 
-.coming-soon {
-  font-size: 1.125rem;
-  color: var(--accent);
-  padding: 0.85rem 1.75rem;
-  background: linear-gradient(135deg, #ffffff 0%, var(--accent-soft) 100%);
-  border-radius: 999px;
-  display: inline-block;
-  font-weight: 500;
-  box-shadow:
-    inset 0 0 0 1px rgba(15, 43, 116, 0.12),
-    0 6px 20px rgba(15, 43, 116, 0.10);
-  transition:
-    transform 0.3s var(--ease-spring),
-    box-shadow 0.3s var(--ease-smooth);
-}
-.coming-soon:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow:
-    inset 0 0 0 1px rgba(15, 43, 116, 0.20),
-    0 12px 28px rgba(15, 43, 116, 0.18);
-}
-.coming-soon em {
+/* ----------------------------------------------------------- FINAL CTA */
+
+.final-cta { text-align: center; }
+.final-cta h2 { font-size: clamp(1.7rem, 5.4vw, 2.3rem); margin-bottom: 1.4rem; }
+
+/* -------------------------------------------------------------- FOOTER */
+
+footer {
+  border-top: 1px solid var(--line);
+  padding: 2.2rem 1.25rem 3rem;
+  text-align: center;
   color: var(--text-soft);
-  font-style: normal;
-  font-size: 0.9em;
-  margin-left: 0.25rem;
+  font-size: 0.9rem;
 }
+footer nav { margin-top: 0.6rem; display: flex; justify-content: center; flex-wrap: wrap; gap: 0.25rem 0.5rem; }
+footer a { color: var(--text-soft); text-decoration: none; }
+footer a:hover { color: var(--blue); text-decoration: underline; }
+.sep { opacity: 0.4; }
 
-/* LEGAL pages */
+/* ------------------------------------------------------------ SUBPAGES */
+/* Classes below are used by support/ and privacy/ — keep them. */
+
 .page-header {
   max-width: var(--max-width);
   margin: 0 auto;
-  padding: 3rem 0 2rem;
-  animation: fadeInUp 0.5s var(--ease-smooth) both;
+  padding: 2.2rem 0 1rem;
 }
-
 .back-link {
-  display: inline-block;
-  color: var(--accent);
+  color: var(--blue);
   text-decoration: none;
-  font-size: 0.9rem;
-  margin-bottom: 1.25rem;
-  padding: 0.25rem 0.6rem 0.25rem 0.4rem;
-  border-radius: 999px;
-  background: rgba(15, 43, 116, 0.06);
-  transition: background 0.25s var(--ease-smooth),
-              transform 0.25s var(--ease-smooth);
-}
-
-.back-link:hover {
-  background: rgba(15, 43, 116, 0.12);
-  transform: translateX(-2px);
-  text-decoration: none;
-}
-
-.page-header h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-  -webkit-background-clip: text;
-          background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: var(--accent);
-}
-
-.effective-date {
-  color: var(--text-soft);
+  font-weight: 600;
   font-size: 0.95rem;
-  margin-top: 0.5rem;
+}
+.back-link:hover { text-decoration: underline; }
+
+.legal, .faq { max-width: var(--max-width); margin: 0 auto; }
+.legal h2, .faq h2 { margin: 2rem 0 0.6rem; font-size: 1.25rem; }
+.legal h3, .faq h3 { margin: 1.4rem 0 0.4rem; font-size: 1.05rem; }
+.legal p, .legal li, .faq p, .faq li { color: var(--text); margin-bottom: 0.6rem; }
+.legal ul, .faq ul { padding-left: 1.3rem; }
+.effective-date { color: var(--text-soft); font-size: 0.9rem; }
+
+/* --------------------------------------------------------- SCROLL-IN */
+
+.scroll-in {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s var(--ease-smooth), transform 0.7s var(--ease-smooth);
+}
+.scroll-in.visible { opacity: 1; transform: none; }
+
+/* ------------------------------------------------------------ MOBILE */
+
+@media (max-width: 720px) {
+  section { margin: 3.2rem auto; }
+
+  .nav { padding: 0.55rem 1rem; gap: 0.15rem; }
+  /* Secondary links fold away on phones; brand + App Store button remain,
+     and the footer still carries the full set. */
+  .nav a.nav-link { display: none; }
+
+  /* One column. The old build used a horizontal snap-carousel here, which
+     is where captions became unreachable on a phone — a single column
+     puts every image and its caption in the normal vertical scroll. */
+  .gallery-grid { grid-template-columns: 1fr; gap: 2.4rem; }
+  .tile.wide { grid-column: auto; margin-bottom: 0; }
+  .tile img { height: auto; width: 100%; max-width: 300px; }
+  .tile.wide img { width: 100%; max-width: 100%; }
+  .tile.watch img { height: auto; max-width: 190px; }
+  .tile figcaption { max-width: 34ch; }
+
+  .cards { grid-template-columns: 1fr; }
+  .sports { grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+  .sport { padding: 0.85rem 0.2rem 0.7rem; }
+  .sport svg { width: 32px; height: 32px; }
+  .sport span { font-size: 0.7rem; }
+
+  .privacy-band { padding: 1.7rem 1.2rem; }
+  .hero-orb { display: none; }
 }
 
-.legal {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding-bottom: 4rem;
-  animation: fadeInUp 0.6s var(--ease-smooth) 0.1s both;
+@media (max-width: 380px) {
+  .sport span { font-size: 0.63rem; }
+  .nav-brand { font-size: 0.95rem; }
 }
 
-.legal h2 {
-  margin-top: 2.5rem;
-}
+/* --------------------------------------------------- REDUCED MOTION */
 
-.legal h3 {
-  color: var(--accent);
-}
-
-.legal p {
-  margin-bottom: 1rem;
-}
-
-a {
-  color: var(--accent);
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
-}
-
-a:hover {
-  color: var(--accent-light);
-}
-
-/* FOOTER */
-footer {
-  max-width: var(--max-width);
-  margin: 0 auto;
-  padding: 3rem 0;
-  border-top: 1px solid rgba(15, 43, 116, 0.12);
-  text-align: center;
-  color: var(--text-soft);
-  font-size: 0.9rem;
-}
-
-footer nav {
-  margin-top: 0.75rem;
-}
-
-footer nav a {
-  color: var(--text-soft);
-  text-decoration: none;
-  transition: color 0.2s var(--ease-smooth);
-}
-
-footer nav a:hover {
-  color: var(--accent);
-}
-
-.sep {
-  color: #cbd5e0;
-  margin: 0 0.5rem;
-}
-
-/* ─────── Reduced-motion override ─────── *
- * Respect the user's OS-level Reduce Motion preference. Animations
- * become near-instant; the scroll-in fade-up resolves to its visible
- * state immediately so content isn't hidden behind disabled motion.
- */
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   *, *::before, *::after {
-    animation-duration: 0.01ms !important;
+    animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
   }
-  .scroll-in {
-    opacity: 1 !important;
-    translate: 0 0 !important;
-    transform: none !important;
-  }
+  .scroll-in { opacity: 1; transform: none; }
 }
 
-/* Mobile */
-@media (max-width: 600px) {
-  .hero { padding: 3rem 0 2rem; }
-  .hero h1 { font-size: 2.25rem; }
-  .tagline { font-size: 1.05rem; }
-  .app-icon { width: 96px; height: 96px; border-radius: 22px; }
-  .page-header h1 { font-size: 1.75rem; }
+/* Tablet step for the 4-up gallery: two columns keeps the devices large
+   enough to read before the single-column phone layout takes over. */
+@media (min-width: 721px) and (max-width: 1000px) {
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  .tile img { height: 320px; }
 }

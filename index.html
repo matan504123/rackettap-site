@@ -4,134 +4,220 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RacketTap — racket-sport scorekeeping for Apple Watch</title>
-<meta name="description" content="A focused racket-sport scorekeeper for Apple Watch with an iPhone companion. Padel, tennis, badminton, and pickleball. Score from the watch, the phone, or a Bluetooth remote. Pair a heart-rate strap or use any non-Apple watch via Apple Health. Live Share to a friend's phone over Bluetooth. Apple Health correlation and on-device AI insights. UI in English, Suomi, Español, עברית.">
+<meta name="description" content="Keep score of padel, tennis, badminton and pickleball on your Apple Watch, your iPhone, or a Bluetooth remote. Every match lands in Apple Health. Private by design.">
+<meta name="apple-itunes-app" content="app-id=6769837930">
 <link rel="stylesheet" href="style.css">
 <link rel="icon" type="image/png" href="icon.png">
+
+<meta property="og:title" content="RacketTap — racket-sport scorekeeping for Apple Watch">
+<meta property="og:description" content="Padel, tennis, badminton and pickleball. Score from your wrist, your phone, or a Bluetooth remote.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://matan504123.github.io/rackettap-site/screenshots/hero-live.png">
 </head>
 <body>
 
+<nav class="nav">
+  <a class="nav-brand" href="./">
+    <img src="icon.png" alt="">
+    RacketTap
+  </a>
+  <a class="nav-link" href="#sports">Sports</a>
+  <a class="nav-link" href="#gallery">Screens</a>
+  <a class="nav-link" href="support/">Support</a>
+  <a class="nav-link" href="privacy/">Privacy</a>
+  <a class="btn-store" href="https://apps.apple.com/app/id6769837930" target="_blank" rel="noopener">
+    <svg viewBox="0 0 384 512" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+    App&nbsp;Store
+  </a>
+</nav>
+
 <header class="hero">
+  <span class="hero-orb b1" aria-hidden="true"></span>
+  <span class="hero-orb b2" aria-hidden="true"></span>
   <img src="icon.png" alt="RacketTap app icon" class="app-icon">
   <h1>RacketTap</h1>
-  <p class="tagline">Racket-sport scorekeeping for Apple Watch — padel, tennis, badminton, and pickleball, with Health correlation and on-device AI.</p>
+  <p class="tagline">Keep score on your wrist. Padel, tennis, badminton, pickleball.</p>
+  <div class="hero-cta">
+    <a class="btn-store lg" href="https://apps.apple.com/app/id6769837930" target="_blank" rel="noopener">
+      <svg viewBox="0 0 384 512" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+      Download on the App Store
+    </a>
+    <p class="hero-note">Free · Pro unlock available</p>
+  </div>
 </header>
 
 <main>
-  <section class="intro scroll-in">
-    <p>RacketTap turns your Apple Watch into a wrist-mounted racket-sport scorekeeper. Tap to score, long-press to undo. Or score on the iPhone — even with a Bluetooth selfie remote. Four sports: padel, tennis, badminton, and pickleball. The iPhone companion turns those matches into something more — sleep-vs-performance correlation, a personalized recap for every match, an AI coach that knows your history, and a daily readiness signal before you step on court. Live Share your match to a friend's iPhone over Bluetooth, or post a live web link so anyone can follow from home. Your match history stays private on your device.</p>
+
+  <section id="sports" class="wrap scroll-in">
+    <div class="sports">
+      <div class="sport">
+        <!-- Padel: paddle with a ball bouncing off it -->
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <rect x="13" y="5" width="22" height="27" rx="11" fill="none" stroke="#0a6fe0" stroke-width="3"/>
+          <path d="M24 32v9" stroke="#0a6fe0" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="20" cy="18" r="2.2" fill="#0a6fe0" opacity=".35"/>
+          <circle cx="28" cy="18" r="2.2" fill="#0a6fe0" opacity=".35"/>
+          <circle class="anim-bounce" cx="40" cy="36" r="4.5" fill="#f08300"/>
+        </svg>
+        <span>Padel</span>
+      </div>
+
+      <div class="sport">
+        <!-- Tennis: ball with its two seams, slowly rotating -->
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <g class="anim-spin" style="transform-origin:24px 24px">
+            <circle cx="24" cy="24" r="16" fill="#f08300"/>
+            <path d="M8.5 19c9 1.5 14.5 7 16 15.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+            <path d="M39.5 19c-9 1.5-14.5 7-16 15.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+          </g>
+        </svg>
+        <span>Tennis</span>
+      </div>
+
+      <div class="sport">
+        <!-- Badminton: shuttlecock rocking as it falls -->
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <g class="anim-fall" style="transform-origin:24px 24px">
+            <path d="M24 6 13 30h22z" fill="none" stroke="#0a6fe0" stroke-width="2.6" stroke-linejoin="round"/>
+            <path d="M24 6v24M18 15l-2 15M30 15l2 15" stroke="#0a6fe0" stroke-width="2" opacity=".45"/>
+            <circle cx="24" cy="35" r="6" fill="#0a6fe0"/>
+          </g>
+        </svg>
+        <span>Badminton</span>
+      </div>
+
+      <div class="sport">
+        <!-- Pickleball: perforated ball, wobbling -->
+        <svg viewBox="0 0 48 48" aria-hidden="true">
+          <g class="anim-wobble" style="transform-origin:24px 24px">
+            <circle cx="24" cy="24" r="16" fill="#f08300"/>
+            <circle cx="18" cy="18" r="2.4" fill="#fff"/>
+            <circle cx="30" cy="19" r="2.4" fill="#fff"/>
+            <circle cx="24" cy="27" r="2.4" fill="#fff"/>
+            <circle cx="16" cy="28" r="2" fill="#fff"/>
+            <circle cx="31" cy="29" r="2" fill="#fff"/>
+          </g>
+        </svg>
+        <span>Pickleball</span>
+      </div>
+    </div>
   </section>
 
-  <section class="gallery scroll-in">
-    <h2>See it in action</h2>
+  <section id="gallery" class="wrap-wide scroll-in">
+    <div class="gallery-head">
+      <h2>See it in action</h2>
+    </div>
     <div class="gallery-grid">
-      <figure class="gallery-tile is-landscape">
-        <img src="screenshots/hero-live.png" alt="Live courtside scoreboard on iPhone (landscape, placed at the side of the court) with STAR POINT banner during a padel match" loading="lazy">
-        <figcaption class="gallery-caption">Live courtside scoreboard mirrors your watch in real time</figcaption>
+      <figure class="tile wide">
+        <img src="screenshots/hero-live.png" width="2868" height="1320" alt="iPhone in landscape showing a large courtside scoreboard during a padel match" loading="lazy">
+        <figcaption><strong>Courtside scoreboard</strong>Stand the phone at the side of the court — readable from across the net.</figcaption>
       </figure>
-      <figure class="gallery-tile is-watch">
-        <img src="screenshots/watch-live.png" alt="Apple Watch scoreboard mid-match" loading="lazy">
-        <figcaption class="gallery-caption">Watch-first scoring: tap, double-tap, long-press</figcaption>
+
+      <figure class="tile watch">
+        <img src="screenshots/watch-star-4040.png" width="422" height="514" alt="Apple Watch showing a live padel score" loading="lazy">
+        <figcaption><strong>Score from your wrist</strong>Tap for your point, double-tap for theirs.</figcaption>
       </figure>
-      <figure class="gallery-tile">
-        <img src="screenshots/history.png" alt="iPhone match history list with sport pills and match summaries" loading="lazy">
-        <figcaption class="gallery-caption">Full match history, filtered by sport</figcaption>
+
+      <figure class="tile">
+        <img src="screenshots/history.png" width="1206" height="2622" alt="iPhone match history list" loading="lazy">
+        <figcaption><strong>Every match, kept</strong>Filter by sport, revisit any session.</figcaption>
       </figure>
-      <figure class="gallery-tile">
-        <img src="screenshots/ai-recap.png" alt="AI-generated match recap card in match detail" loading="lazy">
-        <figcaption class="gallery-caption">AI Match Recap — your score, effort, and physiology</figcaption>
+
+      <figure class="tile">
+        <img src="screenshots/stats.png" width="1206" height="2622" alt="iPhone stats screen with trends and win rates" loading="lazy">
+        <figcaption><strong>Your patterns</strong>Win rates, streaks and trends over time.</figcaption>
       </figure>
-      <figure class="gallery-tile">
-        <img src="screenshots/ai-coach.png" alt="AI Coach chat sheet in Stats tab" loading="lazy">
-        <figcaption class="gallery-caption">AI Coach knows your full history (Pro)</figcaption>
-      </figure>
-      <figure class="gallery-tile">
-        <img src="screenshots/sleep-impact.png" alt="Sleep Impact chart and Best Days &amp; Times card" loading="lazy">
-        <figcaption class="gallery-caption">Sleep Impact + Best Days correlation</figcaption>
-      </figure>
-      <figure class="gallery-tile">
-        <img src="screenshots/share-card.png" alt="Match share card with score and per-set breakdown" loading="lazy">
-        <figcaption class="gallery-caption">Share matches as a polished card image</figcaption>
+
+
+      <figure class="tile">
+        <img src="screenshots/iphone-hr-summary.png" width="1206" height="2622" alt="Match detail showing heart rate, map and weather" loading="lazy">
+        <figcaption><strong>Effort, mapped</strong>Heart rate, calories and conditions on every match.</figcaption>
       </figure>
     </div>
   </section>
 
-  <section class="features scroll-in">
-    <h2>What it does</h2>
-    <ul class="feature-list">
-      <li><strong>Watch-first scoring.</strong> Single tap for your team, double tap for the opponents, long-press to undo. Designed for use while playing.</li>
-      <li><strong>Four sports today.</strong>
-        <ul>
-          <li><em>Padel</em> — five match formats: Normal (full scoring with Star Point, Golden Point, or Advantage deuce — now with a configurable set structure: single set, best-of-3 or best-of-5, 4–9 games per set, and win-by-2-with-tiebreak or first-to-N), Mixing (rotating partners, running game tally), Training (workout-only, no scoring), Americano (point-based rounds with a configurable cap, default 32), and Tiebreak (a single standalone tiebreak — first to N, win by 2 — for when you've only got a few minutes). Serve tracking included — a dot marks the serving team; tap the tennis-ball icon on the scoreboard to flip the serve between games.</li>
-          <li><em>Tennis</em> — singles or doubles, best-of-3 or best-of-5, optional final-set match tiebreak to 7 / 10 / 12 points. Advantage or No-Ad deuce rule. Serve tracking included — a dot marks the server; tap the tennis-ball icon to hand the serve over. Tennis is the new addition in v5.</li>
-          <li><em>Badminton</em> — singles or doubles, real BWF rules. Rally scoring; games to 21 (win by 2 at 20-20, golden point at 30), best of 1/3/5 games (default 3). Three point formats: 21 (official), 15 (the new official BWF standard arriving January 2027 — win by 2 at 14-14, golden point at 21), and 11 (official BWF short format — sudden death at 10-10; an optional house-rule toggle switches to win-by-2/cap-15). Serve tracking follows BWF convention: serving indicator shows which side holds the serve and the active service court (R or L from the server's score parity), rally winner takes the next serve, automatic handover between games. Interval and change-ends cues fire at official midpoints (11/8/6 points) via haptic and voice. Badminton is the new addition in v6.</li>
-          <li><em>Pickleball</em> — singles or doubles, traditional side-out scoring (only the serving team scores; doubles uses server 1/server 2 rotation — "0-0-2" style calls) or rally-scoring option for faster play. Points to 11, 15, or 21; best of 1, 3, or 5 games. SIDE OUT and SERVER 2 banners on the watch and phone scoreboards keep you oriented during play. Serve effectiveness stats: On Serve % and On Receive % for both scoring modes; Serve Possession % in side-out mode. 8 pickleball-specific achievements. Workouts logged as Pickleball in Apple Health. Pickleball is the new addition in v7.</li>
-        </ul>
-      </li>
-      <li><strong>Live courtside scoreboard on the iPhone.</strong> Place the phone sideways at the side of the court and it mirrors the watch in real time — huge score numbers visible from across the net. Optional auto swap-sides flips the display as you change ends (odd games or every set). Optional voice readout announces every point, game, set, and match aloud — pick the exact announcement voice, with a preview button (volume slider + on-view mute). Configurable per format.</li>
-      <li><strong>Apple Health integration.</strong> Each match is recorded in Apple Health as a sport-accurate workout — padel and tennis as Tennis, badminton as Badminton, pickleball as Pickleball — with heart rate, active calories, duration, weather, and a single-dot location marker.</li>
-      <li><strong>iCloud backup.</strong> Match history mirrors automatically to your private iCloud database. Re-install on a new iPhone or iPad and sign in to the same Apple ID — your history comes back without any manual export.</li>
-      <li><strong>Rich match detail on iPhone.</strong> Every match shows an embedded map (tap to open in Maps), the weather captured at workout start, and a heart-rate-zone breakdown (Zone 1–5, computed from your age via HealthKit).</li>
-      <li><strong>Full match history on iPhone.</strong> Every session — matches (padel, tennis, badminton, or pickleball), mixing, training, Americano — with the right summary for each format. A sport filter chip toggles between All / Padel / Tennis / Badminton / Pickleball. Tagged player names sync both ways between phone and watch.</li>
-      <li><strong>Per-player stats.</strong> Track your win rate with each partner and against each opponent. Opponent pairs deduplicate regardless of slot order.</li>
-      <li><strong>Customizable Stats tab.</strong> Drag to reorder sections, toggle to hide; pin the basics at the top. A sport filter at the top scopes everything below to padel, tennis, badminton, pickleball, or all four (All / Padel / Tennis / Badminton / Pickleball). Includes Best Days &amp; Times (per-weekday win rate + strongest time-of-day window), monthly activity calendar, win-rate trend, lifetime Americano totals, a Deuces card counting how many games went to 40-40 and which side won, opponent callouts (best, toughest, most-played), Form &amp; Streaks (last 10 W/L pills + longest streaks), and — for pickleball — serve effectiveness (On Serve %, On Receive %, Serve Possession % in side-out mode).</li>
-      <li><strong>Health correlation (on-device).</strong> With your permission, RacketTap reads sleep, resting heart rate, walking HR, HR variability, VO2 max, blood oxygen, and mindfulness around match times. The Stats tab surfaces a Sleep Impact chart (win rate bucketed by hours slept), a Physiology Trend (resting HR + VO2 max over time with an interpretive verdict), and a Today's Outlook readiness card that calls "ready / cautious / rest" before you play. Decline Health access and everything else still works.</li>
-      <li><strong>AI Match Recap.</strong> Every finished match opens with a 2–3 sentence personalized recap — your score, your effort, your physiology that day. Free on every device; on Apple-Intelligence-capable iPhones (15 Pro and newer with iOS 26), the recap is written by Apple's on-device language model. On older devices, you get a clean deterministic summary.</li>
-      <li><strong>AI Coach (Pro).</strong> Open a chat sheet from the Stats tab and ask anything about your game — "How did I do this month?", "Which partner do I win with the most?", "Is my fitness trending in the right direction?". The coach knows your full history and recent Health signals. Runs entirely on-device.</li>
-      <li><strong>Achievements.</strong> 22 unlockable badges spanning your first match, three matches in one day, your first hour-long match, winning after 7+ hours of sleep, and more — including 8 pickleball-specific achievements.</li>
-      <li><strong>Days-played counter.</strong> Asked once during watch onboarding (or in iPhone Settings), then auto-counted from every day you play.</li>
-      <li><strong>Four UI languages.</strong> Both the iPhone app and the Apple Watch app have their own in-app language pickers with five options: <em>System</em>, <em>English</em>, <em>Suomi</em>, <em>Español</em>, <em>עברית</em>. Pick one language for the UI and a different one for the voice readout if you like — they're independent. RTL layout kicks in automatically when Hebrew is selected.</li>
-      <li><strong>Share matches with anyone.</strong> Send a finished match (or several at once) to another RacketTap user as a <code>.rackettap</code> file via AirDrop, Messages, or Mail — the recipient opens the file and the matches drop into their own history with full stats, no scoring required on their end. Or share a polished match card as an image to any app (Messages, Instagram, etc.), Workouts-style.</li>
-      <li><strong>Phone-only scoring.</strong> Don't have your watch on you? Start and score a match right on the iPhone. Tap the left side for your point, tap the right side for theirs, long-press to undo. A "Quick Score" setup picks sport, format and players in a few seconds.</li>
-      <li><strong>Bluetooth remote support.</strong> Pair a cheap selfie-stick / camera shutter remote (Dispho, AB Shutter 3, generic clickers) and score points hands-free. Single press for your point, double-press for theirs, triple-press or long-press to undo. Mode + diagnostics live in iPhone Settings → Bluetooth Remote.</li>
-      <li><strong>Heart rate from any sensor.</strong> Pair a Bluetooth chest strap (Polar H10, Wahoo Tickr, Garmin HRM-Pro, MyZone) or a non-Apple watch in broadcast mode (Garmin, Suunto, Coros) under iPhone Settings → Heart Rate Sensor. Live BPM shows on the scoreboard during phone-scored matches; per-match HR averages save to the match record. Garmin, Whoop, Polar and any watch that bridges to Apple Health also fill heart rate and calories on saved matches automatically — no pairing needed.</li>
-      <li><strong>Live Share to a friend's phone (and their watch).</strong> Mirror your live match to a nearby friend's iPhone over Bluetooth — no internet, no accounts. They tap Join, you tap Accept, and the score streams to their phone in real time. If they have RacketTap on their watch, the mirror fans out there too. When the match ends, they can save a copy to their own history with the correct YOU / THEM perspective.</li>
-      <li><strong>Follow from home (online live score).</strong> Pro. Tap "Share online" during a match to get a web link — send it to anyone and they follow the live score in a browser, no app or account needed. It updates in near real time, shows the final result, then expires a few hours after the match; stop sharing any time. Only the score and team names are published — no Health data, no location.</li>
-      <li><strong>Watch complication.</strong> Add the RacketTap chip to your watch face for a one-tap start of your default match type (padel · normal/mixing/training/americano, tennis · singles/doubles, badminton · singles/doubles, pickleball · singles/doubles). Default is configurable per sport.</li>
-      <li><strong>Venues you've played.</strong> The first time you label a court in History, RacketTap remembers it. The next match at the same spot auto-fills the venue name. A Venues screen in iPhone Settings lets you rename or remove entries once you have any.</li>
-    </ul>
+  <section class="wrap-wide scroll-in">
+    <div class="section-head">
+      <h2>What you get</h2>
+    </div>
+    <div class="cards">
+      <div class="card">
+        <h3>Three ways to score</h3>
+        <p>Your watch, your phone, or a cheap Bluetooth remote in your pocket. Whichever is easiest without breaking play.</p>
+      </div>
+      <div class="card">
+        <h3>Four sports, real rules</h3>
+        <p>Padel, tennis, badminton and pickleball — each scored the way its own rulebook says, not a generic counter.</p>
+      </div>
+      <div class="card">
+        <h3>Straight into Apple Health</h3>
+        <p>Every match is saved as a proper workout with heart rate, calories and duration.</p>
+      </div>
+      <div class="card">
+        <h3>Let people watch</h3>
+        <p>Mirror the score to a friend's phone beside you, or send a link so anyone can follow from home.</p>
+      </div>
+      <div class="card">
+        <h3>Know your game</h3>
+        <p>History, per-player win rates and long-term trends — plus a recap after every match.</p>
+      </div>
+      <div class="card">
+        <h3>Speaks your language</h3>
+        <p>English, Suomi, Español, Deutsch and עברית — in the app and in the spoken score.</p>
+      </div>
+    </div>
   </section>
 
-  <section class="privacy-highlight scroll-in">
-    <h2>Privacy-first by design</h2>
-    <p>Everything stays on your devices unless you explicitly share it — a match mirrored to a friend's phone, or an opt-in live web link that publishes only the score and team names (never Health data or location). No accounts. No analytics. No tracking. No third-party SDKs. The AI Coach and Match Recap use Apple's on-device language model — no prompt ever leaves your phone. Health data is read locally and never transmitted. Match history mirrors only to <em>your own</em> private iCloud database so you can re-install on a new device.</p>
+  <section class="wrap scroll-in">
+    <div class="privacy-band">
+      <h2>Private by design</h2>
+      <p>No accounts. No analytics. No tracking. Your matches and Health data stay on your devices, and back up only to your own iCloud.</p>
+    </div>
   </section>
 
-  <section class="cta scroll-in">
-    <p class="coming-soon">Free to download · Unlock Pro for $2.99 <em>(launch price)</em></p>
+  <section class="wrap final-cta scroll-in">
+    <h2>Ready when you are</h2>
+    <a class="btn-store lg" href="https://apps.apple.com/app/id6769837930" target="_blank" rel="noopener">
+      <svg viewBox="0 0 384 512" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+      Download on the App Store
+    </a>
+    <p class="hero-note">Free · Pro unlock available</p>
   </section>
+
 </main>
 
 <footer>
-  <p>© 2026 Matan Keret</p>
+  <p>© 2026 Keret Software Oy</p>
   <nav>
-    <a href="privacy/">Privacy Policy</a>
-    <span class="sep">·</span>
     <a href="support/">Support</a>
+    <span class="sep">·</span>
+    <a href="privacy/">Privacy</a>
+    <span class="sep">·</span>
+    <a href="live/">Live score</a>
+    <span class="sep">·</span>
+    <a href="https://apps.apple.com/app/id6769837930" target="_blank" rel="noopener">App Store</a>
     <span class="sep">·</span>
     <a href="mailto:matan504@gmail.com">Contact</a>
   </nav>
 </footer>
 
 <script>
-  // Tiny scroll-in observer. Adds `.visible` to any `.scroll-in`
-  // element the first time it enters the viewport, then unobserves.
-  // The CSS already handles `prefers-reduced-motion` by forcing
-  // visibility — this script just toggles the fade-up for the rest.
+  // Adds `.visible` to each `.scroll-in` the first time it enters view.
+  // CSS forces visibility under prefers-reduced-motion, so this only
+  // drives the fade-up for everyone else. Without IntersectionObserver
+  // everything is revealed immediately rather than left invisible.
   (function () {
-    const items = document.querySelectorAll('.scroll-in');
+    var items = document.querySelectorAll('.scroll-in');
     if (!('IntersectionObserver' in window)) {
-      items.forEach(el => el.classList.add('visible'));
+      items.forEach(function (el) { el.classList.add('visible'); });
       return;
     }
-    const observer = new IntersectionObserver((entries, obs) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          obs.unobserve(entry.target);
-        }
+    var obs = new IntersectionObserver(function (entries, o) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('visible'); o.unobserve(e.target); }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
-    items.forEach(el => observer.observe(el));
+    }, { threshold: 0.08, rootMargin: '0px 0px -6% 0px' });
+    items.forEach(function (el) { obs.observe(el); });
   })();
 </script>
 
