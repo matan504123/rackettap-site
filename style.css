@@ -34,12 +34,19 @@ html {
   font-size: 17px;
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
-  /* The canvas colour lives here, NOT on body. iOS Safari paints the
-     rubber-band overscroll area from the html background; with the colour
-     only on body you get a slab of white below the footer when the page is
-     scrolled to its end. Matches the page gradient's end stop exactly, so
-     the join is invisible. */
+  height: auto;
+  /* The canvas colour lives here, NOT on body: iOS paints the overscroll
+     area from the html background, and with the colour only on body you get
+     a slab of white past the footer. */
   background-color: #f3f6fb;
+  /* Kills the rubber-band scroll past the end of the document. Measured on
+     desktop the page ends exactly at the footer (gap = 0px at 390x844), so
+     the empty band reported on iOS was overscroll, not content — and this is
+     the property that stops it. `contain` keeps normal scrolling intact. */
+  overscroll-behavior-y: contain;
+  /* `clip` rather than `hidden`: hidden on a scroll-adjacent element makes it
+     a scroll container, which interacts badly with the sticky nav on iOS. */
+  overflow-x: clip;
 }
 
 body {
@@ -58,13 +65,10 @@ body {
   background-repeat: no-repeat;
   background-position: top center, top center, top center;
   background-size: 100% 900px, 100% 900px, 100% 1400px;
-  min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "kern", "liga", "calt";
-  /* Guard rail: no section may push the page sideways on a phone. This is
-     the class of bug that made the old gallery unreadable on mobile. */
-  overflow-x: hidden;
+  overscroll-behavior-y: contain;
 }
 
 h1, h2, h3 { color: var(--ink); line-height: 1.2; letter-spacing: -0.02em; }
