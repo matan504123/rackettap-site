@@ -39,11 +39,10 @@ html {
      area from the html background, and with the colour only on body you get
      a slab of white past the footer. */
   background-color: #f3f6fb;
-  /* Kills the rubber-band scroll past the end of the document. Measured on
-     desktop the page ends exactly at the footer (gap = 0px at 390x844), so
-     the empty band reported on iOS was overscroll, not content — and this is
-     the property that stops it. `contain` keeps normal scrolling intact. */
-  overscroll-behavior-y: contain;
+  /* Suppresses the rubber-band scroll past the end of the document. NOTE:
+     `contain` (used first) only blocks scroll CHAINING to a parent — the
+     local bounce survives it. `none` is what actually stops the bounce. */
+  overscroll-behavior-y: none;
   /* `clip` rather than `hidden`: hidden on a scroll-adjacent element makes it
      a scroll container, which interacts badly with the sticky nav on iOS. */
   overflow-x: clip;
@@ -68,7 +67,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-feature-settings: "kern", "liga", "calt";
-  overscroll-behavior-y: contain;
+  overscroll-behavior-y: none;
 }
 
 h1, h2, h3 { color: var(--ink); line-height: 1.2; letter-spacing: -0.02em; }
