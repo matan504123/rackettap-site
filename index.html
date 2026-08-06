@@ -6,7 +6,7 @@
 <title>RacketTap — racket-sport scorekeeping for Apple Watch</title>
 <meta name="description" content="Keep score of padel, tennis, badminton and pickleball on your Apple Watch, your iPhone, or a Bluetooth remote. Every match lands in Apple Health. Private by design.">
 <meta name="apple-itunes-app" content="app-id=6769837930">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 <link rel="icon" type="image/png" href="icon.png">
 
 <meta property="og:title" content="RacketTap — racket-sport scorekeeping for Apple Watch">
@@ -34,8 +34,21 @@
 <header class="hero">
   <span class="hero-orb b1" aria-hidden="true"></span>
   <span class="hero-orb b2" aria-hidden="true"></span>
-  <img src="icon.png" alt="RacketTap app icon" class="app-icon">
-  <h1>RacketTap</h1>
+  <!-- The app's own launch animation: rackets strike, wordmark resolves.
+       Served as muted looping video rather than the GIF beside it — same
+       result, 84KB at 640px against 344KB at 320px. `screenshots/rackettap-anim.gif`
+       is committed if a GIF is ever preferred. The clip already carries the
+       wordmark, so the <h1> below is kept for screen readers and search but
+       hidden visually rather than shown twice. -->
+  <div class="hero-anim">
+    <video autoplay muted loop playsinline preload="auto"
+           poster="screenshots/rackettap-anim-poster.jpg"
+           aria-label="RacketTap logo animation">
+      <source src="screenshots/rackettap-anim.mp4" type="video/mp4">
+      <img src="screenshots/rackettap-anim.gif" alt="RacketTap">
+    </video>
+  </div>
+  <h1 class="sr-only">RacketTap</h1>
   <p class="tagline">Keep score on your wrist. Padel, tennis, badminton, pickleball.</p>
   <div class="hero-cta">
     <a class="btn-store lg" href="https://apps.apple.com/app/id6769837930" target="_blank" rel="noopener">
