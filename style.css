@@ -549,3 +549,93 @@ footer a:hover { color: var(--blue); text-decoration: underline; }
 /* The privacy page names the iCloud container (`iCloud.com.matankeret.PadelTap`),
    one unbreakable token wider than a 320px screen. Let it wrap. */
 code { overflow-wrap: anywhere; }
+
+/* ------------------------------------------------- THREE WAYS TO SCORE */
+/* Named inputs under the hero CTA. The watch is listed first because it is
+   the nicest experience, but the strip exists to make the other two
+   impossible to miss — see the comment in index.html. */
+.ways {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  max-width: 30rem;
+  margin: 1.7rem auto 0;
+  animation: rise 0.8s var(--ease-smooth) 0.4s both;
+}
+.ways li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.42rem;
+  padding: 0.45rem 0.85rem;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--ink);
+  box-shadow: 0 4px 14px rgba(16, 32, 58, 0.05);
+}
+.ways svg { width: 20px; height: 20px; flex: none; }
+.ways-note {
+  margin-top: 0.75rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-soft);
+  animation: rise 0.8s var(--ease-smooth) 0.45s both;
+}
+
+/* ------------------------------------------------------------ FAQ FOLD */
+/* The support page carries ~50 questions. As a flat wall of text it was
+   unreadable on a phone, so each one is a native <details>: no JavaScript,
+   keyboard and screen-reader behaviour for free, deep links and in-page
+   search still work in browsers that auto-open a match, and whatever the
+   reader chooses to leave open stays open. */
+.legal .qa { border-bottom: 1px solid var(--line); }
+.legal .qa:first-of-type { border-top: 1px solid var(--line); }
+
+.legal .qa summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.95rem 0.15rem;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--ink);
+  cursor: pointer;
+  /* Both are needed: Firefox honours list-style, Safari needs the marker. */
+  list-style: none;
+  transition: color 0.2s var(--ease-smooth);
+}
+.legal .qa summary::-webkit-details-marker { display: none; }
+.legal .qa summary:hover { color: var(--blue); }
+.legal .qa summary:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Chevron, drawn from two borders so it needs no asset. */
+.legal .qa summary::after {
+  content: "";
+  flex: none;
+  width: 9px;
+  height: 9px;
+  margin: 0.32rem 0 0 auto;
+  border-right: 2.2px solid var(--blue);
+  border-bottom: 2.2px solid var(--blue);
+  transform: rotate(45deg);
+  transition: transform 0.25s var(--ease-spring);
+}
+.legal .qa[open] summary { color: var(--blue); }
+.legal .qa[open] summary::after { transform: rotate(-135deg); }
+
+.legal .qa-body { padding: 0 0 1.15rem; animation: qa-open 0.28s var(--ease-smooth); }
+.legal .qa-body > :last-child { margin-bottom: 0; }
+
+@keyframes qa-open {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
