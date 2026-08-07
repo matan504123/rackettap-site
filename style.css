@@ -536,3 +536,16 @@ footer a:hover { color: var(--blue); text-decoration: underline; }
     box-shadow: 0 18px 50px rgba(10, 111, 224, 0.30);
   }
 }
+
+/* iPhone SE-class widths (<=359px). The store button's label is set
+   `white-space: nowrap`, so at .lg sizing it cannot shrink and pushes the
+   page sideways by ~37px. Trim the label and padding rather than let the
+   whole document scroll horizontally. Measured clean at 320/375/390/430. */
+@media (max-width: 359px) {
+  .btn-store.lg { font-size: 0.95rem; padding: 0.8rem 1.05rem; }
+  .btn-store.lg svg { width: 18px; height: 18px; }
+}
+
+/* The privacy page names the iCloud container (`iCloud.com.matankeret.PadelTap`),
+   one unbreakable token wider than a 320px screen. Let it wrap. */
+code { overflow-wrap: anywhere; }
