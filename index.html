@@ -6,7 +6,7 @@
 <title>RacketTap — racket-sport scorekeeping for Apple Watch</title>
 <meta name="description" content="Keep score of padel, tennis, badminton and pickleball on your Apple Watch, your iPhone, or a Bluetooth remote. Every match lands in Apple Health. Private by design.">
 <meta name="apple-itunes-app" content="app-id=6769837930">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 <link rel="icon" type="image/png" href="icon.png">
 
 <meta property="og:title" content="RacketTap — racket-sport scorekeeping for Apple Watch">
@@ -23,6 +23,7 @@
   </a>
   <a class="nav-link" href="#sports">Sports</a>
   <a class="nav-link" href="#gallery">Screens</a>
+  <a class="nav-link" href="#atlas">Atlas</a>
   <a class="nav-link" href="support/">Support</a>
   <a class="nav-link" href="privacy/">Privacy</a>
   <a class="btn-store" href="https://apps.apple.com/app/id6769837930" target="_blank" rel="noopener">
@@ -111,7 +112,7 @@
         <svg viewBox="0 0 48 48" aria-hidden="true">
           <g class="anim-spin" style="transform-origin:24px 24px">
             <circle cx="24" cy="24" r="16" fill="#f08300"/>
-            <path d="M8.5 19c9 1.5 14.5 7 16 15.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
+            <path d="M8.5 19c9 1.5 14.5 7 16 15.5" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
             <path d="M39.5 19c-9 1.5-14.5 7-16 15.5" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/>
           </g>
         </svg>
@@ -183,9 +184,63 @@
       </figure>
 
       <figure class="tile">
+        <img src="screenshots/atlas.jpg" width="552" height="1200" alt="A map of southern Spain with a court marked on the coast, showing the venue name, the date, two matches and the weather that day" loading="lazy">
+        <figcaption><strong>Every court you've played</strong>The Atlas flies between them in the order you played.</figcaption>
+      </figure>
+
+      <figure class="tile">
         <img src="screenshots/web-live.png" width="552" height="1200" alt="A live match score being followed in a web browser" loading="lazy">
         <figcaption><strong>Follow from anywhere</strong>Send a link — no app, no account needed.</figcaption>
       </figure>
+    </div>
+  </section>
+
+
+  <!-- The Atlas is the app's most striking screen and had no presence here at
+       all. A band rather than a card: the flight path is the point, so the
+       route draws itself as you arrive, and the phone tilts up beside it. -->
+  <section id="atlas" class="wrap-wide scroll-in">
+    <div class="atlas-band">
+      <span class="atlas-orb o1" aria-hidden="true"></span>
+      <span class="atlas-orb o2" aria-hidden="true"></span>
+
+      <div class="atlas-copy">
+        <p class="eyebrow">New</p>
+        <!-- The route draws itself once the band scrolls into view. Sized in
+             its own box rather than stretched across the card: a sliced
+             backdrop zoomed unpredictably with the band's aspect ratio and
+             left one stray arc floating beside the phone. -->
+        <svg class="atlas-route" viewBox="0 0 340 74" fill="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="routeGrad" x1="0" y1="74" x2="340" y2="0" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#3d94ff"/>
+              <stop offset="1" stop-color="#ff9d2e"/>
+            </linearGradient>
+          </defs>
+          <path d="M14 60 C 70 56, 74 26, 128 24 S 208 48, 250 22 S 316 20, 326 12"
+                stroke="#3d94ff" stroke-width="10" stroke-linecap="round" opacity="0.10"/>
+          <path class="route-line"
+                d="M14 60 C 70 56, 74 26, 128 24 S 208 48, 250 22 S 316 20, 326 12"
+                stroke="url(#routeGrad)" stroke-width="2.6" stroke-linecap="round"
+                stroke-dasharray="400" stroke-dashoffset="400"/>
+          <circle class="stop s1" cx="14"  cy="60" r="4"/>
+          <circle class="stop s2" cx="128" cy="24" r="4"/>
+          <circle class="stop s3" cx="250" cy="22" r="4"/>
+          <circle class="stop s4" cx="326" cy="12" r="4"/>
+        </svg>
+        <h2>Your season, as a map</h2>
+        <p>Every court you've played becomes a stop. The Atlas flies between them in the order you played them — each place with its own record, the weather that day, and how far it was from home.</p>
+        <p>Share it as a 20-second video with a soundtrack, or keep it to yourself. It is drawn on your phone, from your own matches.</p>
+        <ul class="atlas-points">
+          <li><span class="dot b"></span>Every venue, in the order you played</li>
+          <li><span class="dot o"></span>Win rate and court time per place</li>
+          <li><span class="dot b"></span>A shareable video, rendered on device</li>
+        </ul>
+      </div>
+      <div class="atlas-visual" aria-hidden="true">
+        <img src="screenshots/atlas.jpg" width="552" height="1200"
+             alt="" loading="lazy" class="atlas-shot">
+      </div>
     </div>
   </section>
 
@@ -211,8 +266,12 @@
         <p>Mirror the score to a friend's phone beside you, or send a link so anyone can follow from home.</p>
       </div>
       <div class="card">
+        <h3>Score someone else's match</h3>
+        <p>Keep score for a final, or for your kid's game. It stays out of your own record and starts no workout.</p>
+      </div>
+      <div class="card">
         <h3>Know your game</h3>
-        <p>History, per-player win rates and long-term trends — plus a recap after every match.</p>
+        <p>History, per-player win rates and long-term trends — plus a recap after every match and a map of every court you have played.</p>
       </div>
       <div class="card">
         <h3>Speaks your language</h3>

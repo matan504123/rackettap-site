@@ -639,3 +639,181 @@ code { overflow-wrap: anywhere; }
   from { opacity: 0; transform: translateY(-4px); }
   to   { opacity: 1; transform: none; }
 }
+
+/* --------------------------------------------------------------- ATLAS */
+/* The band the Atlas lives in. The route draws itself and the stops land
+   one after another once the section scrolls into view — `.scroll-in`
+   already adds `.visible`, so the animations key off that rather than
+   running on load where nobody would see them. */
+
+.atlas-band {
+  display: grid;
+  grid-template-columns: 1fr 0.85fr;
+  gap: clamp(1.5rem, 4vw, 3.4rem);
+  align-items: center;
+  padding: clamp(1.8rem, 4vw, 3rem);
+  border-radius: 26px;
+  border: 1px solid var(--line);
+  background:
+    radial-gradient(120% 90% at 85% 10%, rgba(240, 131, 0, 0.10), transparent 60%),
+    radial-gradient(110% 100% at 10% 90%, rgba(10, 111, 224, 0.12), transparent 62%),
+    linear-gradient(160deg, #0e1c3a, #060b18 70%);
+  color: #eef3fb;
+  overflow: hidden;
+  position: relative;
+}
+.atlas-copy h2 {
+  font-size: clamp(1.7rem, 4.6vw, 2.4rem);
+  color: #fff;
+  margin-bottom: 0.7rem;
+  line-height: 1.12;
+}
+.atlas-copy p { color: #b9c6db; margin-bottom: 0.7rem; max-width: 46ch; }
+.eyebrow {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6fb4ff;
+  border: 1px solid rgba(111, 180, 255, 0.35);
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  margin-bottom: 0.9rem;
+}
+.atlas-points { list-style: none; margin-top: 1.1rem; padding: 0; }
+.atlas-points li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #d5e0f0;
+  font-size: 0.95rem;
+  padding: 0.28rem 0;
+}
+.atlas-points .dot {
+  width: 9px; height: 9px; border-radius: 50%; flex: none;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.05);
+}
+.atlas-points .dot.b { background: #3d94ff; }
+.atlas-points .dot.o { background: #ff9d2e; }
+
+.atlas-visual { position: relative; display: flex; justify-content: center; }
+.atlas-shot {
+  width: min(100%, 250px);
+  height: auto;
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.55);
+  /* Not `transform` — see the note by .scroll-in; this file uses the
+     standalone properties so the two never clobber each other. */
+  rotate: -3deg;
+  translate: 0 14px;
+  transition: rotate 0.9s var(--ease-smooth), translate 0.9s var(--ease-smooth);
+}
+.scroll-in.visible .atlas-shot { rotate: 0deg; translate: 0 0; }
+
+.atlas-route {
+  display: block;
+  width: min(100%, 340px);
+  height: auto;
+  margin: 0 0 1.1rem;
+}
+.atlas-route .stop {
+  fill: #fff;
+  opacity: 0;
+  filter: drop-shadow(0 0 5px rgba(120, 180, 255, 0.9));
+}
+.scroll-in.visible .atlas-route .route-line {
+  animation: draw-route 1.9s var(--ease-smooth) 0.2s forwards;
+}
+.scroll-in.visible .atlas-route .stop {
+  animation: pop-stop 0.45s var(--ease-smooth) forwards;
+}
+.scroll-in.visible .atlas-route .s1 { animation-delay: 0.3s; }
+.scroll-in.visible .atlas-route .s2 { animation-delay: 0.85s; }
+.scroll-in.visible .atlas-route .s3 { animation-delay: 1.35s; }
+.scroll-in.visible .atlas-route .s4 { animation-delay: 1.85s; }
+
+/* Two soft washes give the card depth without another asset — the same
+   device as the hero orbs, tuned darker for the navy band. */
+.atlas-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+.atlas-orb.o1 {
+  width: 320px; height: 320px;
+  background: rgba(10, 111, 224, 0.42);
+  top: -120px; left: -90px;
+}
+.atlas-orb.o2 {
+  width: 260px; height: 260px;
+  background: rgba(240, 131, 0, 0.30);
+  bottom: -110px; right: 18%;
+}
+
+@keyframes draw-route { to { stroke-dashoffset: 0; } }
+@keyframes pop-stop {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ----------------------------------------------------------- FAQ GROUPS */
+/* Forty-nine questions in one run could not be scanned. The jump row is
+   the table of contents; each section carries a heading and one line of
+   context so a reader can tell in a glance whether their answer is in it. */
+
+.faq-jump {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 1rem 0 2.2rem;
+}
+.faq-jump a {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--blue);
+  text-decoration: none;
+  border: 1px solid rgba(10, 111, 224, 0.28);
+  background: rgba(10, 111, 224, 0.05);
+  border-radius: 999px;
+  padding: 0.34rem 0.8rem;
+  transition: background 0.2s ease, color 0.2s ease, translate 0.2s ease;
+}
+.faq-jump a:hover {
+  background: var(--blue);
+  color: #fff;
+  translate: 0 -2px;
+}
+.faq-section {
+  margin: 2.4rem 0;
+  /* So a jump link does not tuck the heading under the sticky nav. */
+  scroll-margin-top: 84px;
+}
+.faq-heading {
+  font-size: 1.22rem;
+  margin: 0 0 0.9rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--line);
+}
+.faq-heading span {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: var(--text-soft);
+  margin-top: 0.22rem;
+}
+
+@media (max-width: 720px) {
+  .atlas-band { grid-template-columns: 1fr; text-align: left; }
+  .atlas-visual { order: -1; }
+  .atlas-shot { width: min(72%, 220px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atlas-shot { rotate: 0deg; translate: 0 0; transition: none; }
+  .atlas-route .route-line { stroke-dashoffset: 0; animation: none; }
+  .atlas-route .stop { opacity: 1; animation: none; }
+}
