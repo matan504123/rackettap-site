@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Support — RacketTap</title>
-<link rel="stylesheet" href="../style.css?v=7">
+<link rel="stylesheet" href="../style.css?v=8">
 <link rel="icon" type="image/png" href="../icon.png">
 </head>
 <body>
@@ -42,6 +42,19 @@
        scrolls a wall of closed rows looking for the one that matches
        their problem. Grouped, with a jump row, the page can be scanned
        in a second. No question was reworded — only moved. -->
+  <!-- Three different screens get called "Settings" in these answers, and a
+       reader who opens the wrong one finds nothing. Naming them once here is
+       cheaper than qualifying every sentence, though every sentence is
+       qualified too. -->
+  <div class="settings-key">
+    <p><strong>Three places are called Settings.</strong> When an answer below says:</p>
+    <ul>
+      <li><strong>the app's Settings tab</strong> — the last tab inside RacketTap on your iPhone.</li>
+      <li><strong>the watch app's Settings</strong> — inside RacketTap on your Apple Watch, not on the phone.</li>
+      <li><strong>iOS Settings</strong> — Apple's own grey Settings app on the iPhone.</li>
+    </ul>
+  </div>
+
   <nav class="faq-jump" aria-label="Jump to a section">
     <a href="#getting-started">Getting started</a>
     <a href="#scoring">Scoring a match</a>
@@ -86,16 +99,16 @@
   <details class="qa">
     <summary>Can I score with a Bluetooth selfie / camera remote?</summary>
     <div class="qa-body">
-      <p>Yes. Pair the remote first in <em>iOS Settings → Bluetooth</em> (most are listed as "AB Shutter3", "BR-100", "Dispho-XXXX", etc.), then open <em>iPhone Settings → Bluetooth Remote</em>. Press the button to confirm the remote is being seen. Default behavior: single press scores YOU, double press scores THEM, triple-press or long-press undoes. You can change what a single press does (YOU / THEM / Alternate) on the same screen. Any standard Bluetooth shutter remote works, whichever way it behaves — ones that only send "volume up", ones that alternate up and down, ones that send a keyboard key (common on the "Android" button of dual-mode remotes), and ones that fire twice per click.</p>
+      <p>Yes. Pair the remote first in <em>iOS Settings → Bluetooth</em> (most are listed as "AB Shutter3", "BR-100", "Dispho-XXXX", etc.), then open <em>the app's Settings tab → Bluetooth Remote</em>. Press the button to confirm the remote is being seen. Default behavior: single press scores YOU, double press scores THEM, triple-press or long-press undoes. You can change what a single press does (YOU / THEM / Alternate) on the same screen. Any standard Bluetooth shutter remote works, whichever way it behaves — ones that only send "volume up", ones that alternate up and down, ones that send a keyboard key (common on the "Android" button of dual-mode remotes), and ones that fire twice per click.</p>
     </div>
   </details>
   <details class="qa">
     <summary>My Bluetooth remote doesn't change the score — what do I check?</summary>
     <div class="qa-body">
-      <p><strong>Turn your iPhone's volume down two or three steps first.</strong> This is by far the most common cause. Most remotes score by sending a "volume up" keypress, and when the phone is already at maximum volume there is no higher volume to move to, so iOS reports nothing at all to the app — the remote is fine, the phone simply has nothing to tell us. If you had turned the volume up to hear the spoken score, anywhere below maximum still works fine for announcements. RacketTap lowers the volume for you where iOS permits it, but iOS gives apps no reliable way to change the system volume, so on many devices it can only warn you: you'll see that warning on the Live screen and in <em>Settings → Bluetooth Remote</em>.</p>
-      <p>If that isn't it: make sure you're in a phone-scored match (the remote works in matches you start from the Live tab, not while scoring on the watch); check the remote still appears in <em>iOS Settings → Bluetooth</em> and swap its battery, since these remotes are cheap and often ship half-dead; and confirm presses are arriving at all by watching the Event Log in <em>Settings → Bluetooth Remote</em>. A quick independent test: open the stock <em>Camera</em> app and press the remote — if it takes a photo, the remote is reaching your iPhone.</p>
-      <p>If single presses work but a double press sometimes scores your own point twice instead of the opponents', your remote's two clicks are arriving further apart than RacketTap expects. Press the remote twice in <em>Settings → Bluetooth Remote</em> and look at the Event Log: each row shows the gap in milliseconds since the previous press. Drag <em>Double-press window</em> to comfortably above that number. A wider window makes double presses reliable, at the cost of every single press waiting that bit longer before it scores.</p>
-      <p>Still stuck? <em>Settings → Bluetooth Remote → Save or send log</em> produces a small text file with your device model, app version, remote settings and press timings — no match data, names, or location — and you can email it to <a href="mailto:matan504@gmail.com">matan504@gmail.com</a>. It shows exactly what the phone is seeing.</p>
+      <p><strong>Turn your iPhone's volume down two or three steps first.</strong> This is by far the most common cause. Most remotes score by sending a "volume up" keypress, and when the phone is already at maximum volume there is no higher volume to move to, so iOS reports nothing at all to the app — the remote is fine, the phone simply has nothing to tell us. If you had turned the volume up to hear the spoken score, anywhere below maximum still works fine for announcements. RacketTap lowers the volume for you where iOS permits it, but iOS gives apps no reliable way to change the system volume, so on many devices it can only warn you: you'll see that warning on the Live screen and in <em>the app's Settings tab → Bluetooth Remote</em>.</p>
+      <p>If that isn't it: make sure you're in a phone-scored match (the remote works in matches you start from the Live tab, not while scoring on the watch); check the remote still appears in <em>iOS Settings → Bluetooth</em> and swap its battery, since these remotes are cheap and often ship half-dead; and confirm presses are arriving at all by watching the Event Log in <em>the app's Settings tab → Bluetooth Remote</em>. A quick independent test: open the stock <em>Camera</em> app and press the remote — if it takes a photo, the remote is reaching your iPhone.</p>
+      <p>If single presses work but a double press sometimes scores your own point twice instead of the opponents', your remote's two clicks are arriving further apart than RacketTap expects. Press the remote twice in <em>the app's Settings tab → Bluetooth Remote</em> and look at the Event Log: each row shows the gap in milliseconds since the previous press. Drag <em>Double-press window</em> to comfortably above that number. A wider window makes double presses reliable, at the cost of every single press waiting that bit longer before it scores.</p>
+      <p>Still stuck? <em>the app's Settings tab → Bluetooth Remote → Save or send log</em> produces a small text file with your device model, app version, remote settings and press timings — no match data, names, or location — and you can email it to <a href="mailto:matan504@gmail.com">matan504@gmail.com</a>. It shows exactly what the phone is seeing.</p>
     </div>
   </details>
   <details class="qa">
@@ -107,7 +120,7 @@
   <details class="qa">
     <summary>How do I change my Default Match Type or Americano point cap?</summary>
     <div class="qa-body">
-      <p>On the watch, open <strong>Settings → Default Match Type</strong> to pick the padel format the Start button uses (Normal / Mixing / Training / Americano / Tiebreak). For Americano, scroll down in Settings to <em>Americano → Points per round</em> to change the round-point cap.</p>
+      <p>On the watch, open the watch app's <strong>Settings → Default Match Type</strong> to pick the padel format the Start button uses (Normal / Mixing / Training / Americano / Tiebreak). For Americano, scroll down in the watch app's Settings to <em>Americano → Points per round</em> to change the round-point cap.</p>
     </div>
   </details>
   <details class="qa">
@@ -120,20 +133,20 @@
     <summary>How do I get a better-sounding voice?</summary>
     <div class="qa-body">
       <p>The voices iOS ships with by default are the basic ones. Apple also offers much more natural <strong>Enhanced</strong> and <strong>Premium</strong> voices, but they are large files, so you have to download them yourself first. The most reliable place to do that is <em>iOS Settings → Accessibility → Live Speech</em>: under <strong>Preferred Voices</strong>, add the language you want, and you'll see the Enhanced and Premium voices listed with a download button beside each — for German, for example, <em>Anna (Premium)</em>. Tap to download one, then come back to RacketTap.</p>
-      <p>That's it — RacketTap picks the best-quality installed voice for your announcement language automatically, so a freshly downloaded Premium voice is used from the next announcement onward. If you'd rather choose a specific one, open <em>Settings → Voice → Voice</em> in RacketTap: every installed voice for that language is listed with its quality, and the preview button lets you hear each one before you commit.</p>
+      <p>That's it — RacketTap picks the best-quality installed voice for your announcement language automatically, so a freshly downloaded Premium voice is used from the next announcement onward. If you'd rather choose a specific one, open <em>the app's Settings tab → Voice</em>: every installed voice for that language is listed with its quality, and the preview button lets you hear each one before you commit.</p>
       <p>Voices you download are a system-wide resource, not an app setting, so any app that speaks can use them. There is more than one route to the same download screen, which is why other guides may send you elsewhere: on iOS 26 it is also under <em>Accessibility → Read &amp; Speak → Voices</em>, and on iOS 18 and earlier that same pane was called <em>Spoken Content</em>. All of these download the same voices — use whichever you find first.</p>
     </div>
   </details>
   <details class="qa">
     <summary>Which UI languages does RacketTap support?</summary>
     <div class="qa-body">
-      <p>Five options on both targets: <em>System</em>, <em>English</em>, <em>Suomi</em>, <em>Español</em>, and <em>עברית</em>. On the iPhone, that's in <em>Settings tab → App Language</em>. On the watch, in <em>Settings → App Language</em>. The watch picker is independent so you can mix and match (e.g., Hebrew on iPhone, English on watch) — useful when your watchOS device language doesn't match what you want in RacketTap. RTL layout kicks in automatically when Hebrew is selected. A separate <em>Voice</em> picker inside the iPhone's Live-tab settings controls the courtside voice readout language. More languages can be added per request.</p>
+      <p>Five options on both targets: <em>System</em>, <em>English</em>, <em>Suomi</em>, <em>Español</em>, and <em>עברית</em>. On the iPhone, that's in <em>the app's Settings tab → App Language</em>. On the watch, in the watch app's <em>Settings → App Language</em>. The watch picker is independent so you can mix and match (e.g., Hebrew on iPhone, English on watch) — useful when your watchOS device language doesn't match what you want in RacketTap. RTL layout kicks in automatically when Hebrew is selected. A separate <em>Voice</em> picker inside the iPhone's Live-tab settings controls the courtside voice readout language. More languages can be added per request.</p>
     </div>
   </details>
   <details class="qa">
     <summary>Can I keep score for a match I am not playing in?</summary>
     <div class="qa-body">
-      <p>Yes — turn on <em>Scorekeeper</em> in the watch's Settings, above Mirroring. The scoreboard then reads BLUE and ORANGE instead of YOU and THEM, a cyan SCOREKEEPER badge appears so there is no doubt which mode you are in, and no workout is started, because it is not your match.</p>
+      <p>Yes — turn on <em>Scorekeeper</em> in the watch app's Settings, above Mirroring. The scoreboard then reads BLUE and ORANGE instead of YOU and THEM, a cyan SCOREKEEPER badge appears so there is no doubt which mode you are in, and no workout is started, because it is not your match.</p>
       <p>Those matches are kept out of every personal figure — your win rate, your court time, your streaks and your Health data are all untouched — and they are hidden from History behind a filter toggle, so scoring your partner's match or a club final never distorts your own record. It stays on until you turn it off. Pro feature.</p>
     </div>
   </details>
@@ -144,7 +157,7 @@
   <details class="qa">
     <summary>How do I configure the tennis format?</summary>
     <div class="qa-body">
-      <p>On the watch: <em>Settings → Tennis</em>. Pick best-of-3 or best-of-5, toggle "Final-set match tiebreak" on (and choose 7 / 10 / 12) if your league uses one, and pick Advantage or No-Ad for the deuce rule. Star Point is padel-only — it's intentionally not in the tennis list. These settings apply to every tennis match you start; matches in progress are unaffected by changes mid-session.</p>
+      <p>In the watch app's <em>Settings → Tennis</em>. Pick best-of-3 or best-of-5, toggle "Final-set match tiebreak" on (and choose 7 / 10 / 12) if your league uses one, and pick Advantage or No-Ad for the deuce rule. Star Point is padel-only — it's intentionally not in the tennis list. These settings apply to every tennis match you start; matches in progress are unaffected by changes mid-session.</p>
     </div>
   </details>
   <details class="qa">
@@ -154,7 +167,7 @@
       <li><strong>Normal</strong> — a full padel match. Standard game/set/match scoring with your chosen deuce rule (Star Point, Golden Point, or Advantage).</li>
       <li><strong>Mixing</strong> — for casual sessions with rotating partners. Each rally still uses standard game scoring, but games accumulate into a single running tally (no sets, no match winner). End it when you're done playing.</li>
       <li><strong>Training</strong> — workout only. Starts an Apple Health Tennis workout without any scoring UI. No taps to score; just hit start and end.</li>
-      <li><strong>Americano</strong> — point-counting format. Each tap is one point, and a round ends when the total points reach a cap (default 32, configurable in watch Settings). Multiple rounds make up a session; the summary shows rounds won/lost and total points.</li>
+      <li><strong>Americano</strong> — point-counting format. Each tap is one point, and a round ends when the total points reach a cap (default 32, configurable in the watch app's Settings). Multiple rounds make up a session; the summary shows rounds won/lost and total points.</li>
       <li><strong>Tiebreak</strong> — a single standalone tiebreak. First to your chosen number of points (default 7), win by 2; winning it ends the match. Made for when you've only got a few minutes left on the court. Saved matches show a TIEBREAK badge in History.</li>
       </ul>
     </div>
@@ -162,7 +175,7 @@
   <details class="qa">
     <summary>Can I change the padel set format (single set, games per set, no tiebreak)?</summary>
     <div class="qa-body">
-      <p>Yes — on the watch, open <em>Settings → Padel match</em>. You can pick how many sets win the match (single set, best-of-3, or best-of-5), how many games win a set (4–9), and the set-win rule: <em>Win by 2</em> (with a tiebreak at the games cap, the classic behaviour) or <em>First to N</em> (the set ends the instant a team reaches the cap — no tiebreak). The same page sets the points for the standalone <strong>Tiebreak</strong> match type. Defaults reproduce a standard match exactly (best-of-3, 6 games, win-by-2), and changes only apply to matches you start afterwards.</p>
+      <p>Yes — on the watch, open the watch app's <em>Settings → Padel match</em>. You can pick how many sets win the match (single set, best-of-3, or best-of-5), how many games win a set (4–9), and the set-win rule: <em>Win by 2</em> (with a tiebreak at the games cap, the classic behaviour) or <em>First to N</em> (the set ends the instant a team reaches the cap — no tiebreak). The same page sets the points for the standalone <strong>Tiebreak</strong> match type. Defaults reproduce a standard match exactly (best-of-3, 6 games, win-by-2), and changes only apply to matches you start afterwards.</p>
     </div>
   </details>
   <details class="qa">
@@ -174,11 +187,11 @@
   <details class="qa">
     <summary>Can I play 11 or 15 point badminton games?</summary>
     <div class="qa-body">
-      <p>Yes — on the watch, open <em>Settings → Badminton</em>. Three point formats are available:</p>
+      <p>Yes — on the watch, open the watch app's <em>Settings → Badminton</em>. Three point formats are available:</p>
       <ul>
       <li><strong>21</strong> — official BWF. Games to 21, win by 2 at 20-20, golden point at 30.</li>
       <li><strong>15</strong> — the new official BWF standard arriving January 2027. Games to 15, win by 2 at 14-14, golden point at 21.</li>
-      <li><strong>11</strong> — official BWF short format. Games to 11, sudden death at 10-10 (the winner of the next rally takes the game). A house-rule toggle in Settings switches this to "win by 2, cap 15" if your group prefers that style instead.</li>
+      <li><strong>11</strong> — official BWF short format. Games to 11, sudden death at 10-10 (the winner of the next rally takes the game). A house-rule toggle in the watch app's Settings switches this to "win by 2, cap 15" if your group prefers that style instead.</li>
       </ul>
     </div>
   </details>
@@ -197,7 +210,7 @@
   <details class="qa">
     <summary>Which pickleball rules does RacketTap use?</summary>
     <div class="qa-body">
-      <p>By default, RacketTap uses side-out scoring (only the serving team can score a point), which is the traditional pickleball rule — games to 11, win by 2. A rally-scoring option is available in Settings for groups that prefer it. In doubles, server numbers are tracked — the first server each side-out is Server 1, the second is Server 2, and RacketTap announces the number with each serve change so everyone on court stays in sync. Three point formats are supported: 11 (default), 15, and 21.</p>
+      <p>By default, RacketTap uses side-out scoring (only the serving team can score a point), which is the traditional pickleball rule — games to 11, win by 2. A rally-scoring option is available in the watch app's Settings for groups that prefer it. In doubles, server numbers are tracked — the first server each side-out is Server 1, the second is Server 2, and RacketTap announces the number with each serve change so everyone on court stays in sync. Three point formats are supported: 11 (default), 15, and 21.</p>
     </div>
   </details>
   </section>
@@ -213,13 +226,13 @@
   <details class="qa">
     <summary>I tagged some matches before the latest update and the names aren't on the watch yet — can I backfill?</summary>
     <div class="qa-body">
-      <p>Yes. On the iPhone, open <em>Settings tab → "Push player tags &amp; venues to watch"</em>. That queues every match's enrichment back to the watch in one batch. The button shows a spinner and a confirmation alert. Payloads queue safely if the watch is offline.</p>
+      <p>Yes. On the iPhone, open <em>the app's Settings tab → "Push player tags &amp; venues to watch"</em>. That queues every match's enrichment back to the watch in one batch. The button shows a spinner and a confirmation alert. Payloads queue safely if the watch is offline.</p>
     </div>
   </details>
   <details class="qa">
     <summary>How do I manage remembered venues?</summary>
     <div class="qa-body">
-      <p>The first time you label a court in History detail, RacketTap remembers it. Future matches at the same spot auto-fill that name. Once you have at least one remembered venue, a <em>Venues</em> row appears in iPhone Settings — tap to rename or swipe to delete.</p>
+      <p>The first time you label a court in History detail, RacketTap remembers it. Future matches at the same spot auto-fill that name. Once you have at least one remembered venue, a <em>Venues</em> row appears in the app's Settings tab — the one inside RacketTap, not Apple's Settings app — tap to rename or swipe to delete.</p>
     </div>
   </details>
   <details class="qa">
@@ -232,7 +245,7 @@
     <summary>Settings is offering to merge two venue names — why?</summary>
     <div class="qa-body">
       <p>Because they look like one court recorded under two spellings, and while that lasts, every figure for that place is counted from only part of your matches. A capital letter or a different word order is enough to split it — "Baseline padel" and "Baseline Padel" are one club to you and two to every count in the app.</p>
-      <p>Open <em>Settings → Venues</em>. Any suspected pair is listed with the number of matches under each spelling, so the real one is usually obvious at a glance. Tap the one you want to keep and every match moves to it — nothing is deleted, and an Undo row appears in case you change your mind. A name that differs only by a stray space is repaired on its own, since that difference cannot be seen in any list. From then on, typing a name that matches one you already use keeps your spelling instead of starting a second entry.</p>
+      <p>Open the app's Settings tab → <em>Venues</em>. Any suspected pair is listed with the number of matches under each spelling, so the real one is usually obvious at a glance. Tap the one you want to keep and every match moves to it — nothing is deleted, and an Undo row appears in case you change your mind. A name that differs only by a stray space is repaired on its own, since that difference cannot be seen in any list. From then on, typing a name that matches one you already use keeps your spelling instead of starting a second entry.</p>
     </div>
   </details>
   </section>
@@ -242,7 +255,7 @@
   <details class="qa">
     <summary>What is the Live tab on the iPhone?</summary>
     <div class="qa-body">
-      <p>An opt-in courtside scoreboard. When you enable it in <em>iPhone Settings → Live court scoreboard</em>, a Live tab appears between History and Stats. Place the iPhone sideways at the side of the court and it mirrors the watch in real time — big sets / games / current-game points so the score is readable from across the net. You can enable it per format (Normal / Mixing / Americano); Training never appears in Live. The iPhone screen stays awake while the Live tab is open, then resumes normal sleep behaviour when you switch tabs.</p>
+      <p>An opt-in courtside scoreboard. When you enable it in <em>the app's Settings tab → Live court scoreboard</em>, a Live tab appears between History and Stats. Place the iPhone sideways at the side of the court and it mirrors the watch in real time — big sets / games / current-game points so the score is readable from across the net. You can enable it per format (Normal / Mixing / Americano); Training never appears in Live. The iPhone screen stays awake while the Live tab is open, then resumes normal sleep behaviour when you switch tabs.</p>
     </div>
   </details>
   <details class="qa">
@@ -254,7 +267,7 @@
   <details class="qa">
     <summary>Can the Live view swap sides automatically when we change ends?</summary>
     <div class="qa-body">
-      <p>Yes. On the watch, <em>Settings → Swap sides</em> offers <strong>Off</strong>, <strong>Odd games</strong> (flip after games 1, 3, 5… — the usual change-ends convention), or <strong>Every set</strong>. The phone's courtside Live scoreboard then flips automatically at those boundaries, and if voice readout is on you'll hear "Change ends." The manual swap button still works and layers on top. (The watch's own wrist scoreboard stays fixed — only the courtside phone display flips.)</p>
+      <p>Yes. On the watch, the watch app's <em>Settings → Swap sides</em> offers <strong>Off</strong>, <strong>Odd games</strong> (flip after games 1, 3, 5… — the usual change-ends convention), or <strong>Every set</strong>. The phone's courtside Live scoreboard then flips automatically at those boundaries, and if voice readout is on you'll hear "Change ends." The manual swap button still works and layers on top. (The watch's own wrist scoreboard stays fixed — only the courtside phone display flips.)</p>
     </div>
   </details>
   <details class="qa">
@@ -300,7 +313,7 @@
   <details class="qa">
     <summary>How does the "days played" stat work?</summary>
     <div class="qa-body">
-      <p>On the iPhone Stats tab you'll see a "days played" total. You can seed the starting number in two places: during first setup on the watch or the first time you open the iPhone Stats tab. The value syncs across both devices automatically. From then on, every day you finish at least one match, mixing session, training, or Americano session counts as one more day. You can edit the baseline anytime in iPhone Settings → Activity.</p>
+      <p>On the iPhone Stats tab you'll see a "days played" total. You can seed the starting number in two places: during first setup on the watch or the first time you open the iPhone Stats tab. The value syncs across both devices automatically. From then on, every day you finish at least one match, mixing session, training, or Americano session counts as one more day. You can edit the baseline anytime in the app's Settings tab → <em>Activity</em>.</p>
     </div>
   </details>
   <details class="qa">
@@ -372,7 +385,7 @@
   <details class="qa">
     <summary>Does RacketTap work with a Garmin / Whoop / Polar watch?</summary>
     <div class="qa-body">
-      <p>Yes — for matches scored on the iPhone. Anything that syncs to Apple Health (Garmin via Garmin Connect, Whoop, Polar Flow, Wahoo, Oura, etc.) shows up as heart rate and calories on the saved match. There can be a few minutes of lag while the third-party app pushes to Health; if a match looks empty right after, reopen it later. For live heart rate during the match itself, pair the watch (or a chest strap) directly under <em>iPhone Settings → Heart Rate Sensor</em>.</p>
+      <p>Yes — for matches scored on the iPhone. Anything that syncs to Apple Health (Garmin via Garmin Connect, Whoop, Polar Flow, Wahoo, Oura, etc.) shows up as heart rate and calories on the saved match. There can be a few minutes of lag while the third-party app pushes to Health; if a match looks empty right after, reopen it later. For live heart rate during the match itself, pair the watch (or a chest strap) directly under <em>the app's Settings tab → Heart Rate Sensor</em>.</p>
     </div>
   </details>
   <details class="qa">
@@ -384,7 +397,7 @@
   <details class="qa">
     <summary>How do I pair a chest strap or heart-rate watch?</summary>
     <div class="qa-body">
-      <p>Open <em>iPhone Settings → Heart Rate Sensor</em>, put your strap on (or put your watch in heart-rate broadcast mode), and tap your device in the "Nearby sensors" list. Works with anything that speaks the standard Bluetooth Heart Rate Service — Polar H10, Wahoo Tickr, Garmin HRM-Pro, MyZone, Polar Verity Sense, plus Garmin / Suunto / Coros watches in broadcast mode. The sensor reconnects automatically the next time you start a phone-scored match.</p>
+      <p>Open <em>the app's Settings tab → Heart Rate Sensor</em>, put your strap on (or put your watch in heart-rate broadcast mode), and tap your device in the "Nearby sensors" list. Works with anything that speaks the standard Bluetooth Heart Rate Service — Polar H10, Wahoo Tickr, Garmin HRM-Pro, MyZone, Polar Verity Sense, plus Garmin / Suunto / Coros watches in broadcast mode. The sensor reconnects automatically the next time you start a phone-scored match.</p>
     </div>
   </details>
   </section>
@@ -394,13 +407,13 @@
   <details class="qa">
     <summary>Is my match history backed up?</summary>
     <div class="qa-body">
-      <p>Yes — your iPhone's match history mirrors to your private iCloud database automatically. Sign in to iCloud in iOS Settings and RacketTap takes care of the rest. If you install RacketTap on a second iPhone or iPad using the same Apple ID, your history shows up there too. The Apple Watch keeps its own copy and syncs from the phone after a fresh install. The iPhone Settings tab shows an <em>iCloud Sync</em> panel with a live count of how many matches are on the device versus safely in iCloud, plus a <em>Check iCloud</em> button.</p>
+      <p>Yes — your iPhone's match history mirrors to your private iCloud database automatically. Sign in to iCloud in iOS Settings and RacketTap takes care of the rest. If you install RacketTap on a second iPhone or iPad using the same Apple ID, your history shows up there too. The Apple Watch keeps its own copy and syncs from the phone after a fresh install. The app's Settings tab shows an <em>iCloud Sync</em> panel with a live count of how many matches are on the device versus safely in iCloud, plus a <em>Check iCloud</em> button.</p>
     </div>
   </details>
   <details class="qa">
     <summary>iCloud Sync vs. the iOS "iCloud Backup" switch — what's the difference?</summary>
     <div class="qa-body">
-      <p>They're two separate systems. RacketTap uses <strong>iCloud Sync</strong> (Apple's CloudKit) to live-mirror your matches to your Apple ID — that's what the in-app <em>iCloud Sync</em> panel reports, and it's what restores your history on a new device. The iOS <em>Settings → [your name] → iCloud → iCloud Backup → Backup Details</em> list (where each app shows a size and a toggle) is the separate nightly whole-device snapshot. Turning RacketTap off in that Backup Details list does <em>not</em> stop iCloud Sync — your matches keep mirroring to iCloud regardless. To actually pause the app's cloud sync you'd toggle RacketTap under <em>Settings → [your name] → iCloud → Saved to iCloud → See All</em>; the in-app panel then turns orange to warn you sync is off.</p>
+      <p>They're two separate systems. RacketTap uses <strong>iCloud Sync</strong> (Apple's CloudKit) to live-mirror your matches to your Apple ID — that's what the in-app <em>iCloud Sync</em> panel reports, and it's what restores your history on a new device. The iOS <em>iOS Settings → [your name] → iCloud → iCloud Backup → Backup Details</em> list (where each app shows a size and a toggle) is the separate nightly whole-device snapshot. Turning RacketTap off in that Backup Details list does <em>not</em> stop iCloud Sync — your matches keep mirroring to iCloud regardless. To actually pause the app's cloud sync you'd toggle RacketTap under <em>iOS Settings → [your name] → iCloud → Saved to iCloud → See All</em>; the in-app panel then turns orange to warn you sync is off.</p>
     </div>
   </details>
   <details class="qa">
@@ -412,7 +425,7 @@
   <details class="qa">
     <summary>A match I played on my watch isn't showing on my iPhone</summary>
     <div class="qa-body">
-      <p>Watch-to-iPhone sync is automatic when both devices are nearby. If something looks missing, on the iPhone go to <em>Settings tab → "Resync from watch"</em>. The sync is durable: even if the iPhone is off when you finish a match, it'll arrive once they're paired again.</p>
+      <p>Watch-to-iPhone sync is automatic when both devices are nearby. If something looks missing, on the iPhone go to <em>the app's Settings tab → "Resync from watch"</em>. The sync is durable: even if the iPhone is off when you finish a match, it'll arrive once they're paired again.</p>
     </div>
   </details>
   <details class="qa">
