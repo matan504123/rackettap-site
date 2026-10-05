@@ -53,12 +53,26 @@
     .team-a { border-left-color:var(--blue); }
     .team-b { border-left-color:var(--orange); }
     .team.winner { outline:2px solid #30d158; }
-    .team-id { display:flex; align-items:center; gap:8px; min-width:0; }
+    /* Name above the Broadcaster badge, taking all the width the score
+       columns leave: typed player names ("M. Virtanen & Korhonen") need it. */
+    .team-id { display:flex; flex-direction:column; align-items:flex-start; gap:4px;
+               flex:1; min-width:0; margin-right:10px; }
     .team-name { font-size:22px; font-weight:600; text-align:left; overflow:hidden;
-                 text-overflow:ellipsis; white-space:nowrap; }
+                 line-height:1.15; overflow-wrap:break-word; max-width:100%;
+                 display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; }
+    /* Phone width: the names take their own full-width line across the top
+       of the card and the score row sits under it, still under the column
+       headings. */
+    @media (max-width:520px) {
+      .team { flex-wrap:wrap; }
+      .team-id { flex-basis:100%; flex-direction:row; flex-wrap:wrap; align-items:center;
+                 gap:4px 8px; margin:0 0 6px; }
+      .team-name { font-size:20px; }
+      .team-cols { margin-left:auto; }
+    }
     .bcast { flex:none; font-size:11px; font-weight:700; letter-spacing:.03em; color:#30d158;
              border:1px solid #30d158; border-radius:999px; padding:2px 7px; white-space:nowrap; }
-    .team-cols { display:flex; gap:14px; align-items:center; }
+    .team-cols { display:flex; gap:14px; align-items:center; flex:none; }
     .team-cols .sets,.team-cols .games { width:44px; text-align:center; font-size:24px;
                  font-variant-numeric:tabular-nums; color:var(--muted); }
     .team-cols .points { width:44px; text-align:center; font-size:30px; font-weight:800;
