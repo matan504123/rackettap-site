@@ -147,7 +147,8 @@ function isPickleball(s) { return s.sportRaw === "pickleball"; }
 /* Render one team's row. `s` is the decoded LiveScorePublic. */
 function renderTeam(side, s, ended, isBroadcaster) {
   const isA = side === "a";
-  const name = (isA ? s.teamAName : s.teamBName) || (isA ? "Team A" : "Team B");
+  const typed = isA ? s.teamAName : s.teamBName;
+  const name = typed || (isA ? "Team A" : "Team B");
   const won = ended && s.winnerRaw === side;
   const tag = isBroadcaster ? `<span class="bcast">📡 Broadcaster</span>` : "";
 
@@ -189,7 +190,7 @@ function renderTeam(side, s, ended, isBroadcaster) {
   }
 
   return `
-    <div class="team ${isA ? "team-a" : "team-b"} ${won ? "winner" : ""}">
+    <div class="team ${isA ? "team-a" : "team-b"} ${won ? "winner" : ""} ${typed ? "named" : ""}">
       <span class="team-id">
         <span class="team-name">${escapeText(name)}</span>
         ${tag}
