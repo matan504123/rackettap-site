@@ -144,6 +144,30 @@ function isRallySport(s) { return s.sportRaw === "badminton" || s.sportRaw === "
 /* True when the snapshot came from a pickleball match. */
 function isPickleball(s) { return s.sportRaw === "pickleball"; }
 
+/* Deciding tie-break (app R13): the players turned a running match into one
+   tie-break whose winner wins the match. `decidingTiebreakPoints` is optional
+   (absent/null on every other match and on older app builds). */
+function isDecidingTiebreak(s) {
+  return Number.isFinite(s.decidingTiebreakPoints) && s.decidingTiebreakPoints > 0;
+}
+
+/* A completed set frozen when the deciding tie-break was called (e.g. 3-2).
+   `wasUnfinished` is optional; absent means a normal, finished set. Such a set
+   is never won by anyone. */
+function isUnfinishedSet(set) { return set.wasUnfinished === true; }
+
+function setWonBy(set, isA) {
+  if (isUnfinishedSet(set)) return false;
+  return isA ? set.gamesA > set.gamesB : set.gamesB > set.gamesA;
+}
+
+/* Column heading for completed set `i` in the final summary. With a deciding
+   tie-break the last entry IS that tie-break (its "games" are its points). */
+function finalSetLabel(s, i) {
+  if (isDecidingTiebreak(s) && i === s.completedSets.length - 1) return "TB";
+  return `${isRallySport(s) ? "GAME" : "SET"} ${i + 1}`;
+}
+
 /* Render one team's row. `s` is the decoded LiveScorePublic. */
 function renderTeam(side, s, ended, isBroadcaster) {
   const isA = side === "a";
@@ -157,11 +181,18 @@ function renderTeam(side, s, ended, isBroadcaster) {
     // FINAL: one cell per completed set showing this team's games (with a
     // tiebreak marker). The set the team won is highlighted. No stale
     // current-game point ("40"/"AD") — the match is over.
-    cols = s.completedSets.map((set) => {
+    // An unfinished set (frozen by a deciding tie-break) is dimmed and never
+    // highlighted; the deciding tie-break column is already headed "TB", so
+    // it needs no superscript marker.
+    const lastIdx = s.completedSets.length - 1;
+    cols = s.completedSets.map((set, i) => {
       const g = isA ? set.gamesA : set.gamesB;
-      const setWon = isA ? set.gamesA > set.gamesB : set.gamesB > set.gamesA;
-      const tb = set.wasTiebreak ? `<sup class="tb">TB</sup>` : "";
-      return `<span class="setcell ${setWon ? "win" : ""}">${g}${tb}</span>`;
+      const setWon = setWonBy(set, isA);
+      const isDecider = isDecidingTiebreak(s) && i === lastIdx;
+      const tb = set.wasTiebreak && !isDecider ? `<sup class="tb">TB</sup>` : "";
+      const cls = ["setcell", setWon ? "win" : "", isUnfinishedSet(set) ? "unfinished" : ""]
+        .filter(Boolean).join(" ");
+      return `<span class="${cls}">${g}${tb}</span>`;
     }).join("");
   } else if (isRallySport(s)) {
     // RALLY-POINT LIVE (badminton / pickleball): games won + current-game points.
@@ -207,7 +238,8 @@ function badges(s) {
   if (s.isAmericano) out.push({ text: "AMERICANO" });
   if (s.isTraining)  out.push({ text: "TRAINING" });
   // Rally-point sports are always "in tiebreak"; suppress the misleading badge.
-  if (s.isInTiebreak && !isRallySport(s)) out.push({ text: "TIEBREAK" });
+  // The deciding tie-break has its own banner; don't repeat it as a badge.
+  if (s.isInTiebreak && !isRallySport(s) && !isDecidingTiebreak(s)) out.push({ text: "TIEBREAK" });
   // Sport name badge with sport-specific accent colour (sport CSS variable).
   if (isBadminton(s))  out.push({ text: "BADMINTON",  cls: "sport" });
   if (isPickleball(s)) out.push({ text: "PICKLEBALL", cls: "sport" });
@@ -258,9 +290,8 @@ function render(record) {
   // (badminton/pickleball) per completed game/set; Americano ⇒ PTS/TOT;
   // rally-sport live ⇒ GAMES/PTS; otherwise the live SETS/GMS/PTS columns.
   if (hasFinalSetSummary(s, ended)) {
-    const unitLabel = isRallySport(s) ? "GAME" : "SET";
     $("col-head").innerHTML = s.completedSets
-      .map((_, i) => `<span class="setcell">${unitLabel} ${i + 1}</span>`).join("");
+      .map((set, i) => `<span class="setcell${isUnfinishedSet(set) ? " unfinished" : ""}">${finalSetLabel(s, i)}</span>`).join("");
   } else if (isRallySport(s)) {
     $("col-head").innerHTML =
       `<span class="sets">GAMES</span><span class="points">PTS</span>`;
@@ -275,6 +306,14 @@ function render(record) {
 
   // Star point banner
   $("starpoint").hidden = !s.isStarPointActive;
+
+  // Deciding tie-break: banner while it's being played; a small note on the
+  // final summary once it has decided the match.
+  const deciding = isDecidingTiebreak(s);
+  const banner = $("deciding");
+  banner.hidden = !(deciding && !ended);
+  if (!banner.hidden) banner.textContent = `DECIDING TIE-BREAK · FIRST TO ${s.decidingTiebreakPoints}`;
+  $("decided-note").hidden = !(deciding && hasFinalSetSummary(s, ended));
 
   // Badges
   const b = badges(s);

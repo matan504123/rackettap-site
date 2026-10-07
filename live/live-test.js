@@ -11,7 +11,11 @@
  *   4. Doubles SIDE OUT — pointsCount+1, score unchanged, sideOutRaw, 2→1       → flash
  *   5. Scored rally     — pointsCount+1, score changed                           → none
  *
- * This is a verbatim copy of the pure function from live.js — keep in sync.
+ * Cases 6+ cover the deciding tie-break helpers (finalSetLabel, setWonBy,
+ * isDecidingTiebreak) against a fixture with the new optional fields and a
+ * legacy fixture without them.
+ *
+ * These are verbatim copies of the pure functions from live.js — keep in sync.
  */
 
 /* ── Copy of decideSideOutAction from live.js ─────────────────────────── */
@@ -84,12 +88,66 @@ const cases = [
   },
 ];
 
+/* ── Copy of the deciding tie-break helpers from live.js (keep in sync) ── */
+function isRallySport(s) { return s.sportRaw === "badminton" || s.sportRaw === "pickleball"; }
+function isDecidingTiebreak(s) {
+  return Number.isFinite(s.decidingTiebreakPoints) && s.decidingTiebreakPoints > 0;
+}
+function isUnfinishedSet(set) { return set.wasUnfinished === true; }
+function setWonBy(set, isA) {
+  if (isUnfinishedSet(set)) return false;
+  return isA ? set.gamesA > set.gamesB : set.gamesB > set.gamesA;
+}
+function finalSetLabel(s, i) {
+  if (isDecidingTiebreak(s) && i === s.completedSets.length - 1) return "TB";
+  return `${isRallySport(s) ? "GAME" : "SET"} ${i + 1}`;
+}
+/* ── End copy ─────────────────────────────────────────────────────────── */
+
+/* Fixture: Blue won set 1 6-4, led set 2 3-2 when court time ran out, then
+   won the deciding tie-break 7-5 → reads 6-4, 3-2, TB 7-5. */
+const DECIDED = {
+  sportRaw: null,
+  decidingTiebreakPoints: 7,
+  winnerRaw: "a",
+  setsWonByA: 2, setsWonByB: 0,
+  completedSets: [
+    { gamesA: 6, gamesB: 4, wasTiebreak: false },
+    { gamesA: 3, gamesB: 2, wasTiebreak: false, wasUnfinished: true },
+    { gamesA: 7, gamesB: 5, wasTiebreak: true },
+  ],
+};
+/* Legacy payload: no new fields at all. */
+const LEGACY = {
+  sportRaw: null, winnerRaw: "a", setsWonByA: 2, setsWonByB: 1,
+  completedSets: [
+    { gamesA: 6, gamesB: 4, wasTiebreak: false },
+    { gamesA: 6, gamesB: 7, wasTiebreak: true },
+    { gamesA: 7, gamesB: 6, wasTiebreak: true },
+  ],
+};
+
+const helperCases = [
+  ["6. Deciding: last column labelled TB", () => finalSetLabel(DECIDED, 2), "TB"],
+  ["7. Deciding: earlier columns keep SET n", () => finalSetLabel(DECIDED, 1), "SET 2"],
+  ["8. Legacy: last column stays SET 3", () => finalSetLabel(LEGACY, 2), "SET 3"],
+  ["9. Unfinished 3-2 set is won by neither team",
+     () => [setWonBy(DECIDED.completedSets[1], true), setWonBy(DECIDED.completedSets[1], false)].join(), "false,false"],
+  ["10. Legacy set without wasUnfinished still counts", () => setWonBy(LEGACY.completedSets[0], true), true],
+  ["11. null decidingTiebreakPoints is not a deciding tie-break",
+     () => isDecidingTiebreak({ decidingTiebreakPoints: null }), false],
+  ["12. Absent decidingTiebreakPoints is not a deciding tie-break", () => isDecidingTiebreak(LEGACY), false],
+];
+for (const [name, fn, expected] of helperCases) {
+  cases.push({ name, fn, expected });
+}
+
 /* ── Runner ──────────────────────────────────────────────────────────── */
 let passed = 0;
 let failed = 0;
 
 for (const c of cases) {
-  const got = decideSideOutAction(c.prev, c.current);
+  const got = c.fn ? c.fn() : decideSideOutAction(c.prev, c.current);
   const ok  = got === c.expected;
   if (ok) {
     console.log(`PASS  ${c.name}`);

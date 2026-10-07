@@ -89,6 +89,14 @@
     #starpoint { margin:14px 0; padding:10px; border-radius:12px; background:#ffd60a; color:#000;
                  font-weight:800; letter-spacing:.12em; }
     #starpoint[hidden] { display:none; }
+    /* Deciding tie-break banner: same capsule idiom as ★ STAR POINT, in red. */
+    #deciding { margin:14px 0; padding:10px; border-radius:12px; background:#ff453a; color:#fff;
+                font-weight:800; letter-spacing:.12em; }
+    #deciding[hidden] { display:none; }
+    #decided-note { margin-top:10px; color:var(--muted); font-size:13px; }
+    #decided-note[hidden] { display:none; }
+    /* A set frozen by the deciding tie-break: kept as played, never won. */
+    .setcell.unfinished { opacity:.45; }
     #badges { display:flex; gap:8px; justify-content:center; margin-top:14px; flex-wrap:wrap; }
     #badges[hidden] { display:none; }
     .badge { font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--muted);
@@ -142,6 +150,8 @@
     <div id="col-head" class="col-head"></div>
     <div id="teams"></div>
     <div id="starpoint" hidden>★ STAR POINT</div>
+    <div id="deciding" hidden></div>
+    <div id="decided-note" hidden>Decided by tie-break</div>
     <div id="server-chip" hidden></div>
     <div id="sideout" hidden>SIDE OUT</div>
     <div id="badges" hidden></div>
