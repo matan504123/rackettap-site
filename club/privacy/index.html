@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — RacketTap Club</title>
+<meta name="description" content="Privacy policy for RacketTap Club, the courtside scoreboard app for clubs by Keret Software Oy.">
+<link rel="stylesheet" href="../../style.css?v=8">
+<link rel="stylesheet" href="../club.css?v=1">
+<link rel="icon" type="image/png" href="../../icon.png">
+<script>
+  (function () {
+    var d = document.documentElement, lang = 'en';
+    try {
+      var h = (location.hash || '').toLowerCase();
+      var saved = null;
+      try { saved = localStorage.getItem('club.lang'); } catch (e) {}
+      if (h.indexOf('#fi') === 0) lang = 'fi';
+      else if (h.indexOf('#en') === 0) lang = 'en';
+      else if (saved === 'fi' || saved === 'en') lang = saved;
+      else if ((navigator.language || '').toLowerCase().indexOf('fi') === 0) lang = 'fi';
+    } catch (e) {}
+    d.className += ' js';
+    d.setAttribute('data-lang', lang);
+    d.setAttribute('lang', lang);
+  })();
+</script>
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="../">
+    <img src="../../icon.png" alt="">
+    RacketTap Club
+  </a>
+  <div class="lang-switch" role="group" aria-label="Language / Kieli">
+    <a href="#en" hreflang="en" lang="en" data-set-lang="en" aria-current="true">English</a>
+    <a href="#fi" hreflang="fi" lang="fi" data-set-lang="fi" aria-current="false">Suomeksi</a>
+  </div>
+</nav>
+
+<!-- ================================================================ ENGLISH -->
+<main class="club-legal" id="en" data-lang-block="en" lang="en">
+  <header class="page-header">
+    <a class="back-link" href="../">← RacketTap Club</a>
+    <h1 style="margin-top:0.8rem">RacketTap Club Privacy Policy</h1>
+    <p class="effective-date">Last updated 2026-10-09</p>
+  </header>
+
+  <div class="privacy-summary">
+    <p><strong>In short:</strong> Keret Software Oy collects no personal data through RacketTap Club. What the app keeps stays on the court's iPad. The only thing that ever leaves the iPad is a match's live score, and only when the players choose to share it.</p>
+  </div>
+
+  <h2>Who we are</h2>
+  <p>RacketTap Club is made by Keret Software Oy. Questions about this policy: <a href="mailto:matan504@gmail.com">matan504@gmail.com</a>.</p>
+
+  <h2>What stays on the iPad</h2>
+  <p>RacketTap Club stores the following only on the court's iPad. None of it is sent to us or to anyone else:</p>
+  <ul>
+    <li><strong>Club settings</strong>: the court name, the default sport, match type and rules, and the voice and language settings.</li>
+    <li><strong>The licence and the admin PIN</strong>, kept in the iPad's Keychain. The PIN is stored only as a salted hash, never as the PIN itself.</li>
+    <li><strong>Sponsor images</strong> that club staff add to the court screen.</li>
+    <li><strong>The court's match log</strong>: the scores and times of matches played on that court, and player names only when the players choose to save them with a match.</li>
+  </ul>
+  <p>RacketTap Club doesn't use Apple Health or the iPad's location.</p>
+
+  <h2>The live score on phones</h2>
+  <p>During a match, players can tap <em>Share online</em>. The court screen then shows a QR code that opens a live score page in any web browser. To make that page work, the iPad publishes the current match to a record in the public database of Apple's iCloud (CloudKit, container <code>iCloud.com.matankeret.PadelTap</code>). The record is addressed by a long, random link that can't be guessed or listed.</p>
+  <p>The record contains:</p>
+  <ul>
+    <li>the running score: points, games, sets, tie-break points and the scores of finished sets, which side is serving, and the sport and match type;</li>
+    <li>the time the match started;</li>
+    <li>the team or player names typed on the court for that match, if any.</li>
+  </ul>
+  <p>It contains nothing else: no heart rate, no location, no Apple Account details. Anyone with the link can view the page while the match is shared.</p>
+  <p>How long it stays:</p>
+  <ul>
+    <li>When the players tap <em>Stop sharing</em>, or the match is left without being finished, the record is deleted straight away.</li>
+    <li>When the match finishes, the record is marked as ended with the final score, and the live page keeps showing that result for three hours. After that the page no longer shows it, and the iPad deletes the record the next time the app starts.</li>
+    <li>If the app is closed in the middle of a shared match, the iPad deletes that record the next time the app starts after 12 hours.</li>
+  </ul>
+  <p>The record goes only to Apple's iCloud. There are no RacketTap servers and no third-party services involved.</p>
+
+  <h2>No tracking</h2>
+  <p>No accounts, no analytics, no ads, no tracking and no third-party SDKs.</p>
+
+  <h2>Changes</h2>
+  <p>If this policy changes, the new version will be posted on this page with a new date.</p>
+
+  <h2>Contact</h2>
+  <p>Keret Software Oy · <a href="mailto:matan504@gmail.com">matan504@gmail.com</a></p>
+</main>
+
+<p class="lang-divider" lang="fi">Suomeksi</p>
+
+<!-- ================================================================ SUOMEKSI -->
+<main class="club-legal" id="fi" data-lang-block="fi" lang="fi">
+  <header class="page-header">
+    <a class="back-link" href="../#fi">← RacketTap Club</a>
+    <h1 style="margin-top:0.8rem">RacketTap Clubin tietosuojaseloste</h1>
+    <p class="effective-date">Päivitetty 2026-10-09</p>
+  </header>
+
+  <div class="privacy-summary">
+    <p><strong>Lyhyesti:</strong> Keret Software Oy ei kerää RacketTap Clubin kautta henkilötietoja. Sovelluksen tallentamat tiedot pysyvät kentän iPadissa. Ainoa iPadista lähtevä tieto on ottelun live-tulos, ja sekin vain silloin, kun pelaajat itse päättävät jakaa sen.</p>
+  </div>
+
+  <h2>Keitä olemme</h2>
+  <p>RacketTap Clubin tekee Keret Software Oy. Tätä selostetta koskevat kysymykset: <a href="mailto:matan504@gmail.com">matan504@gmail.com</a>.</p>
+
+  <h2>Mitä iPadiin tallentuu</h2>
+  <p>RacketTap Club tallentaa seuraavat tiedot vain kentän iPadiin. Niitä ei lähetetä meille eikä kenellekään muulle:</p>
+  <ul>
+    <li><strong>Seuran asetukset</strong>: kentän nimi, oletuslaji, ottelutyyppi ja säännöt sekä kuulutuksen ja kielen asetukset.</li>
+    <li><strong>Lisenssi ja ylläpitäjän PIN-koodi</strong> iPadin avainnipussa (Keychain). PIN-koodista tallennetaan vain suolattu tiiviste, ei itse koodia.</li>
+    <li><strong>Sponsorikuvat</strong>, jotka seuran henkilökunta lisää kenttänäytölle.</li>
+    <li><strong>Kentän otteluloki</strong>: kentällä pelattujen otteluiden tulokset ja ajat sekä pelaajien nimet vain, jos pelaajat itse tallentavat ne ottelun yhteyteen.</li>
+  </ul>
+  <p>RacketTap Club ei käytä Apple Health -tietoja eikä iPadin sijaintia.</p>
+
+  <h2>Live-tulos puhelimissa</h2>
+  <p>Ottelun aikana pelaajat voivat napauttaa <em>Jaa verkossa</em>. Kenttänäytölle tulee QR-koodi, joka avaa live-tulossivun millä tahansa selaimella. Jotta sivu toimisi, iPad julkaisee käynnissä olevan ottelun tietueena Applen iCloudin julkiseen tietokantaan (CloudKit, säilö <code>iCloud.com.matankeret.PadelTap</code>). Tietueen osoite on pitkä satunnainen linkki, jota ei voi arvata eikä listata.</p>
+  <p>Tietue sisältää:</p>
+  <ul>
+    <li>ottelun tilanteen: pisteet, pelit, erät, tiebreak-pisteet ja päättyneiden erien tulokset, syöttövuoron sekä lajin ja ottelutyypin;</li>
+    <li>ottelun alkamisajan;</li>
+    <li>kentällä kyseiselle ottelulle kirjoitetut joukkueiden tai pelaajien nimet, jos niitä on.</li>
+  </ul>
+  <p>Muuta se ei sisällä: ei sykettä, ei sijaintia eikä Apple-tilin tietoja. Kuka tahansa linkin saanut voi katsoa sivua niin kauan kuin ottelu on jaettuna.</p>
+  <p>Kuinka kauan tieto säilyy:</p>
+  <ul>
+    <li>Kun pelaajat napauttavat <em>Lopeta jakaminen</em> tai ottelu jätetään kesken, tietue poistetaan heti.</li>
+    <li>Kun ottelu päättyy, tietue merkitään päättyneeksi lopputuloksineen, ja live-sivu näyttää tuloksen kolmen tunnin ajan. Sen jälkeen sivu ei enää näytä sitä, ja iPad poistaa tietueen seuraavan kerran, kun sovellus käynnistyy.</li>
+    <li>Jos sovellus suljetaan kesken jaetun ottelun, iPad poistaa tietueen, kun sovellus käynnistyy seuraavan kerran 12 tunnin kuluttua.</li>
+  </ul>
+  <p>Tietue menee vain Applen iCloudiin. Käytössä ei ole RacketTapin omia palvelimia eikä kolmansien osapuolten palveluja.</p>
+
+  <h2>Ei seurantaa</h2>
+  <p>Ei käyttäjätilejä, ei analytiikkaa, ei mainoksia, ei seurantaa eikä kolmansien osapuolten ohjelmistokirjastoja.</p>
+
+  <h2>Muutokset</h2>
+  <p>Jos seloste muuttuu, uusi versio julkaistaan tällä sivulla uudella päivämäärällä.</p>
+
+  <h2>Yhteystiedot</h2>
+  <p>Keret Software Oy · <a href="mailto:matan504@gmail.com">matan504@gmail.com</a></p>
+</main>
+
+<footer>
+  <p>© 2026 Keret Software Oy</p>
+  <nav>
+    <a href="../">RacketTap Club</a>
+    <span class="sep">·</span>
+    <a href="mailto:matan504@gmail.com"><span data-lang-block="en" lang="en">Contact</span><span data-lang-block="fi" lang="fi">Yhteystiedot</span></a>
+    <span class="sep">·</span>
+    <a href="../../">RacketTap</a>
+  </nav>
+</footer>
+
+<script>
+  (function () {
+    var d = document.documentElement;
+    var links = document.querySelectorAll('[data-set-lang]');
+    function apply(lang) {
+      d.setAttribute('data-lang', lang);
+      d.setAttribute('lang', lang);
+      for (var i = 0; i < links.length; i++) {
+        links[i].setAttribute('aria-current', links[i].getAttribute('data-set-lang') === lang ? 'true' : 'false');
+      }
+      try { localStorage.setItem('club.lang', lang); } catch (e) {}
+    }
+    for (var i = 0; i < links.length; i++) {
+      links[i].addEventListener('click', function (ev) {
+        ev.preventDefault();
+        var lang = this.getAttribute('data-set-lang');
+        apply(lang);
+        try { history.replaceState(null, '', '#' + lang); } catch (e) {}
+        window.scrollTo(0, 0);
+      });
+    }
+    apply(d.getAttribute('data-lang') || 'en');
+  })();
+</script>
+
+</body>
+</html>
