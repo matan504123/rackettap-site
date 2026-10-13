@@ -34,6 +34,7 @@ let currentDelay = BASE_POLL_MS;
 
 // Side-out detection: persisted across polls to compare consecutive snapshots.
 let prevSnapshot  = null;   // LiveScorePublic from the previous successful render
+let lastTeamsHTML = "";     // last rendered #teams markup (skip no-op DOM writes)
 let sideOutTimer  = null;   // setTimeout handle for hiding the flash
 
 function shareIDFromURL() {
@@ -60,8 +61,14 @@ function showEnded() {
 }
 
 function pointDisplay(raw) {
-  return POINT_WORDS[raw] != null ? POINT_WORDS[raw] : String(raw);
+  return POINT_WORDS[raw] != null ? POINT_WORDS[raw] : num(raw);
 }
+
+/* Snapshot numbers go into innerHTML: coerce to a plain number string (or a
+   dash) so a hostile record can't inject markup. */
+function num(v) { return Number.isFinite(+v) && v !== null && v !== "" ? String(+v) : "–"; }
+/* pointDisplay() output made HTML-safe (known words pass through unchanged). */
+function pointHTML(raw) { return escapeText(pointDisplay(raw)); }
 
 function timeAgo(date) {
   const secs = Math.max(0, Math.round((Date.now() - date) / 1000));
@@ -177,56 +184,66 @@ function renderTeam(side, s, ended, isBroadcaster) {
   const tag = isBroadcaster ? `<span class="bcast">📡 Broadcaster</span>` : "";
 
   let cols;
+  let colsCls = "team-cols";
+  const stat = (cls, val, label) =>
+    `<span class="stat ${cls}"><b>${val}</b><i>${label}</i></span>`;
   if (hasFinalSetSummary(s, ended)) {
     // FINAL: one cell per completed set showing this team's games (with a
-    // tiebreak marker). The set the team won is highlighted. No stale
-    // current-game point ("40"/"AD") — the match is over.
+    // tiebreak marker) and its heading ("SET n" / "GAME n" / "TB"). The set
+    // the team won is highlighted. No stale current-game point ("40"/"AD").
     // An unfinished set (frozen by a deciding tie-break) is dimmed and never
     // highlighted; the deciding tie-break column is already headed "TB", so
     // it needs no superscript marker.
     const lastIdx = s.completedSets.length - 1;
+    colsCls += " final";
     cols = s.completedSets.map((set, i) => {
-      const g = isA ? set.gamesA : set.gamesB;
+      const g = num(isA ? set.gamesA : set.gamesB);
       const setWon = setWonBy(set, isA);
       const isDecider = isDecidingTiebreak(s) && i === lastIdx;
       const tb = set.wasTiebreak && !isDecider ? `<sup class="tb">TB</sup>` : "";
       const cls = ["setcell", setWon ? "win" : "", isUnfinishedSet(set) ? "unfinished" : ""]
         .filter(Boolean).join(" ");
-      return `<span class="${cls}">${g}${tb}</span>`;
+      return `<span class="${cls}"><b>${g}${tb}</b><i>${finalSetLabel(s, i)}</i></span>`;
     }).join("");
   } else if (isRallySport(s)) {
     // RALLY-POINT LIVE (badminton / pickleball): games won + current-game points.
     // isInTiebreak is always true for these sports.
     // setsWonByA/B = games won; tiebreakPointsA/B = current-game rally points.
     // No "current-set games" column — rally points IS the game score.
-    const gamesWon = isA ? s.setsWonByA : s.setsWonByB;
-    const rallyPts = isA ? s.tiebreakPointsA : s.tiebreakPointsB;
-    cols = `<span class="sets">${gamesWon}</span>`
-         + `<span class="points">${rallyPts}</span>`;
+    const gamesWon = num(isA ? s.setsWonByA : s.setsWonByB);
+    const rallyPts = num(isA ? s.tiebreakPointsA : s.tiebreakPointsB);
+    cols = `<span class="points" data-k="${side}">${rallyPts}</span>`
+         + `<span class="stats">${stat("sets", gamesWon, "GAMES")}</span>`;
   } else {
     // LIVE / PAUSED (or an ended match with no set data): sets · games · pts.
-    const sets = isA ? s.setsWonByA : s.setsWonByB;
-    const games = isA ? s.currentSetGamesA : s.currentSetGamesB;
+    const sets = num(isA ? s.setsWonByA : s.setsWonByB);
+    const games = num(isA ? s.currentSetGamesA : s.currentSetGamesB);
     let points;
     if (s.isAmericano) {
-      points = isA ? s.americanoTotalPointsA : s.americanoTotalPointsB;
+      points = num(isA ? s.americanoTotalPointsA : s.americanoTotalPointsB);
     } else if (s.isInTiebreak) {
-      points = isA ? s.tiebreakPointsA : s.tiebreakPointsB;
+      points = num(isA ? s.tiebreakPointsA : s.tiebreakPointsB);
     } else {
-      points = pointDisplay(isA ? s.currentGamePointsARaw : s.currentGamePointsBRaw);
+      points = pointHTML(isA ? s.currentGamePointsARaw : s.currentGamePointsBRaw);
     }
-    cols = `${s.isAmericano ? "" : `<span class="sets">${sets}</span>`}`
-         + `<span class="games">${games}</span>`
-         + `<span class="points">${points}</span>`;
+    // Americano: the big number is the running TOTal; the small one is the
+    // current round's points (labelled PTS).
+    cols = (s.isAmericano
+              ? `<span class="pts-wrap"><span class="points" data-k="${side}">${points}</span><i class="pts-cap">TOTAL</i></span>`
+              : `<span class="points" data-k="${side}">${points}</span>`)
+         + `<span class="stats">`
+         + `${s.isAmericano ? "" : stat("sets", sets, "SETS")}`
+         + `${stat("games", games, s.isAmericano ? "PTS" : "GAMES")}`
+         + `</span>`;
   }
 
   return `
-    <div class="team ${isA ? "team-a" : "team-b"} ${won ? "winner" : ""} ${typed ? "named" : ""}">
-      <span class="team-id">
-        <span class="team-name">${escapeText(name)}</span>
+    <div class="team ${isA ? "team-a" : "team-b"} ${won ? "winner" : ""}">
+      <div class="team-id">
+        <span class="team-name${name.length > 28 ? " long" : ""}">${escapeText(name)}</span>
         ${tag}
-      </span>
-      <span class="team-cols">${cols}</span>
+      </div>
+      <div class="${colsCls}">${cols}</div>
     </div>`;
 }
 
@@ -245,6 +262,37 @@ function badges(s) {
   if (isPickleball(s)) out.push({ text: "PICKLEBALL", cls: "sport" });
   return out;
 }
+
+/* Screen-reader sentence built from the snapshot (not the DOM). */
+function plural(n, word) { return `${n} ${word}${n === "1" ? "" : "s"}`; }
+function srTeam(side, s, ended) {
+  const isA = side === "a";
+  const name = (isA ? s.teamAName : s.teamBName) || (isA ? "Team A" : "Team B");
+  if (hasFinalSetSummary(s, ended)) {
+    const parts = s.completedSets.map((set, i) => {
+      const g = num(isA ? set.gamesA : set.gamesB);
+      const lbl = finalSetLabel(s, i).toLowerCase().replace("tb", "tie-break");
+      return `${lbl} ${g}${set.wasTiebreak && lbl !== "tie-break" ? " (tie-break)" : ""}${isUnfinishedSet(set) ? " (unfinished)" : ""}`;
+    });
+    return `${name}: ${parts.join(", ")}`;
+  }
+  if (isRallySport(s)) {
+    return `${name}: ${plural(num(isA ? s.tiebreakPointsA : s.tiebreakPointsB), "point")}, `
+         + `${plural(num(isA ? s.setsWonByA : s.setsWonByB), "game")} won`;
+  }
+  const games = num(isA ? s.currentSetGamesA : s.currentSetGamesB);
+  if (s.isAmericano) {
+    return `${name}: total ${num(isA ? s.americanoTotalPointsA : s.americanoTotalPointsB)}, ${plural(games, "point")}`;
+  }
+  const pts = s.isInTiebreak
+    ? num(isA ? s.tiebreakPointsA : s.tiebreakPointsB)
+    : pointDisplay(isA ? s.currentGamePointsARaw : s.currentGamePointsBRaw);
+  const ptsText = s.isInTiebreak ? plural(String(pts), "point") : (pts === "AD" ? "advantage" : `${pts}`);
+  return `${name}: ${ptsText}, ${plural(games, "game")}, ${plural(num(isA ? s.setsWonByA : s.setsWonByB), "set")}`;
+}
+function srSummary(s, ended) { return srTeam("a", s, ended) + ". " + srTeam("b", s, ended) + "."; }
+let lastSR = "";
+function srSet(text) { if (text !== lastSR) { lastSR = text; $("sr-score").textContent = text; } }
 
 function render(record) {
   let s;
@@ -285,24 +333,22 @@ function render(record) {
   // Sport data attribute drives CSS --sport-accent variable for colour theming.
   $("score").dataset.sport = s.sportRaw || "";
 
-  // Header columns label.
-  // FINAL with a set breakdown ⇒ one "SET n" (padel/tennis) or "GAME n"
-  // (badminton/pickleball) per completed game/set; Americano ⇒ PTS/TOT;
-  // rally-sport live ⇒ GAMES/PTS; otherwise the live SETS/GMS/PTS columns.
-  if (hasFinalSetSummary(s, ended)) {
-    $("col-head").innerHTML = s.completedSets
-      .map((set, i) => `<span class="setcell${isUnfinishedSet(set) ? " unfinished" : ""}">${finalSetLabel(s, i)}</span>`).join("");
-  } else if (isRallySport(s)) {
-    $("col-head").innerHTML =
-      `<span class="sets">GAMES</span><span class="points">PTS</span>`;
-  } else {
-    $("col-head").innerHTML = s.isAmericano
-      ? `<span class="games">PTS</span><span class="points">TOT</span>`
-      : `<span class="sets">SETS</span><span class="games">GMS</span><span class="points">PTS</span>`;
+  // Only touch the DOM when the markup changed (heartbeat polls re-send the
+  // same score): keeps screen readers quiet and lets changed numbers animate.
+  const teamsHTML = renderTeam("a", s, ended, BROADCASTER_TEAM === "a")
+                  + renderTeam("b", s, ended, BROADCASTER_TEAM === "b");
+  if (teamsHTML !== lastTeamsHTML) {
+    const prevPts = {};
+    document.querySelectorAll("#teams .points").forEach((el) => { prevPts[el.dataset.k] = el.textContent; });
+    $("teams").innerHTML = teamsHTML;
+    document.querySelectorAll("#teams .points").forEach((el) => {
+      if (lastTeamsHTML && prevPts[el.dataset.k] !== undefined && prevPts[el.dataset.k] !== el.textContent) {
+        el.classList.add("bump");
+      }
+    });
+    lastTeamsHTML = teamsHTML;
+    srSet(srSummary(s, ended));
   }
-
-  $("teams").innerHTML = renderTeam("a", s, ended, BROADCASTER_TEAM === "a")
-                       + renderTeam("b", s, ended, BROADCASTER_TEAM === "b");
 
   // Star point banner
   $("starpoint").hidden = !s.isStarPointActive;
@@ -421,6 +467,10 @@ function start() {
 
 // Re-fetch immediately if the user edits the fragment, and start once
 // CloudKit JS has loaded.
-window.addEventListener("hashchange", () => { currentDelay = BASE_POLL_MS; poll(); });
+window.addEventListener("hashchange", () => {
+  currentDelay = BASE_POLL_MS;
+  lastTeamsHTML = ""; prevSnapshot = null; lastSR = "";   // new match: no animation/flash from the old one
+  poll();
+});
 if (document.readyState === "complete") start();
 else window.addEventListener("load", start);

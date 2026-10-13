@@ -1,0 +1,16 @@
+<!doctype html><meta charset="utf-8"><title>frame</title>
+<!-- Dev-only: hosts page.html in an iframe of an exact CSS size, because
+     headless Chrome enforces a ~500px minimum window width. -->
+<style>html,body{margin:0;background:#444}iframe{border:0;display:block;background:#000}</style>
+<body><script>
+  const q = new URLSearchParams(location.search);
+  const f = document.createElement("iframe");
+  f.width = q.get("w"); f.height = q.get("h");
+  const id = q.get("f");
+  f.src = "page.html#" + id;
+  // "<fixture>-sideout": trigger the transient SIDE OUT flash late enough that it is still visible when the shot is taken (page CSP forbids eval).
+  if (id.endsWith("-sideout")) f.onload = () => setTimeout(() => {
+    f.contentWindow.flashSideOut();   // its 2 s hide timer outlives the screenshot
+  }, 1500);
+  document.body.appendChild(f);
+</script></body>
