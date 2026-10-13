@@ -61,7 +61,7 @@ function showEnded() {
 }
 
 function pointDisplay(raw) {
-  return POINT_WORDS[raw] != null ? POINT_WORDS[raw] : String(raw);
+  return POINT_WORDS[raw] != null ? POINT_WORDS[raw] : num(raw);
 }
 
 /* Snapshot numbers go into innerHTML: coerce to a plain number string (or a
@@ -264,6 +264,7 @@ function badges(s) {
 }
 
 /* Screen-reader sentence built from the snapshot (not the DOM). */
+function plural(n, word) { return `${n} ${word}${n === "1" ? "" : "s"}`; }
 function srTeam(side, s, ended) {
   const isA = side === "a";
   const name = (isA ? s.teamAName : s.teamBName) || (isA ? "Team A" : "Team B");
@@ -271,22 +272,22 @@ function srTeam(side, s, ended) {
     const parts = s.completedSets.map((set, i) => {
       const g = num(isA ? set.gamesA : set.gamesB);
       const lbl = finalSetLabel(s, i).toLowerCase().replace("tb", "tie-break");
-      return `${lbl} ${g}${set.wasTiebreak && lbl !== "tie-break" ? " (tie-break)" : ""}`;
+      return `${lbl} ${g}${set.wasTiebreak && lbl !== "tie-break" ? " (tie-break)" : ""}${isUnfinishedSet(set) ? " (unfinished)" : ""}`;
     });
     return `${name}: ${parts.join(", ")}`;
   }
   if (isRallySport(s)) {
-    return `${name}: ${num(isA ? s.tiebreakPointsA : s.tiebreakPointsB)} points, `
-         + `${num(isA ? s.setsWonByA : s.setsWonByB)} games won`;
+    return `${name}: ${plural(num(isA ? s.tiebreakPointsA : s.tiebreakPointsB), "point")}, `
+         + `${plural(num(isA ? s.setsWonByA : s.setsWonByB), "game")} won`;
   }
   const games = num(isA ? s.currentSetGamesA : s.currentSetGamesB);
   if (s.isAmericano) {
-    return `${name}: total ${num(isA ? s.americanoTotalPointsA : s.americanoTotalPointsB)}, ${games} points`;
+    return `${name}: total ${num(isA ? s.americanoTotalPointsA : s.americanoTotalPointsB)}, ${plural(games, "point")}`;
   }
   const pts = s.isInTiebreak
     ? num(isA ? s.tiebreakPointsA : s.tiebreakPointsB)
     : pointDisplay(isA ? s.currentGamePointsARaw : s.currentGamePointsBRaw);
-  return `${name}: ${pts} points, ${games} games, ${num(isA ? s.setsWonByA : s.setsWonByB)} sets`;
+  return `${name}: ${plural(String(pts), "point")}, ${plural(games, "game")}, ${plural(num(isA ? s.setsWonByA : s.setsWonByB), "set")}`;
 }
 function srSummary(s, ended) { return srTeam("a", s, ended) + ". " + srTeam("b", s, ended) + "."; }
 let lastSR = "";

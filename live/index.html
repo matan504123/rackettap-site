@@ -52,7 +52,7 @@
                                           align-items:center; justify-content:center; }
     #teams { width:100%; max-width:1600px; display:grid; grid-template-columns:minmax(0,1fr);
              gap:clamp(8px, 2vw, 24px); }
-    .pill { display:inline-block; font-size:clamp(12px, 2.2dvh, 16px); font-weight:800; letter-spacing:.1em;
+    .pill { display:inline-block; font-size:clamp(12px, 2.2dvh, 28px); font-weight:800; letter-spacing:.1em;
             padding:5px 14px; border-radius:999px; }
     .pill.live { background:var(--green); color:#000; }
     .pill.stale { background:var(--orange); color:#000; }
@@ -104,10 +104,10 @@
     #deciding { background:#ff453a; color:#fff; }
     .status-row { position:relative; display:flex; justify-content:center; align-items:center;
                   margin-bottom:clamp(2px, 1dvh, 8px); }
-    #sideout { position:absolute; inset:0; margin:auto; width:max-content; max-width:none; left:50%; right:auto; transform:translateX(-50%); height:100%;
+    #sideout { position:absolute; inset:0; margin:auto; width:max-content; max-width:none; left:50%; right:auto; transform:translateX(-50%); min-height:100%;
                display:flex; align-items:center; justify-content:center; padding:0 16px;
                border-radius:999px; background:#04323c; color:#00d4ff; border:1px solid #00d4ff;
-               font-weight:800; letter-spacing:.12em; font-size:clamp(12px, 2.2dvh, 16px); white-space:nowrap; }
+               font-weight:800; letter-spacing:.12em; font-size:clamp(12px, 2.2dvh, 36px); white-space:nowrap; }
     .pts-wrap { display:inline-flex; flex-direction:column; align-items:center; }
     .pts-cap { font-style:normal; font-size:clamp(10px, 1.9dvh, 14px); font-weight:700;
                letter-spacing:.1em; color:var(--muted); }
@@ -159,6 +159,10 @@
       .team-name.long { font-size:13px; }
       body[data-state="score"] #score { gap:5px; }
       .team-cols { gap:0 !important; }
+      .team-cols:has(.pts-wrap) { gap:8px !important; }
+      .pts-cap { margin-top:2px; }
+      .team-cols:has(.pts-wrap) { gap:10px !important; }
+      .team-cols:has(.pts-wrap) .stats { border-top:1px solid rgba(255,255,255,.18); padding-top:3px; width:60%; justify-content:center; }
       #server-chip { padding:2px 12px; font-size:12px; }
       .badge { padding:1px 10px; }
       #updated { font-size:12px; }
