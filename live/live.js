@@ -287,7 +287,8 @@ function srTeam(side, s, ended) {
   const pts = s.isInTiebreak
     ? num(isA ? s.tiebreakPointsA : s.tiebreakPointsB)
     : pointDisplay(isA ? s.currentGamePointsARaw : s.currentGamePointsBRaw);
-  return `${name}: ${plural(String(pts), "point")}, ${plural(games, "game")}, ${plural(num(isA ? s.setsWonByA : s.setsWonByB), "set")}`;
+  const ptsText = s.isInTiebreak ? plural(String(pts), "point") : (pts === "AD" ? "advantage" : `${pts}`);
+  return `${name}: ${ptsText}, ${plural(games, "game")}, ${plural(num(isA ? s.setsWonByA : s.setsWonByB), "set")}`;
 }
 function srSummary(s, ended) { return srTeam("a", s, ended) + ". " + srTeam("b", s, ended) + "."; }
 let lastSR = "";
