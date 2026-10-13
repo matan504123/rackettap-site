@@ -18,7 +18,10 @@
                  base-uri 'none'">
   <title>RacketTap — Live Score</title>
   <style>
-    :root { color-scheme: dark; --blue:#0a84ff; --orange:#ff9f0a; --bg:#000; --card:#1c1c1e; --muted:#8e8e93; }
+    :root { color-scheme: dark; --blue:#0a84ff; --orange:#ff9f0a; --bg:#000; --card:#1c1c1e;
+            --muted:#98989f; --green:#30d158;
+            --pts: clamp(64px, min(34vw, 14.5dvh), 260px);
+            --pad: clamp(12px, 3vw, 28px); }
     /* Sport accent — driven by data-sport attribute set on #score by live.js.
        Defaults to muted so sport-keyed elements blend in if the attribute is
        absent (padel/tennis don't render sport-specific elements at all). */
@@ -26,116 +29,141 @@
     #score[data-sport="badminton"]  { --sport-accent: #5ac8fa; } /* teal  */
     #score[data-sport="pickleball"] { --sport-accent: #30d158; } /* green */
     * { box-sizing: border-box; }
-    body { margin:0; min-height:100dvh; background:var(--bg); color:#fff;
-           font:-apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-           display:flex; flex-direction:column; align-items:center; justify-content:center;
-           padding:24px; gap:18px; text-align:center; }
-    .brand { position:fixed; top:20px; left:0; right:0; display:flex; align-items:center;
-             justify-content:center; gap:10px; text-decoration:none; color:#fff; }
-    .brand-icon { width:42px; height:42px; border-radius:9px; box-shadow:0 1px 6px rgba(0,0,0,.5); }
-    .brand-name { font-size:30px; font-weight:700; letter-spacing:.01em; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { margin:0; min-height:100vh; min-height:100dvh; background:var(--bg); color:#fff;
+           font-family:-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                       "Segoe UI", Roboto, "Helvetica Neue", Arial, system-ui, sans-serif;
+           display:flex; flex-direction:column; align-items:center; text-align:center;
+           padding:max(14px, env(safe-area-inset-top)) max(var(--pad), env(safe-area-inset-right))
+                   max(14px, env(safe-area-inset-bottom)) max(var(--pad), env(safe-area-inset-left));
+           gap:clamp(8px, 2dvh, 18px); }
+    .brand { display:flex; align-items:center; justify-content:center; gap:10px;
+             text-decoration:none; color:#fff; flex:none; }
+    .brand-icon { width:clamp(28px, 5dvh, 42px); height:clamp(28px, 5dvh, 42px); border-radius:9px;
+                  box-shadow:0 1px 6px rgba(0,0,0,.5); }
+    .brand-name { font-size:clamp(20px, 3.4dvh, 30px); font-weight:700; letter-spacing:.01em; }
     .brand:active { opacity:.55; }
     /* state machine: body[data-state] toggles which block shows */
-    #score, #message { display:none; width:100%; max-width:520px; }
-    body[data-state="score"] #score { display:block; }
-    body[data-state="message"] #message { display:block; }
-    .pill { display:inline-block; font-size:13px; font-weight:800; letter-spacing:.1em;
-            padding:5px 12px; border-radius:999px; margin-bottom:18px; }
-    .pill.live { background:#30d158; color:#000; }
-    .pill.stale { background:#ff9f0a; color:#000; }
+    main#score, #message { display:none; width:100%; }
+    body[data-state="score"] #score { display:flex; flex:1; flex-direction:column; justify-content:center;
+                                      align-items:center; gap:clamp(8px, 1.8dvh, 16px); min-height:0; }
+    body[data-state="message"] #message { display:flex; flex:1; flex-direction:column;
+                                          align-items:center; justify-content:center; }
+    #teams { width:100%; max-width:1600px; display:grid; grid-template-columns:minmax(0,1fr);
+             gap:clamp(8px, 2vw, 24px); }
+    .pill { display:inline-block; font-size:clamp(12px, 2.2dvh, 16px); font-weight:800; letter-spacing:.1em;
+            padding:5px 14px; border-radius:999px; }
+    .pill.live { background:var(--green); color:#000; }
+    .pill.stale { background:var(--orange); color:#000; }
     .pill.final { background:#48484a; color:#fff; }
-    .col-head { display:flex; justify-content:flex-end; gap:14px; color:var(--muted);
-                font-size:12px; letter-spacing:.06em; padding:0 16px 6px; }
-    .col-head .sets,.col-head .games,.col-head .points,.col-head .setcell { width:44px; text-align:center; }
-    .team { display:flex; align-items:center; justify-content:space-between;
-            background:var(--card); border-radius:16px; padding:18px 16px; margin:8px 0;
-            border-left:6px solid transparent; }
-    .team-a { border-left-color:var(--blue); }
-    .team-b { border-left-color:var(--orange); }
-    .team.winner { outline:2px solid #30d158; }
-    .team-id { display:flex; align-items:center; gap:8px; min-width:0; }
-    .team-name { font-size:22px; font-weight:600; text-align:left; overflow:hidden;
-                 text-overflow:ellipsis; white-space:nowrap; }
-    /* Typed player names (app 8.9+): the name sits above the Broadcaster
-       badge, takes all the width the score columns leave, and wraps to two
-       lines. Unnamed teams ("Team A") keep the layout above. */
-    .team.named .team-id { flex-direction:column; align-items:flex-start; gap:4px;
-                           flex:1; margin-right:10px; }
-    .team.named .team-name { white-space:normal; line-height:1.15; overflow-wrap:break-word;
-                             max-width:100%; display:-webkit-box; -webkit-box-orient:vertical;
-                             -webkit-line-clamp:2; }
-    .team.named .team-cols { flex:none; }
-    /* Phone width: named teams get a full-width line across the top of the
-       card, the score row under it, still under the column headings. */
-    @media (max-width:520px) {
-      .team.named { flex-wrap:wrap; }
-      .team.named .team-id { flex-basis:100%; flex-direction:row; flex-wrap:wrap;
-                             align-items:center; gap:4px 8px; margin:0 0 6px; }
-      .team.named .team-name { font-size:20px; }
-      .team.named .team-cols { margin-left:auto; }
-    }
-    .bcast { flex:none; font-size:11px; font-weight:700; letter-spacing:.03em; color:#30d158;
-             border:1px solid #30d158; border-radius:999px; padding:2px 7px; white-space:nowrap; }
-    .team-cols { display:flex; gap:14px; align-items:center; }
-    .team-cols .sets,.team-cols .games { width:44px; text-align:center; font-size:24px;
-                 font-variant-numeric:tabular-nums; color:var(--muted); }
-    .team-cols .points { width:44px; text-align:center; font-size:30px; font-weight:800;
-                 font-variant-numeric:tabular-nums; }
+
+    /* Score cards — portrait: stacked, point number left + stats right. */
+    .team { --tc:var(--blue); --tcbg:rgba(10,132,255,.16); min-width:0;
+            background:linear-gradient(160deg, var(--tcbg), #111113 75%);
+            border:1px solid rgba(255,255,255,.06); border-top:5px solid var(--tc);
+            border-radius:clamp(18px, 3vw, 32px); padding:clamp(12px, 2.4vw, 28px);
+            display:flex; flex-direction:column; gap:clamp(4px, 1.2dvh, 12px); text-align:left; }
+    .team-b { --tc:var(--orange); --tcbg:rgba(255,159,10,.16); }
+    .team.winner { box-shadow:0 0 0 3px var(--green); }
+    .team-id { display:flex; align-items:center; flex-wrap:wrap; gap:4px 10px; min-width:0; }
+    .team-name { font-size:clamp(18px, min(3.2vw, 4.2dvh), 40px); font-weight:700; line-height:1.15;
+                 overflow-wrap:anywhere; min-width:0; max-width:100%;
+                 display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; }
+    .team-name.long { font-size:clamp(14px, min(2.4vw, 3.2dvh), 28px); -webkit-line-clamp:3; }
+    .bcast { flex:none; font-size:clamp(11px, 1.9dvh, 14px); font-weight:700; letter-spacing:.03em;
+             color:var(--green); border:1px solid var(--green); border-radius:999px;
+             padding:2px 8px; white-space:nowrap; }
+    .team-cols { display:flex; align-items:center; justify-content:space-between; gap:clamp(8px, 2vw, 24px);
+                 min-width:0; }
+    .points { font-size:var(--pts); line-height:1; font-weight:800; letter-spacing:-.02em;
+              font-variant-numeric:tabular-nums; color:var(--tc); display:inline-block; }
+    .points.bump { animation:bump .45s cubic-bezier(.2,.9,.3,1.4); }
+    @keyframes bump { 0% { transform:scale(.82); opacity:.35; } 100% { transform:scale(1); opacity:1; } }
+    .stats { display:flex; gap:clamp(12px, 3vw, 32px); }
+    .stat { display:flex; flex-direction:column; align-items:center; min-width:2ch; }
+    .stat b { font-size:clamp(26px, min(7vw, 7dvh), 72px); line-height:1.05; font-weight:700;
+              font-variant-numeric:tabular-nums; color:#fff; }
+    .stat i, .setcell i { font-style:normal; font-size:clamp(10px, 1.9dvh, 14px); font-weight:700;
+                          letter-spacing:.08em; color:var(--muted); }
     /* Final set-by-set summary cells (shown only when the match is over). */
-    .team-cols .setcell { width:44px; text-align:center; font-size:28px; font-weight:700;
+    .team-cols.final { justify-content:space-around; gap:clamp(4px, 1.5vw, 16px); }
+    .setcell { flex:1 1 0; min-width:0; display:flex; flex-direction:column; align-items:center; }
+    .setcell b { font-size:clamp(34px, min(9vw, 10dvh), 120px); line-height:1.05; font-weight:700;
                  font-variant-numeric:tabular-nums; color:var(--muted); }
-    .team-cols .setcell.win { color:#fff; }
-    .team-cols .setcell .tb { font-size:11px; font-weight:700; margin-left:1px; vertical-align:super; }
-    #starpoint { margin:14px 0; padding:10px; border-radius:12px; background:#ffd60a; color:#000;
-                 font-weight:800; letter-spacing:.12em; }
-    #starpoint[hidden] { display:none; }
-    /* Deciding tie-break banner: same capsule idiom as ★ STAR POINT, in red. */
-    #deciding { margin:14px 0; padding:10px; border-radius:12px; background:#ff453a; color:#fff;
-                font-weight:800; letter-spacing:.12em; }
-    #deciding[hidden] { display:none; }
-    #decided-note { margin-top:10px; color:var(--muted); font-size:13px; }
-    #decided-note[hidden] { display:none; }
+    .setcell.win b { color:#fff; }
+    .setcell .tb { font-size:.32em; font-weight:700; margin-left:1px; vertical-align:super; line-height:0; }
     /* A set frozen by the deciding tie-break: kept as played, never won. */
     .setcell.unfinished { opacity:.45; }
-    #badges { display:flex; gap:8px; justify-content:center; margin-top:14px; flex-wrap:wrap; }
-    #badges[hidden] { display:none; }
-    .badge { font-size:12px; font-weight:700; letter-spacing:.08em; color:var(--muted);
-             border:1px solid #48484a; border-radius:999px; padding:4px 10px; }
+
+    /* Banners */
+    .banner { width:100%; max-width:1600px; padding:10px 14px; border-radius:14px; font-weight:800;
+              letter-spacing:.12em; font-size:clamp(14px, 2.6dvh, 22px); overflow-wrap:anywhere; }
+    #starpoint { background:#ffd60a; color:#000; }
+    /* Deciding tie-break banner: same capsule idiom as ★ STAR POINT, in red. */
+    #deciding { background:#ff453a; color:#fff; }
+    #sideout { background:rgba(0,212,255,.12); color:#00d4ff; border:1px solid #00d4ff; }
+    [hidden] { display:none !important; }
+    #decided-note { color:var(--muted); font-size:clamp(13px, 2.2dvh, 18px); }
+    #badges { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+    .badge { font-size:clamp(12px, 2dvh, 15px); font-weight:700; letter-spacing:.08em; color:var(--muted);
+             border:1px solid #48484a; border-radius:999px; padding:4px 12px; }
     /* Sport name badge uses the sport accent colour (BADMINTON=teal, PICKLEBALL=green). */
     .badge.sport { color:var(--sport-accent); border-color:var(--sport-accent); }
-    /* Server-number chip (pickleball doubles): shown inline below the score grid. */
-    #server-chip { display:inline-block; margin:10px 0; padding:6px 14px;
-                   border-radius:999px; border:1px solid var(--sport-accent);
-                   color:var(--sport-accent); font-size:13px; font-weight:700;
-                   letter-spacing:.08em; }
-    #server-chip[hidden] { display:none; }
-    /* Side-out flash: transient cyan overlay, styled like ★ STAR POINT. */
-    #sideout { margin:14px 0; padding:10px; border-radius:12px;
-               background:rgba(0,212,255,.12); color:#00d4ff;
-               font-weight:800; letter-spacing:.12em; border:1px solid #00d4ff; }
-    #sideout[hidden] { display:none; }
-    #updated { margin-top:20px; color:var(--muted); font-size:13px; }
-    #msg-title { font-size:22px; font-weight:600; margin:0 0 8px; }
-    #msg-detail { color:var(--muted); font-size:15px; margin:0; max-width:32ch; display:inline-block; }
-    .foot { position:fixed; bottom:20px; left:0; right:0; color:var(--muted); font-size:15px;
-            display:flex; gap:8px; justify-content:center; align-items:center; flex-wrap:wrap; padding:0 16px; }
+    /* Server-number chip (pickleball doubles). */
+    #server-chip { display:inline-block; padding:6px 16px; border-radius:999px;
+                   border:1px solid var(--sport-accent); color:var(--sport-accent);
+                   font-size:clamp(13px, 2.4dvh, 20px); font-weight:700; letter-spacing:.08em;
+                   transition:background .3s, color .3s; }
+    #server-chip.server-handoff { background:var(--sport-accent); color:#000; }
+    #updated { color:var(--muted); font-size:clamp(13px, 2.1dvh, 17px); }
+    #msg-title { font-size:clamp(24px, 4dvh, 40px); font-weight:700; margin:0 0 8px; }
+    #msg-detail { color:var(--muted); font-size:clamp(15px, 2.4dvh, 20px); margin:0; max-width:32ch; }
+    .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0);
+               white-space:nowrap; }
+    .foot { flex:none; color:var(--muted); font-size:clamp(14px, 2.2dvh, 17px);
+            display:flex; gap:8px 12px; justify-content:center; align-items:center; flex-wrap:wrap; }
     .foot a { color:var(--blue); text-decoration:none; font-weight:600; }
     .foot a:active { opacity:.55; }
-    .foot .dot { opacity:.5; }
     .foot .cta { display:inline-flex; align-items:center; background:var(--blue); color:#fff;
-                 padding:10px 18px; border-radius:999px; font-weight:700; font-size:15px; }
+                 padding:10px 18px; border-radius:999px; font-weight:700; }
     .foot .cta:active { opacity:.7; }
-    /* Short / landscape viewports: the vertically-centered score otherwise
-       slides under the position:fixed brand header (and the footer), so the
-       LIVE pill collides with the logo. Drop the brand + footer into normal
-       flow and shrink the brand so everything stacks without overlapping.
-       The page scrolls if the content is taller than the viewport. */
-    @media (max-height: 560px) {
-      body { justify-content:flex-start; padding:12px 16px; gap:10px; }
-      .brand { position:static; }
-      .brand-icon { width:30px; height:30px; }
-      .brand-name { font-size:22px; }
-      .foot { position:static; margin-top:10px; }
+
+    /* Wide / landscape: Team A left, Team B right; point number centred and huge. */
+    @media (min-width:700px) and (orientation:landscape), (min-width:1100px) {
+      :root { --pts: clamp(72px, min(21vw, 36dvh), 440px); }
+      #teams { grid-template-columns:repeat(2, minmax(0,1fr)); grid-template-rows:auto 1fr; }
+      /* Both cards share rows so names / numbers / stats line up across cards. */
+      .team { align-items:stretch; display:grid; grid-row:span 2; grid-template-rows:subgrid; }
+      .team-cols { flex-direction:column; justify-content:center; gap:clamp(4px, 1.5dvh, 20px); }
+      .team-cols.final { flex-direction:row; justify-content:space-around; }
+      .points { text-align:center; }
+      .stats { justify-content:center; }
+      .team-id { justify-content:flex-start; }
+      .stat b { font-size:clamp(26px, min(4.2vw, 7dvh), 80px); }
+    }
+    /* Short viewports (phone landscape): tighten chrome so all fits one screen. */
+    @media (max-height:560px) {
+      :root { --pts: clamp(48px, min(17vw, 24dvh), 200px); }
+      body { padding-top:max(8px, env(safe-area-inset-top)); padding-bottom:max(8px, env(safe-area-inset-bottom)); gap:6px; }
+      .team { padding:8px 14px; gap:2px; }
+      .team-name { font-size:16px; }
+      .team-name.long { font-size:13px; }
+      body[data-state="score"] #score { gap:5px; }
+      .team-cols { gap:0 !important; }
+      #server-chip { padding:2px 12px; font-size:12px; }
+      .badge { padding:1px 10px; }
+      #updated { font-size:12px; }
+      .foot { gap:4px 10px; }
+      .stat b { font-size:24px; }
+      .setcell b { font-size:clamp(28px, 9dvh, 60px); }
+      .brand-icon { width:24px; height:24px; }
+      .brand-name { font-size:18px; }
+      .pill { padding:2px 10px; }
+      .banner { padding:4px 10px; }
+      .foot { font-size:13px; } .foot .cta { padding:6px 14px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation:none !important; transition:none !important; }
     }
   </style>
 </head>
@@ -147,15 +175,15 @@
 
   <main id="score">
     <span id="status-pill" class="pill live">LIVE</span>
-    <div id="col-head" class="col-head"></div>
     <div id="teams"></div>
-    <div id="starpoint" hidden>★ STAR POINT</div>
-    <div id="deciding" hidden></div>
+    <div id="starpoint" class="banner" hidden>★ STAR POINT</div>
+    <div id="deciding" class="banner" hidden></div>
     <div id="decided-note" hidden>Decided by tie-break</div>
     <div id="server-chip" hidden></div>
-    <div id="sideout" hidden>SIDE OUT</div>
+    <div id="sideout" class="banner" hidden>SIDE OUT</div>
     <div id="badges" hidden></div>
     <div id="updated"></div>
+    <div id="sr-score" class="sr-only" aria-live="polite"></div>
   </main>
 
   <section id="message">
