@@ -31,7 +31,7 @@
     completedSets: [{ gamesA: 6, gamesB: 7, wasTiebreak: true }, { gamesA: 6, gamesB: 4 }, { gamesA: 7, gamesB: 6, wasTiebreak: true }] }),
     { status: "ended" });
   F["tennis-final-5"] = rec(Object.assign(base(), {
-    teamAName: "Federer", teamBName: "Nadal", winnerRaw: "b", setsWonByA: 2, setsWonByB: 3,
+    teamAName: "Mikko", teamBName: "Torsten", winnerRaw: "b", setsWonByA: 2, setsWonByB: 3,
     completedSets: [{ gamesA: 6, gamesB: 7, wasTiebreak: true }, { gamesA: 6, gamesB: 4 }, { gamesA: 3, gamesB: 6 }, { gamesA: 7, gamesB: 6, wasTiebreak: true }, { gamesA: 4, gamesB: 6 }] }),
     { status: "ended" });
   F["starpoint"] = rec(Object.assign(base(), {
@@ -46,7 +46,7 @@
     completedSets: [{ gamesA: 6, gamesB: 4 }, { gamesA: 4, gamesB: 6 }, { gamesA: 3, gamesB: 2, wasUnfinished: true }, { gamesA: 10, gamesB: 8, wasTiebreak: true }] }),
     { status: "ended" });
   F["badminton"] = rec(Object.assign(base(), {
-    sportRaw: "badminton", isInTiebreak: true, teamAName: "Lin", teamBName: "Axelsen",
+    sportRaw: "badminton", isInTiebreak: true, teamAName: "Wen", teamBName: "Dalgaard",
     setsWonByA: 1, setsWonByB: 0, tiebreakPointsA: 17, tiebreakPointsB: 19 }));
   F["pickleball-s2"] = rec(Object.assign(base(), {
     sportRaw: "pickleball", isInTiebreak: true, sideOutRaw: true, serverNumberRaw: 2, pointsCount: 40,
@@ -71,5 +71,6 @@
     teamAName: "Matan", teamBName: "Opponents", currentSetGamesA: 1, currentSetGamesB: 0 }),
     { ageMs: 600e3 });
   // "ended" = expired/missing record -> Broadcast ended message.
+  F["pickleball-sideout"] = F["pickleball-s2"];  // harness flashes SIDE OUT (see frame.html)
   window.LIVE_FIXTURES = F;
 })();

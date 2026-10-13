@@ -6,6 +6,11 @@
   const q = new URLSearchParams(location.search);
   const f = document.createElement("iframe");
   f.width = q.get("w"); f.height = q.get("h");
-  f.src = "page.html#" + q.get("f");
+  const id = q.get("f");
+  f.src = "page.html#" + id;
+  // "<fixture>-sideout": trigger the transient SIDE OUT flash late enough that it is still visible when the shot is taken (page CSP forbids eval).
+  if (id.endsWith("-sideout")) f.onload = () => setTimeout(() => {
+    f.contentWindow.flashSideOut();   // its 2 s hide timer outlives the screenshot
+  }, 1500);
   document.body.appendChild(f);
 </script></body>

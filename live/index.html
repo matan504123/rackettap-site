@@ -15,7 +15,8 @@
                  connect-src https://*.apple-cloudkit.com https://api.apple-cloudkit.com;
                  style-src 'self' 'unsafe-inline';
                  img-src 'self' data:;
-                 base-uri 'none'">
+                 base-uri 'none';
+                 form-action 'none'">
   <title>RacketTap — Live Score</title>
   <style>
     :root { color-scheme: dark; --blue:#0a84ff; --orange:#ff9f0a; --bg:#000; --card:#1c1c1e;
@@ -93,7 +94,7 @@
     .setcell.win b { color:#fff; }
     .setcell .tb { font-size:.32em; font-weight:700; margin-left:1px; vertical-align:super; line-height:0; }
     /* A set frozen by the deciding tie-break: kept as played, never won. */
-    .setcell.unfinished { opacity:.45; }
+    .setcell.unfinished b { opacity:.45; }
 
     /* Banners */
     .banner { width:100%; max-width:1600px; padding:10px 14px; border-radius:14px; font-weight:800;
@@ -101,7 +102,15 @@
     #starpoint { background:#ffd60a; color:#000; }
     /* Deciding tie-break banner: same capsule idiom as ★ STAR POINT, in red. */
     #deciding { background:#ff453a; color:#fff; }
-    #sideout { background:rgba(0,212,255,.12); color:#00d4ff; border:1px solid #00d4ff; }
+    .status-row { position:relative; display:flex; justify-content:center; align-items:center;
+                  margin-bottom:clamp(2px, 1dvh, 8px); }
+    #sideout { position:absolute; inset:0; margin:auto; width:max-content; max-width:none; left:50%; right:auto; transform:translateX(-50%); height:100%;
+               display:flex; align-items:center; justify-content:center; padding:0 16px;
+               border-radius:999px; background:#04323c; color:#00d4ff; border:1px solid #00d4ff;
+               font-weight:800; letter-spacing:.12em; font-size:clamp(12px, 2.2dvh, 16px); white-space:nowrap; }
+    .pts-wrap { display:inline-flex; flex-direction:column; align-items:center; }
+    .pts-cap { font-style:normal; font-size:clamp(10px, 1.9dvh, 14px); font-weight:700;
+               letter-spacing:.1em; color:var(--muted); }
     [hidden] { display:none !important; }
     #decided-note { color:var(--muted); font-size:clamp(13px, 2.2dvh, 18px); }
     #badges { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
@@ -138,7 +147,7 @@
       .team-cols.final { flex-direction:row; justify-content:space-around; }
       .points { text-align:center; }
       .stats { justify-content:center; }
-      .team-id { justify-content:flex-start; }
+      .team-id { justify-content:flex-start; align-self:start; align-content:flex-start; }
       .stat b { font-size:clamp(26px, min(4.2vw, 7dvh), 80px); }
     }
     /* Short viewports (phone landscape): tighten chrome so all fits one screen. */
@@ -155,10 +164,11 @@
       #updated { font-size:12px; }
       .foot { gap:4px 10px; }
       .stat b { font-size:24px; }
-      .setcell b { font-size:clamp(28px, 9dvh, 60px); }
+      .setcell b { font-size:clamp(30px, 14dvh, 72px); }
       .brand-icon { width:24px; height:24px; }
       .brand-name { font-size:18px; }
       .pill { padding:2px 10px; }
+      .status-row { margin-bottom:4px; }
       .banner { padding:4px 10px; }
       .foot { font-size:13px; } .foot .cta { padding:6px 14px; }
     }
@@ -174,16 +184,19 @@
   </a>
 
   <main id="score">
-    <span id="status-pill" class="pill live">LIVE</span>
+    <div class="status-row">
+      <span id="status-pill" class="pill live">LIVE</span>
+      <!-- Overlays the status pill for ~2 s (takes no layout space). -->
+      <div id="sideout" hidden>SIDE OUT</div>
+    </div>
     <div id="teams"></div>
     <div id="starpoint" class="banner" hidden>★ STAR POINT</div>
     <div id="deciding" class="banner" hidden></div>
     <div id="decided-note" hidden>Decided by tie-break</div>
     <div id="server-chip" hidden></div>
-    <div id="sideout" class="banner" hidden>SIDE OUT</div>
     <div id="badges" hidden></div>
     <div id="updated"></div>
-    <div id="sr-score" class="sr-only" aria-live="polite"></div>
+    <div id="sr-score" class="sr-only" aria-live="polite" aria-atomic="true"></div>
   </main>
 
   <section id="message">

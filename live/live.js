@@ -64,6 +64,12 @@ function pointDisplay(raw) {
   return POINT_WORDS[raw] != null ? POINT_WORDS[raw] : String(raw);
 }
 
+/* Snapshot numbers go into innerHTML: coerce to a plain number string (or a
+   dash) so a hostile record can't inject markup. */
+function num(v) { return Number.isFinite(+v) && v !== null && v !== "" ? String(+v) : "–"; }
+/* pointDisplay() output made HTML-safe (known words pass through unchanged). */
+function pointHTML(raw) { return escapeText(pointDisplay(raw)); }
+
 function timeAgo(date) {
   const secs = Math.max(0, Math.round((Date.now() - date) / 1000));
   if (secs < 5) return "just now";
@@ -191,7 +197,7 @@ function renderTeam(side, s, ended, isBroadcaster) {
     const lastIdx = s.completedSets.length - 1;
     colsCls += " final";
     cols = s.completedSets.map((set, i) => {
-      const g = isA ? set.gamesA : set.gamesB;
+      const g = num(isA ? set.gamesA : set.gamesB);
       const setWon = setWonBy(set, isA);
       const isDecider = isDecidingTiebreak(s) && i === lastIdx;
       const tb = set.wasTiebreak && !isDecider ? `<sup class="tb">TB</sup>` : "";
@@ -204,25 +210,27 @@ function renderTeam(side, s, ended, isBroadcaster) {
     // isInTiebreak is always true for these sports.
     // setsWonByA/B = games won; tiebreakPointsA/B = current-game rally points.
     // No "current-set games" column — rally points IS the game score.
-    const gamesWon = isA ? s.setsWonByA : s.setsWonByB;
-    const rallyPts = isA ? s.tiebreakPointsA : s.tiebreakPointsB;
+    const gamesWon = num(isA ? s.setsWonByA : s.setsWonByB);
+    const rallyPts = num(isA ? s.tiebreakPointsA : s.tiebreakPointsB);
     cols = `<span class="points" data-k="${side}">${rallyPts}</span>`
          + `<span class="stats">${stat("sets", gamesWon, "GAMES")}</span>`;
   } else {
     // LIVE / PAUSED (or an ended match with no set data): sets · games · pts.
-    const sets = isA ? s.setsWonByA : s.setsWonByB;
-    const games = isA ? s.currentSetGamesA : s.currentSetGamesB;
+    const sets = num(isA ? s.setsWonByA : s.setsWonByB);
+    const games = num(isA ? s.currentSetGamesA : s.currentSetGamesB);
     let points;
     if (s.isAmericano) {
-      points = isA ? s.americanoTotalPointsA : s.americanoTotalPointsB;
+      points = num(isA ? s.americanoTotalPointsA : s.americanoTotalPointsB);
     } else if (s.isInTiebreak) {
-      points = isA ? s.tiebreakPointsA : s.tiebreakPointsB;
+      points = num(isA ? s.tiebreakPointsA : s.tiebreakPointsB);
     } else {
-      points = pointDisplay(isA ? s.currentGamePointsARaw : s.currentGamePointsBRaw);
+      points = pointHTML(isA ? s.currentGamePointsARaw : s.currentGamePointsBRaw);
     }
     // Americano: the big number is the running TOTal; the small one is the
     // current round's points (labelled PTS).
-    cols = `<span class="points" data-k="${side}">${points}</span>`
+    cols = (s.isAmericano
+              ? `<span class="pts-wrap"><span class="points" data-k="${side}">${points}</span><i class="pts-cap">TOTAL</i></span>`
+              : `<span class="points" data-k="${side}">${points}</span>`)
          + `<span class="stats">`
          + `${s.isAmericano ? "" : stat("sets", sets, "SETS")}`
          + `${stat("games", games, s.isAmericano ? "PTS" : "GAMES")}`
@@ -230,7 +238,7 @@ function renderTeam(side, s, ended, isBroadcaster) {
   }
 
   return `
-    <div class="team ${isA ? "team-a" : "team-b"} ${won ? "winner" : ""} ${typed ? "named" : ""}">
+    <div class="team ${isA ? "team-a" : "team-b"} ${won ? "winner" : ""}">
       <div class="team-id">
         <span class="team-name${name.length > 28 ? " long" : ""}">${escapeText(name)}</span>
         ${tag}
@@ -254,6 +262,35 @@ function badges(s) {
   if (isPickleball(s)) out.push({ text: "PICKLEBALL", cls: "sport" });
   return out;
 }
+
+/* Screen-reader sentence built from the snapshot (not the DOM). */
+function srTeam(side, s, ended) {
+  const isA = side === "a";
+  const name = (isA ? s.teamAName : s.teamBName) || (isA ? "Team A" : "Team B");
+  if (hasFinalSetSummary(s, ended)) {
+    const parts = s.completedSets.map((set, i) => {
+      const g = num(isA ? set.gamesA : set.gamesB);
+      const lbl = finalSetLabel(s, i).toLowerCase().replace("tb", "tie-break");
+      return `${lbl} ${g}${set.wasTiebreak && lbl !== "tie-break" ? " (tie-break)" : ""}`;
+    });
+    return `${name}: ${parts.join(", ")}`;
+  }
+  if (isRallySport(s)) {
+    return `${name}: ${num(isA ? s.tiebreakPointsA : s.tiebreakPointsB)} points, `
+         + `${num(isA ? s.setsWonByA : s.setsWonByB)} games won`;
+  }
+  const games = num(isA ? s.currentSetGamesA : s.currentSetGamesB);
+  if (s.isAmericano) {
+    return `${name}: total ${num(isA ? s.americanoTotalPointsA : s.americanoTotalPointsB)}, ${games} points`;
+  }
+  const pts = s.isInTiebreak
+    ? num(isA ? s.tiebreakPointsA : s.tiebreakPointsB)
+    : pointDisplay(isA ? s.currentGamePointsARaw : s.currentGamePointsBRaw);
+  return `${name}: ${pts} points, ${games} games, ${num(isA ? s.setsWonByA : s.setsWonByB)} sets`;
+}
+function srSummary(s, ended) { return srTeam("a", s, ended) + ". " + srTeam("b", s, ended) + "."; }
+let lastSR = "";
+function srSet(text) { if (text !== lastSR) { lastSR = text; $("sr-score").textContent = text; } }
 
 function render(record) {
   let s;
@@ -308,11 +345,7 @@ function render(record) {
       }
     });
     lastTeamsHTML = teamsHTML;
-    const pts = [...document.querySelectorAll("#teams .team")].map((t) =>
-      t.querySelector(".team-name").textContent + " "
-      + (t.querySelector(".points") ? t.querySelector(".points").textContent
-         : [...t.querySelectorAll(".setcell")].map((c) => c.textContent).join(" ")));
-    $("sr-score").textContent = pts.join(", ");
+    srSet(srSummary(s, ended));
   }
 
   // Star point banner
@@ -432,6 +465,10 @@ function start() {
 
 // Re-fetch immediately if the user edits the fragment, and start once
 // CloudKit JS has loaded.
-window.addEventListener("hashchange", () => { currentDelay = BASE_POLL_MS; poll(); });
+window.addEventListener("hashchange", () => {
+  currentDelay = BASE_POLL_MS;
+  lastTeamsHTML = ""; prevSnapshot = null; lastSR = "";   // new match: no animation/flash from the old one
+  poll();
+});
 if (document.readyState === "complete") start();
 else window.addEventListener("load", start);
