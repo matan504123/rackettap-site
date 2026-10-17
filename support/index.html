@@ -223,6 +223,12 @@
       <p>On your iPhone, open the Matches tab, tap a match, then tap each player slot. You can pick from your saved players or add a new one. Tagged player names <em>do</em> sync back to the watch — open the same match on your watch and you'll see the YOU / THEM block under the headline. Edits made while the watch is off your wrist queue up safely and arrive when you put it back on. Training and Americano sessions don't have player slots (training is workout-only; Americano partners rotate every round). Tennis singles matches show one slot per team instead of two.</p>
     </div>
   </details>
+  <details class="qa" id="call-names">
+    <summary>How do I choose how players are called out?</summary>
+    <div class="qa-body">
+      <p>On the iPhone, open the <em>Settings</em> tab and find <strong>"Call players by"</strong> in the <em>Voice</em> section. Pick <strong>Surname</strong> (the way tennis is called) or <strong>First name</strong>. It applies to the names on the Live board and to the spoken score. For anyone who goes by something else, open that player in your roster and fill in <strong>"Called as"</strong>: that name always comes first, whichever style you chose. It applies to every match you score and share from then on.</p>
+    </div>
+  </details>
   <details class="qa">
     <summary>I tagged some matches before the latest update and the names aren't on the watch yet — can I backfill?</summary>
     <div class="qa-body">
@@ -475,11 +481,11 @@
     // blank space.
     window.addEventListener('hashchange', function () {
       var el = document.querySelector(window.location.hash);
-      if (el) { el.classList.add('visible'); }
+      if (el) { el.classList.add('visible'); if (el.tagName === 'DETAILS') { el.open = true; } }
     });
     if (window.location.hash) {
       var initial = document.querySelector(window.location.hash);
-      if (initial) { initial.classList.add('visible'); }
+      if (initial) { initial.classList.add('visible'); if (initial.tagName === 'DETAILS') { initial.open = true; } }
     }
   })();
 </script>
