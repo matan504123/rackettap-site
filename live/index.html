@@ -118,6 +118,10 @@
              border:1px solid #48484a; border-radius:999px; padding:4px 12px; }
     /* Sport name badge uses the sport accent colour (BADMINTON=teal, PICKLEBALL=green). */
     .badge.sport { color:var(--sport-accent); border-color:var(--sport-accent); }
+    /* Who serves (shown only when the app sends serverPlayerRaw). */
+    #serve-line { font-size:clamp(14px, 2.6dvh, 22px); font-weight:700; letter-spacing:.06em; }
+    #serve-line.team-a { color:var(--blue); }
+    #serve-line.team-b { color:var(--orange); }
     /* Server-number chip (pickleball doubles). */
     #server-chip { display:inline-block; padding:6px 16px; border-radius:999px;
                    border:1px solid var(--sport-accent); color:var(--sport-accent);
@@ -197,6 +201,7 @@
     <div id="starpoint" class="banner" hidden>★ STAR POINT</div>
     <div id="deciding" class="banner" hidden></div>
     <div id="decided-note" hidden>Decided by tie-break</div>
+    <div id="serve-line" hidden></div>
     <div id="server-chip" hidden></div>
     <div id="badges" hidden></div>
     <div id="updated"></div>

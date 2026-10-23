@@ -366,6 +366,17 @@ function render(record) {
   $("badges").innerHTML = b.map((x) => `<span class="${["badge", x.cls].filter(Boolean).join(" ")}">${x.text}</span>`).join("");
   $("badges").hidden = b.length === 0;
 
+  // Who serves (needs serverPlayerRaw; hidden when absent or ended).
+  const serve = $("serve-line");
+  const sl = ended ? null : serveLabel(s);
+  if (sl) {
+    serve.className = s.serverRaw === "a" ? "team-a" : "team-b";
+    serve.innerHTML = `<span class="ball">●</span> ${escapeText(sl)} serving`;
+    serve.hidden = false;
+  } else {
+    serve.hidden = true;
+  }
+
   // Server-number chip (pickleball doubles side-out only; hidden when ended).
   const chip = $("server-chip");
   if (!ended && isPickleball(s) && s.serverNumberRaw != null) {
@@ -392,6 +403,17 @@ function render(record) {
   else if (stale) $("updated").textContent = "Hasn't updated recently — the match may have finished.";
   else $("updated").textContent = "Updated " + timeAgo(updatedAt);
   return !ended; // keep polling only while the match is live
+}
+
+/* Who is serving, as shown under the score. Needs serverRaw ("a"/"b") and
+ * serverPlayerRaw (1/2); anything else → null (today's rendering).
+ * Prefers serverName (resolved by the app); otherwise BLUE 1 / ORANGE 2. */
+function serveLabel(s) {
+  if (!s || (s.serverRaw !== "a" && s.serverRaw !== "b")) return null;
+  if (s.serverPlayerRaw !== 1 && s.serverPlayerRaw !== 2) return null;
+  const name = typeof s.serverName === "string" ? s.serverName.trim() : "";
+  if (name) return name;
+  return `${s.serverRaw === "a" ? "BLUE" : "ORANGE"} ${s.serverPlayerRaw}`;
 }
 
 function escapeText(str) {

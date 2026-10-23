@@ -52,6 +52,11 @@
     sportRaw: "pickleball", isInTiebreak: true, sideOutRaw: true, serverNumberRaw: 2, pointsCount: 40,
     teamAName: "Matan & Sari", teamBName: "Pete & Anna", setsWonByA: 0, setsWonByB: 1,
     tiebreakPointsA: 7, tiebreakPointsB: 9 }));
+  F["serve-named"] = rec(Object.assign(base(), {
+    teamAName: "Matan & Sari", teamBName: "Pete & Anna", serverRaw: "b", serverPlayerRaw: 2, serverName: "Anna",
+    currentSetGamesA: 2, currentSetGamesB: 3 }));
+  F["serve-unnamed"] = rec(Object.assign(base(), {
+    serverRaw: "a", serverPlayerRaw: 1, currentSetGamesA: 2, currentSetGamesB: 3 }));
   F["americano"] = rec(Object.assign(base(), {
     isAmericano: true, isMixing: true, americanoTotalPointsA: 47, americanoTotalPointsB: 52,
     currentSetGamesA: 12, currentSetGamesB: 9, americanoPointCap: 24 }));

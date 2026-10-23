@@ -6,7 +6,7 @@ HERE="$(cd "$(dirname "$0")" && pwd)"; ROOT="$(cd "$HERE/../.." && pwd)"
 OUT=/private/tmp/claude-503/live-shots; mkdir -p "$OUT"
 CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 "$HERE/build.sh"
-FIX=(padel-mid padel-final-tb tennis-final-5 starpoint deciding-tb deciding-final badminton pickleball-s2 americano unnamed longnames longnames-final paused ended pickleball-sideout)
+FIX=(serve-named serve-unnamed padel-mid padel-final-tb tennis-final-5 starpoint deciding-tb deciding-final badminton pickleball-s2 americano unnamed longnames longnames-final paused ended pickleball-sideout)
 VPS=(320x568 375x667 390x844 430x932 844x390 932x430 1024x768 1366x1024 1440x900 1920x1080)
 PORT=$(python3 -c 'import socket;s=socket.socket();s.bind(("",0));print(s.getsockname()[1])')
 python3 -m http.server $PORT --bind 127.0.0.1 -d "$ROOT" >/dev/null 2>&1 &

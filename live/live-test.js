@@ -142,6 +142,26 @@ for (const [name, fn, expected] of helperCases) {
   cases.push({ name, fn, expected });
 }
 
+/* ── Copy of serveLabel from live.js ─────────────────────────────────── */
+function serveLabel(s) {
+  if (!s || (s.serverRaw !== "a" && s.serverRaw !== "b")) return null;
+  if (s.serverPlayerRaw !== 1 && s.serverPlayerRaw !== 2) return null;
+  const name = typeof s.serverName === "string" ? s.serverName.trim() : "";
+  if (name) return name;
+  return `${s.serverRaw === "a" ? "BLUE" : "ORANGE"} ${s.serverPlayerRaw}`;
+}
+/* ── End copy ─────────────────────────────────────────────────────────── */
+const serveCases = [
+  ["13. Serve: named server shows the name", () => serveLabel({ serverRaw: "b", serverPlayerRaw: 2, serverName: "Anna" }), "Anna"],
+  ["14. Serve: no name → BLUE 1", () => serveLabel({ serverRaw: "a", serverPlayerRaw: 1 }), "BLUE 1"],
+  ["15. Serve: no name → ORANGE 2", () => serveLabel({ serverRaw: "b", serverPlayerRaw: 2, serverName: "  " }), "ORANGE 2"],
+  ["16. Serve: field absent → null (today's rendering)", () => serveLabel({ serverRaw: "a" }), null],
+  ["17. Serve: null serverPlayerRaw → null", () => serveLabel({ serverRaw: "a", serverPlayerRaw: null }), null],
+  ["18. Serve: out-of-range player → null", () => serveLabel({ serverRaw: "a", serverPlayerRaw: 3 }), null],
+  ["19. Serve: no serving team → null", () => serveLabel({ serverPlayerRaw: 1 }), null],
+];
+for (const [name, fn, expected] of serveCases) cases.push({ name, fn, expected });
+
 /* ── Runner ──────────────────────────────────────────────────────────── */
 let passed = 0;
 let failed = 0;
