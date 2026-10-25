@@ -397,7 +397,7 @@
   <details class="qa">
     <summary>What's in the Heart Rate section of a match?</summary>
     <div class="qa-body">
-      <p>The Heart Rate section mirrors what Apple Health shows for a workout: an "Avg Heart Rate" headline, a candle-bar chart of HR over the match (each bar spans the min–max BPM recorded in that interval), a five-zone time breakdown with horizontal progress bars (60% / 70% / 80% / 90% of your max HR), and a Post-Workout Heart Rate chart for the two minutes after the match ended — useful for spotting recovery rate. The first time you open a match the iPhone asks for HealthKit permission so it can read your HR samples. Max HR is estimated from your age (220 − age) read from HealthKit; if you haven't set a date of birth there it falls back to age 30.</p>
+      <p>The Heart Rate section mirrors what Apple Health shows for a workout: an "Avg Heart Rate" headline, a candle-bar chart of HR over the match (each bar spans the min–max BPM recorded in that interval), a five-zone time breakdown with horizontal progress bars (60% / 70% / 80% / 90% of your max HR), and a Post-Workout Heart Rate chart for the two minutes after the match ended — useful for spotting recovery rate. The first time you open a match the iPhone asks for Apple Health permission so it can read your HR samples. Max HR is estimated from your age (220 − age) read from Apple Health; if you haven't set a date of birth there it falls back to age 30.</p>
     </div>
   </details>
   <details class="qa">
@@ -431,7 +431,7 @@
   <details class="qa">
     <summary>iCloud Sync vs. the iOS "iCloud Backup" switch — what's the difference?</summary>
     <div class="qa-body">
-      <p>They're two separate systems. RacketTap uses <strong>iCloud Sync</strong> (Apple's CloudKit) to live-mirror your matches to your Apple ID — that's what the in-app <em>iCloud Sync</em> panel reports, and it's what restores your history on a new device. The iOS <em>iOS Settings → [your name] → iCloud → iCloud Backup → Backup Details</em> list (where each app shows a size and a toggle) is the separate nightly whole-device snapshot. Turning RacketTap off in that Backup Details list does <em>not</em> stop iCloud Sync — your matches keep mirroring to iCloud regardless. To actually pause the app's cloud sync you'd toggle RacketTap under <em>iOS Settings → [your name] → iCloud → Saved to iCloud → See All</em>; the in-app panel then turns orange to warn you sync is off.</p>
+      <p>They're two separate systems. RacketTap uses <strong>iCloud Sync</strong> to live-mirror your matches to your Apple ID — that's what the in-app <em>iCloud Sync</em> panel reports, and it's what restores your history on a new device. The iOS <em>iOS Settings → [your name] → iCloud → iCloud Backup → Backup Details</em> list (where each app shows a size and a toggle) is the separate nightly whole-device snapshot. Turning RacketTap off in that Backup Details list does <em>not</em> stop iCloud Sync — your matches keep mirroring to iCloud regardless. To actually pause the app's cloud sync you'd toggle RacketTap under <em>iOS Settings → [your name] → iCloud → Saved to iCloud → See All</em>; the in-app panel then turns orange to warn you sync is off.</p>
     </div>
   </details>
   <details class="qa">
