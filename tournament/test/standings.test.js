@@ -41,3 +41,20 @@ test("parseScoreRecord reads CloudKit shape and rejects junk", () => {
   assert.equal(S.parseScoreRecord({}), null);
   assert.equal(S.parseScoreRecord({ created: {}, fields: {} }), null);
 });
+
+const swiftVectors = JSON.parse(fs.readFileSync(path.join(__dirname, "swift-vectors.json"), "utf8"));
+const swiftCases = Array.isArray(swiftVectors) ? swiftVectors : swiftVectors.cases;
+test("swift vectors file is non-empty", () => assert.ok(swiftCases.length >= 3));
+for (const v of swiftCases) {
+  test("swift vector: " + v.name, () => {
+    const results = S.resolveScores(v.definition, v.entries);
+    const got = {};
+    for (const [id, r] of Object.entries(results)) got[id] = { scoreA: r.scoreA, scoreB: r.scoreB, endedEarly: r.endedEarly, source: r.source };
+    const want = {};
+    for (const [id, r] of Object.entries(v.expectedResults)) want[id] = { scoreA: r.scoreA, scoreB: r.scoreB, endedEarly: r.endedEarly, source: r.source };
+    assert.deepEqual(got, want);
+    const rows = S.computeStandings(v.definition, results).map((r) => ({ playerID: r.id, rank: r.rank, points: r.points,
+      wins: r.wins, pointDiff: r.diff, played: r.played, scheduled: r.scheduled }));
+    assert.deepEqual(rows, v.expectedStandings);
+  });
+}

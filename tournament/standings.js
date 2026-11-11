@@ -30,6 +30,9 @@
     };
   }
 
+  /* submittedAt as ms: numbers pass through, ISO-8601 strings are parsed, junk -> NaN (treated as 0). */
+  function toTime(t) { const n = typeof t === "number" ? t : Date.parse(t); return Number.isFinite(n) ? n : 0; }
+
   /* Trust + resolution. Drops scores from creators not in definition.trustedWriters,
      for unknown matchIDs, or invalid. Per match: latest "app" score wins; else latest "web".
      Returns { [matchID]: {scoreA, scoreB, endedEarly, source, submittedAt, note} }. */
@@ -43,13 +46,15 @@
       if (s.source !== "app" && s.source !== "web") continue;
       if (!validScore(s.scoreA, s.scoreB, def.pointsPerMatch, !!s.endedEarly)) continue;
       const cur = best[s.source][s.matchID];
-      if (!cur || s.submittedAt >= cur.submittedAt) best[s.source][s.matchID] = s;
+      const t = toTime(s.submittedAt);
+      if (!cur || t >= cur.t) best[s.source][s.matchID] = { s, t };   // equal time: later array position wins
     }
     const out = {};
     for (const id of known) {
-      const s = best.app[id] || best.web[id];
+      const pick = best.app[id] || best.web[id];
+      const s = pick && pick.s;
       if (s) out[id] = { scoreA: s.scoreA, scoreB: s.scoreB, endedEarly: !!s.endedEarly,
-                         source: s.source, submittedAt: s.submittedAt, note: s.note || "" };
+                         source: s.source, submittedAt: pick.t, note: s.note || "" };
     }
     return out;
   }
