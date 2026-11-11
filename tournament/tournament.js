@@ -15,7 +15,10 @@ const CK_CONFIG = {
   // TESTING ONLY: selected with ?env=dev. Paste a Development-environment token here to test against a debug build.
   dev:        { environment: "development", token: "DEV_API_TOKEN_PLACEHOLDER" },
 };
-const WORKER_URL = "https://tournament-worker.example.workers.dev"; // placeholder until the Worker is deployed
+const WORKER_URLS = {   // CSP connect-src in index.html pins exactly these two origins
+  production: "https://rackettap-tournament.rackettap.workers.dev",
+  dev:        "https://rackettap-tournament-dev.rackettap.workers.dev",   // ?env=dev only
+};
 
 const POLL_MS = 10000;
 const FETCH_TIMEOUT_MS = 15000;
@@ -61,6 +64,8 @@ function lsDel(k) { try { localStorage.removeItem(k); } catch (e) { /* ignore */
 const pinKey = () => "rt-tournament-pin-" + tournamentID;
 const NAME_KEY = "rt-tournament-name";
 
+function isDevEnv() { return new URLSearchParams(location.search).get("env") === "dev"; }
+function workerURL() { return isDevEnv() ? WORKER_URLS.dev : WORKER_URLS.production; }
 function envConfig() {
   return new URLSearchParams(location.search).get("env") === "dev" ? CK_CONFIG.dev : CK_CONFIG.production;
 }
@@ -327,7 +332,7 @@ const ERR_TEXT = {
   400: "That score isn't valid for this match.",
   401: "Wrong PIN.",
   403: "This tournament is finished — scores are closed.",
-  404: "Tournament or match not found.",
+  404: "Tournament not found.",
   409: "Scored by the app — ask the organizer to change it",
   413: "That entry is too large — shorten the name.",
   429: "Too many attempts. Wait ten minutes and try again.",
@@ -338,7 +343,7 @@ async function workerPost(path, body) {
   const ctl = new AbortController();
   const t = setTimeout(() => ctl.abort(), FETCH_TIMEOUT_MS);
   try {
-    const r = await fetch(WORKER_URL + path, { method: "POST", headers: { "Content-Type": "application/json" },
+    const r = await fetch(workerURL() + path, { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body), signal: ctl.signal, referrerPolicy: "no-referrer", credentials: "omit" });
     return r.status;
   } catch (e) { return 0; }
@@ -406,7 +411,9 @@ async function submitScore(m, f) {
 /* ── start ────────────────────────────────────────────────────────────── */
 function start() {
   const cfg = envConfig();
-  if (/PLACEHOLDER|PASTE/.test(cfg.token)) { showMessage("Not configured yet", "This page needs its CloudKit API token before it can show tournaments."); return; }
+  if (/PLACEHOLDER|PASTE/.test(cfg.token)) {
+    if (isDevEnv()) { showMessage("Dev token not configured", "?env=dev needs a Development CloudKit API token in CK_CONFIG.dev (tournament.js). None exists yet."); return; }
+    showMessage("Not configured yet", "This page needs its CloudKit API token before it can show tournaments."); return; }
   if (typeof CloudKit === "undefined") { showMessage("Couldn't load", "The CloudKit library failed to load. Check your connection."); return; }
   CloudKit.configure({ containers: [{ containerIdentifier: CONTAINER,
     apiTokenAuth: { apiToken: cfg.token, persist: false }, environment: cfg.environment }] });

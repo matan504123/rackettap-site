@@ -5,12 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="referrer" content="no-referrer">
   <!-- Same lock-down as live/: scripts only from self + Apple's CloudKit CDN; network only to Apple CloudKit and
-       the score-entry Worker (Cloudflare workers.dev; if the Worker moves to a custom domain, change connect-src
-       AND WORKER_URL in tournament.js). GitHub Pages can't set headers, so CSP is a meta tag. -->
+       the two score-entry Workers (prod + dev; keep in sync with WORKER_URLS in tournament.js). GitHub Pages can't set headers, so CSP is a meta tag. -->
   <meta http-equiv="Content-Security-Policy"
         content="default-src 'none';
                  script-src 'self' https://cdn.apple-cloudkit.com;
-                 connect-src https://*.apple-cloudkit.com https://api.apple-cloudkit.com https://*.workers.dev;
+                 connect-src https://*.apple-cloudkit.com https://api.apple-cloudkit.com https://rackettap-tournament.rackettap.workers.dev https://rackettap-tournament-dev.rackettap.workers.dev;
                  style-src 'self' 'unsafe-inline';
                  img-src 'self' data:;
                  base-uri 'none';

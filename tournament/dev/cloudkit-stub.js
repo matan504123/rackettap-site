@@ -24,7 +24,7 @@
   window.fetch = function (url, opts) {
     if (String(url).indexOf("workers.dev") < 0) return realFetch.apply(this, arguments);
     const body = JSON.parse(opts.body); sent.push({ url: String(url), body });
-    const status = body.pin !== "1234" ? 401 : 200;
+    const status = body.pin === "0404" ? 404 : body.pin !== "1234" ? 401 : 200;   // 0404: unknown tournament
     return Promise.resolve({ status });
   };
 })();

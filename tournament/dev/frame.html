@@ -15,9 +15,9 @@
     else if (mode.startsWith("sheet")) {
       const mid = w.document.querySelector(".match .btn:not(.secondary)").closest(".match").dataset.match;
       w.openSheet(mid);
-      if (mode === "sheet-submit" || mode === "sheet-badpin") {
+      if (mode === "sheet-submit" || mode === "sheet-badpin" || mode === "sheet-404") {
         const d = w.document, set = (i, v) => { const e = d.getElementById(i); e.value = v; e.dispatchEvent(new Event("input")); };
-        set("in-a", "18"); set("in-pin", mode === "sheet-badpin" ? "9999" : "1234"); d.getElementById("sheet-submit").click();
+        set("in-a", "18"); set("in-pin", mode === "sheet-404" ? "0404" : mode === "sheet-badpin" ? "9999" : "1234"); d.getElementById("sheet-submit").click();
         setTimeout(() => { document.title = JSON.stringify({ sent: w.__sent, err: (d.getElementById("sheet-err") || {}).textContent,
           card: d.querySelector('[data-match="' + mid + '"]').innerText.replace(/\n/g, " | "), pin: w.localStorage.getItem("rt-tournament-pin-" + hashID) }); }, 500);
       }
