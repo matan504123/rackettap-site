@@ -1,0 +1,27 @@
+<!doctype html><meta charset="utf-8"><title>frame</title>
+<!-- Dev-only: hosts page.html in an iframe of an exact CSS size (headless Chrome enforces a ~500px minimum window).
+     ?f=<fixture>[-standings|-sheet|-sheet-replace]&w=&h= -->
+<style>html,body{margin:0;background:#444}iframe{border:0;display:block;background:#000}</style>
+<body><script>
+  const q = new URLSearchParams(location.search);
+  const f = document.createElement("iframe");
+  f.width = q.get("w"); f.height = q.get("h");
+  const parts = q.get("f").split("-"), id = parts[0], mode = parts.slice(1).join("-");
+  f.src = "page.html#" + id;
+  if (mode) f.onload = () => setTimeout(() => {
+    const w = f.contentWindow;
+    if (mode === "standings") w.document.getElementById("tab-standings").click();
+    else if (mode.startsWith("sheet")) {
+      const mid = w.document.querySelector(".match .btn:not(.secondary)").closest(".match").dataset.match;
+      w.openSheet(mid);
+      if (mode === "sheet-submit" || mode === "sheet-badpin") {
+        const d = w.document, set = (i, v) => { const e = d.getElementById(i); e.value = v; e.dispatchEvent(new Event("input")); };
+        set("in-a", "18"); set("in-pin", mode === "sheet-badpin" ? "9999" : "1234"); d.getElementById("sheet-submit").click();
+        setTimeout(() => { document.title = JSON.stringify({ sent: w.__sent, err: (d.getElementById("sheet-err") || {}).textContent,
+          card: d.querySelector('[data-match="' + mid + '"]').innerText.replace(/\n/g, " | "), pin: w.localStorage.getItem("rt-tournament-pin-mid") }); }, 500);
+      }
+      if (mode === "sheet-filled") { const a = w.document.getElementById("in-a"); a.value = "18"; a.dispatchEvent(new Event("input")); }
+    }
+  }, 600);
+  document.body.appendChild(f);
+</script></body>
