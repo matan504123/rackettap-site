@@ -89,7 +89,10 @@
     return list.map(({ _i, ...rest }) => rest);
   }
 
-  const api = { validScore, parseScoreRecord, resolveScores, computeStandings };
+  /* Tournament ids are base64url (22 chars today). Anything else never reaches fetch, query, storage or the Worker. */
+  function validTournamentID(id) { return typeof id === "string" && /^[A-Za-z0-9_-]{16,64}$/.test(id); }
+
+  const api = { validTournamentID, validScore, parseScoreRecord, resolveScores, computeStandings };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.TournamentStandings = api;
 })(typeof window !== "undefined" ? window : globalThis);

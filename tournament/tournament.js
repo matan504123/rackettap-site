@@ -64,7 +64,15 @@ const NAME_KEY = "rt-tournament-name";
 function envConfig() {
   return new URLSearchParams(location.search).get("env") === "dev" ? CK_CONFIG.dev : CK_CONFIG.production;
 }
-function tournamentIDFromURL() { return (location.hash || "").replace(/^#/, "").trim(); }
+function tournamentIDFromURL() {
+  const id = (location.hash || "").replace(/^#/, "").trim();
+  return Standings.validTournamentID(id) ? id : "";   // invalid → "No tournament selected"
+}
+function withTimeout(promise, ms) {
+  let t;
+  return Promise.race([promise, new Promise((_, rej) => { t = setTimeout(() => rej(new Error("timeout")), ms); })])
+    .finally(() => clearTimeout(t));
+}
 
 function setState(name) { document.body.dataset.state = name; }
 function showMessage(title, detail) {
@@ -101,13 +109,14 @@ function parseDefinition(rec) {
 }
 
 async function poll() {
+  if (document.hidden) { pollTimer = null; return; }   // paused; visibilitychange resumes
   const id = tournamentID;
   if (!id) { showMessage("No tournament selected", "This link is missing its tournament code."); return; }
   try {
     const db = ckDB;
-    const resp = await db.fetchRecords(id);
+    const resp = await withTimeout(db.fetchRecords(id), FETCH_TIMEOUT_MS);
     const rec = resp && resp.records && resp.records[0];
-    if (!rec || !rec.fields || rec.serverErrorCode === "NOT_FOUND") {
+    if (!rec || !rec.fields || rec.serverErrorCode === "NOT_FOUND" || rec.recordType !== "Tournament") {
       showMessage("Tournament not found", "This link is wrong, or the tournament has expired and been removed.");
       return;
     }
@@ -115,7 +124,7 @@ async function poll() {
     if (!def) { showMessage("Couldn't read this tournament", "Its data isn't in a format this page understands."); return; }
     const status = rec.fields.status ? rec.fields.status.value : "running";
     const expiresAt = rec.fields.expiresAt ? Number(rec.fields.expiresAt.value) : 0;
-    const scores = await fetchAllScores(db, id);
+    const scores = await withTimeout(fetchAllScores(db, id), FETCH_TIMEOUT_MS * 2);
     if (id !== tournamentID) return;   // fragment changed mid-flight
     const results = Standings.resolveScores(def, scores);
     applyOptimistic(results);
@@ -163,6 +172,8 @@ function teamNames(names, pm) {
 }
 
 function isFinished() { return data && data.status === "finished"; }
+function isExpired() { return !!(data && data.expiresAt && data.expiresAt < Date.now()); }
+function entryClosed() { return isFinished() || isExpired(); }
 
 function roundIsDone(round, results) { return round.matches.every((m) => results[m.id]); }
 
@@ -182,7 +193,7 @@ function render() {
   $("t-bar").style.width = (total ? Math.round(100 * scored / total) : 0) + "%";
 
   const banner = $("t-banner");
-  const expired = data.expiresAt && data.expiresAt < Date.now();
+  const expired = isExpired();
   if (isFinished()) { banner.hidden = false; banner.className = "banner final"; banner.textContent = "Tournament finished — final standings"; }
   else if (expired) { banner.hidden = false; banner.className = "banner warn"; banner.textContent = "This tournament has expired."; }
   else banner.hidden = true;
@@ -223,7 +234,7 @@ function matchCard(m, res, pm, cm) {
     h("span", { class: "pts" + (res ? (win || a === b ? " win" : " dim") : " dim") }, res ? num(mine) : "–"));
   const lockedByApp = res && res.source === "app";
   let action = null;
-  if (!isFinished()) {
+  if (!entryClosed()) {
     action = lockedByApp ? h("div", { class: "locked" }, "Scored by the app")
       : h("button", { class: "btn" + (res ? " secondary" : ""), type: "button", onclick: () => openSheet(m.id) },
           res ? "Change score" : "Enter score");
@@ -266,7 +277,7 @@ function findMatch(mid) {
 }
 
 function openSheet(matchID) {
-  if (!data || isFinished()) return;
+  if (!data || entryClosed()) return;
   const m = findMatch(matchID);
   if (!m) return;
   const res = data.results[matchID];
@@ -379,7 +390,7 @@ async function submitScore(m, f) {
     }
     if (code === 401) {
       lsDel(pinKey());
-      if (sheetState) { sheetState.pinNeeded = true; buildSheet(m, { scoreA: a, scoreB: b, endedEarly: early }); sheetState.confirmed = true; }
+      if (sheetState) { sheetState.pinNeeded = true; buildSheet(m, { scoreA: a, scoreB: b, endedEarly: early }); sheetState.confirmed = !!data.results[m.id]; if (sheetState.confirmed) $("sheet-submit").textContent = "Replace score"; }
       const e = $("sheet-err"); if (e) e.textContent = "That PIN isn't accepted. Enter it again.";
       return;
     }
@@ -406,6 +417,7 @@ function start() {
 
 $("tab-rounds").addEventListener("click", () => { activeTab = "rounds"; lastSignature = ""; if (data) render(); });
 $("tab-standings").addEventListener("click", () => { activeTab = "standings"; lastSignature = ""; if (data) render(); });
+document.addEventListener("visibilitychange", () => { if (!document.hidden && ckDB && tournamentID) { if (pollTimer) clearTimeout(pollTimer); poll(); } });
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && sheetState) closeSheet(); });
 $("sheet").addEventListener("click", (e) => { if (e.target === $("sheet")) closeSheet(); });
 window.addEventListener("hashchange", () => {

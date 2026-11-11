@@ -54,6 +54,8 @@
     { courts: [{ id: "c1", name: "<b>Court</b> " + "X".repeat(60) }, { id: "c2", name: "מגרש 2" }] });
   F.hostile = { rec: tRec(hostile, "running"), scores: scoreRounds(hostile, 2, () => ({})) };
 
-  F.missing = null;
-  window.TOURNAMENT_FIXTURES = F;
+  // Page ids must be base64url, 16-64 chars: expose each fixture under "fx_<name>_0000000000".
+  const L = {};
+  Object.keys(F).forEach((k) => { L["fx_" + k + "_0000000000"] = F[k]; });
+  window.TOURNAMENT_FIXTURES = L;
 })();

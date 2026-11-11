@@ -7,7 +7,8 @@
   const f = document.createElement("iframe");
   f.width = q.get("w"); f.height = q.get("h");
   const parts = q.get("f").split("-"), id = parts[0], mode = parts.slice(1).join("-");
-  f.src = "page.html#" + id;
+  const hashID = "fx_" + id + "_0000000000";
+  f.src = "page.html#" + hashID;
   if (mode) f.onload = () => setTimeout(() => {
     const w = f.contentWindow;
     if (mode === "standings") w.document.getElementById("tab-standings").click();
@@ -18,7 +19,7 @@
         const d = w.document, set = (i, v) => { const e = d.getElementById(i); e.value = v; e.dispatchEvent(new Event("input")); };
         set("in-a", "18"); set("in-pin", mode === "sheet-badpin" ? "9999" : "1234"); d.getElementById("sheet-submit").click();
         setTimeout(() => { document.title = JSON.stringify({ sent: w.__sent, err: (d.getElementById("sheet-err") || {}).textContent,
-          card: d.querySelector('[data-match="' + mid + '"]').innerText.replace(/\n/g, " | "), pin: w.localStorage.getItem("rt-tournament-pin-mid") }); }, 500);
+          card: d.querySelector('[data-match="' + mid + '"]').innerText.replace(/\n/g, " | "), pin: w.localStorage.getItem("rt-tournament-pin-" + hashID) }); }, 500);
       }
       if (mode === "sheet-filled") { const a = w.document.getElementById("in-a"); a.value = "18"; a.dispatchEvent(new Event("input")); }
     }

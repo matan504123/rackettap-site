@@ -58,3 +58,14 @@ for (const v of swiftCases) {
     assert.deepEqual(rows, v.expectedStandings);
   });
 }
+
+test("validTournamentID accepts base64url ids only", () => {
+  assert.equal(S.validTournamentID("Abc123_-Abc123_-Abc123"), true);
+  assert.equal(S.validTournamentID(""), false);
+  assert.equal(S.validTournamentID("a".repeat(65)), false);
+  assert.equal(S.validTournamentID("../x"), false);
+  assert.equal(S.validTournamentID("a b a b a b a b a b a b"), false);
+  assert.equal(S.validTournamentID("<script>alert(1)</script>"), false);
+  assert.equal(S.validTournamentID("short"), false);
+  assert.equal(S.validTournamentID(null), false);
+});
