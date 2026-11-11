@@ -83,6 +83,7 @@ function showMessage(title, detail) {
 
 /* ── data ─────────────────────────────────────────────────────────────── */
 async function fetchAllScores(db, id) {
+  const key = await Standings.tournamentKey(id);   // scores are keyed by the hash, never the raw id
   const out = [];
   let marker;
   for (let page = 0; page < MAX_SCORE_PAGES; page++) {
@@ -90,7 +91,7 @@ async function fetchAllScores(db, id) {
     if (marker) opts.continuationMarker = marker;
     const resp = await db.performQuery({
       recordType: "TournamentScore",
-      filterBy: [{ fieldName: "tournamentID", comparator: "EQUALS", fieldValue: { value: id } }],
+      filterBy: [{ fieldName: "tournamentKey", comparator: "EQUALS", fieldValue: { value: key } }],
     }, opts);
     if (resp && resp.hasErrors && !(resp.records && resp.records.length)) throw resp.errors && resp.errors[0] || new Error("query failed");
     for (const r of (resp && resp.records) || []) { const s = Standings.parseScoreRecord(r); if (s) out.push(s); }
@@ -179,7 +180,7 @@ function roundIsDone(round, results) { return round.matches.every((m) => results
 
 function render() {
   const { def, results } = data;
-  const sig = JSON.stringify([data.status, def.id, def.name, def.rounds, def.players, def.courts, results, activeTab]);
+  const sig = JSON.stringify([data.status, def.id, def.name, def.rounds, def.players, def.courts, results, activeTab, isExpired()]);
   setState("tournament");
   $("updated").textContent = "Updated just now · refreshes every 10 s";
   if (sig === lastSignature) return;

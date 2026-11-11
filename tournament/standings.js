@@ -92,7 +92,15 @@
   /* Tournament ids are base64url (22 chars today). Anything else never reaches fetch, query, storage or the Worker. */
   function validTournamentID(id) { return typeof id === "string" && /^[A-Za-z0-9_-]{16,64}$/.test(id); }
 
-  const api = { validTournamentID, validScore, parseScoreRecord, resolveScores, computeStandings };
+  /* TournamentScore.tournamentKey = base64url-nopad(SHA-256(utf8(tournamentID))). Keeps raw ids out of the
+     enumerable queryable field. Async (WebCrypto). */
+  async function tournamentKey(id) {
+    const digest = await globalThis.crypto.subtle.digest("SHA-256", new TextEncoder().encode(id));
+    let bin = ""; new Uint8Array(digest).forEach((b) => { bin += String.fromCharCode(b); });
+    return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+
+  const api = { tournamentKey, validTournamentID, validScore, parseScoreRecord, resolveScores, computeStandings };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.TournamentStandings = api;
 })(typeof window !== "undefined" ? window : globalThis);

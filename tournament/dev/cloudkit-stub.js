@@ -8,11 +8,13 @@
       return { publicCloudDatabase: {
         fetchRecords: function (id) {
           const f = F[id];
-          return Promise.resolve({ records: [f ? f.rec : { recordName: id, serverErrorCode: "NOT_FOUND" }] });
+          return Promise.resolve({ records: [f ? f.rec : { recordType: "Tournament", recordName: id, serverErrorCode: "NOT_FOUND" }] });
         },
-        performQuery: function (q) {
-          const id = q.filterBy[0].fieldValue.value, f = F[id];
-          return Promise.resolve({ records: f ? f.scores : [], moreComing: false });
+        performQuery: async function (q) {
+          if (q.filterBy[0].fieldName !== "tournamentKey") return { records: [] };   // only the hashed key is queryable
+          const key = q.filterBy[0].fieldValue.value;
+          for (const id of Object.keys(F)) if (await window.TournamentStandings.tournamentKey(id) === key) return { records: F[id].scores, moreComing: false };
+          return { records: [], moreComing: false };
         },
       } };
     },

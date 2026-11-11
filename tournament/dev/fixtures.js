@@ -24,7 +24,7 @@
     expiresAt: { value: Date.now() + 864e5 }, schemaVersion: { value: 1 } } });
   let n = 0;
   const sRec = (def, matchID, a, b, o) => { o = o || {}; return { recordName: "s" + (++n), recordType: "TournamentScore",
-    created: { userRecordName: o.creator || ORG }, fields: { tournamentID: { value: def.id }, matchID: { value: matchID },
+    created: { userRecordName: o.creator || ORG }, fields: { tournamentKey: { value: def.id }, matchID: { value: matchID },
       scoreA: { value: a }, scoreB: { value: b }, endedEarly: { value: o.early ? 1 : 0 }, source: { value: o.source || "app" },
       submittedAt: { value: 1000 + n }, note: { value: o.note || "" } } }; };
   const eight = ["Anna", "Mikko", "Sofia", "Jussi", "Liisa", "Pekka", "Emma", "Olli"];

@@ -69,3 +69,8 @@ test("validTournamentID accepts base64url ids only", () => {
   assert.equal(S.validTournamentID("short"), false);
   assert.equal(S.validTournamentID(null), false);
 });
+
+test("tournamentKey is base64url(SHA-256(utf8(id)))", async () => {
+  assert.equal(await S.tournamentKey("abc"), "ungWv48Bz-pBQUDeXa4iI7ADYaOWF3qctBD_YfIAFa0");
+  assert.match(await S.tournamentKey("Abc123_-Abc123_-Abc123"), /^[A-Za-z0-9_-]{43}$/);
+});
