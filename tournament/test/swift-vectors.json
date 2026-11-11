@@ -1,0 +1,74 @@
+[
+{
+ "name":"app beats later web; untrusted and unknown dropped",
+ "definition":{"schemaVersion":1,"id":"one-match","name":"one-match","createdAt":"2026-11-11T10:00:00Z","pointsPerMatch":32,"seed":1,"players":[{"id":"p1","name":"P1"},{"id":"p2","name":"P2"},{"id":"p3","name":"P3"},{"id":"p4","name":"P4"}],"courts":[{"id":"c1","name":"Court 1"}],"trustedWriters":["org","worker"],"rounds":[
+    {"index":1,"matches":[{"id":"r1c1","courtID":"c1","teamA":["p1","p2"],"teamB":["p3","p4"]}],"sittingOut":[]}
+  ]},
+ "entries":[
+  {"matchID":"r1c1","scoreA":18,"scoreB":14,"endedEarly":false,"source":"app","submittedAt":"2026-11-11T10:00:10Z","creator":"org"},
+  {"matchID":"r1c1","scoreA":12,"scoreB":20,"endedEarly":false,"source":"web","submittedAt":"2026-11-11T10:00:20Z","creator":"worker"},
+  {"matchID":"r1c1","scoreA":0,"scoreB":32,"endedEarly":false,"source":"app","submittedAt":"2026-11-11T10:00:30Z","creator":"stranger"},
+  {"matchID":"r9c9","scoreA":16,"scoreB":16,"endedEarly":false,"source":"app","submittedAt":"2026-11-11T10:00:40Z","creator":"org"}
+],
+ "expectedResults":{
+    "r1c1":{"matchID":"r1c1","scoreA":18,"scoreB":14,"endedEarly":false,"source":"app","submittedAt":"2026-11-11T10:00:10Z","creator":"org"}
+  },
+ "expectedStandings":[
+  {"playerID":"p1","rank":1,"points":18,"wins":1,"pointDiff":4,"played":1,"scheduled":1},
+  {"playerID":"p2","rank":1,"points":18,"wins":1,"pointDiff":4,"played":1,"scheduled":1},
+  {"playerID":"p3","rank":3,"points":14,"wins":0,"pointDiff":-4,"played":1,"scheduled":1},
+  {"playerID":"p4","rank":3,"points":14,"wins":0,"pointDiff":-4,"played":1,"scheduled":1}
+]
+},
+{
+ "name":"eight players, draw, ties, invalid newer entries",
+ "definition":{"schemaVersion":1,"id":"eight-two-rounds","name":"eight-two-rounds","createdAt":"2026-11-11T10:00:00Z","pointsPerMatch":32,"seed":1,"players":[{"id":"p1","name":"P1"},{"id":"p2","name":"P2"},{"id":"p3","name":"P3"},{"id":"p4","name":"P4"},{"id":"p5","name":"P5"},{"id":"p6","name":"P6"},{"id":"p7","name":"P7"},{"id":"p8","name":"P8"}],"courts":[{"id":"c1","name":"Court 1"},{"id":"c2","name":"Court 2"}],"trustedWriters":["org","worker"],"rounds":[
+    {"index":1,"matches":[{"id":"r1c1","courtID":"c1","teamA":["p1","p2"],"teamB":["p3","p4"]},{"id":"r1c2","courtID":"c2","teamA":["p5","p6"],"teamB":["p7","p8"]}],"sittingOut":[]},
+    {"index":2,"matches":[{"id":"r2c1","courtID":"c1","teamA":["p1","p3"],"teamB":["p5","p7"]},{"id":"r2c2","courtID":"c2","teamA":["p2","p4"],"teamB":["p6","p8"]}],"sittingOut":[]}
+  ]},
+ "entries":[
+  {"matchID":"r1c1","scoreA":20,"scoreB":12,"endedEarly":false,"source":"app","submittedAt":"2026-11-11T10:01:00Z","creator":"org"},
+  {"matchID":"r1c2","scoreA":16,"scoreB":16,"endedEarly":false,"source":"app","submittedAt":"2026-11-11T10:01:01Z","creator":"org"},
+  {"matchID":"r2c1","scoreA":10,"scoreB":22,"endedEarly":false,"source":"web","submittedAt":"2026-11-11T10:01:02Z","creator":"worker"},
+  {"matchID":"r2c1","scoreA":14,"scoreB":18,"endedEarly":false,"source":"app","submittedAt":"2026-11-11T10:01:03Z","creator":"org"},
+  {"matchID":"r2c2","scoreA":20,"scoreB":12,"endedEarly":false,"source":"web","submittedAt":"2026-11-11T10:01:04Z","creator":"worker"},
+  {"matchID":"r2c2","scoreA":20,"scoreB":20,"endedEarly":false,"source":"app","submittedAt":"2026-11-11T10:01:05Z","creator":"org"}
+],
+ "expectedResults":{
+    "r1c1":{"matchID":"r1c1","scoreA":20,"scoreB":12,"endedEarly":false,"source":"app","submittedAt":"2026-11-11T10:01:00Z","creator":"org"},
+    "r1c2":{"matchID":"r1c2","scoreA":16,"scoreB":16,"endedEarly":false,"source":"app","submittedAt":"2026-11-11T10:01:01Z","creator":"org"},
+    "r2c1":{"matchID":"r2c1","scoreA":14,"scoreB":18,"endedEarly":false,"source":"app","submittedAt":"2026-11-11T10:01:03Z","creator":"org"},
+    "r2c2":{"matchID":"r2c2","scoreA":20,"scoreB":12,"endedEarly":false,"source":"web","submittedAt":"2026-11-11T10:01:04Z","creator":"worker"}
+  },
+ "expectedStandings":[
+  {"playerID":"p2","rank":1,"points":40,"wins":2,"pointDiff":16,"played":2,"scheduled":2},
+  {"playerID":"p5","rank":2,"points":34,"wins":1.5,"pointDiff":4,"played":2,"scheduled":2},
+  {"playerID":"p7","rank":2,"points":34,"wins":1.5,"pointDiff":4,"played":2,"scheduled":2},
+  {"playerID":"p1","rank":4,"points":34,"wins":1,"pointDiff":4,"played":2,"scheduled":2},
+  {"playerID":"p4","rank":5,"points":32,"wins":1,"pointDiff":0,"played":2,"scheduled":2},
+  {"playerID":"p6","rank":6,"points":28,"wins":0.5,"pointDiff":-8,"played":2,"scheduled":2},
+  {"playerID":"p8","rank":6,"points":28,"wins":0.5,"pointDiff":-8,"played":2,"scheduled":2},
+  {"playerID":"p3","rank":8,"points":26,"wins":0,"pointDiff":-12,"played":2,"scheduled":2}
+]
+},
+{
+ "name":"partial: ended early, latest web, one round unplayed",
+ "definition":{"schemaVersion":1,"id":"partial","name":"partial","createdAt":"2026-11-11T10:00:00Z","pointsPerMatch":32,"seed":1,"players":[{"id":"p1","name":"P1"},{"id":"p2","name":"P2"},{"id":"p3","name":"P3"},{"id":"p4","name":"P4"}],"courts":[{"id":"c1","name":"Court 1"}],"trustedWriters":["org","worker"],"rounds":[
+    {"index":1,"matches":[{"id":"r1c1","courtID":"c1","teamA":["p1","p2"],"teamB":["p3","p4"]}],"sittingOut":[]},
+    {"index":2,"matches":[{"id":"r2c1","courtID":"c1","teamA":["p1","p3"],"teamB":["p2","p4"]}],"sittingOut":[]}
+  ]},
+ "entries":[
+  {"matchID":"r1c1","scoreA":10,"scoreB":20,"endedEarly":true,"source":"web","submittedAt":"2026-11-11T10:02:00Z","creator":"worker"},
+  {"matchID":"r1c1","scoreA":12,"scoreB":10,"endedEarly":true,"source":"web","submittedAt":"2026-11-11T10:02:30Z","creator":"worker","note":"retired"}
+],
+ "expectedResults":{
+    "r1c1":{"matchID":"r1c1","scoreA":12,"scoreB":10,"endedEarly":true,"source":"web","submittedAt":"2026-11-11T10:02:30Z","creator":"worker","note":"retired"}
+  },
+ "expectedStandings":[
+  {"playerID":"p1","rank":1,"points":12,"wins":1,"pointDiff":2,"played":1,"scheduled":2},
+  {"playerID":"p2","rank":1,"points":12,"wins":1,"pointDiff":2,"played":1,"scheduled":2},
+  {"playerID":"p3","rank":3,"points":10,"wins":0,"pointDiff":-2,"played":1,"scheduled":2},
+  {"playerID":"p4","rank":3,"points":10,"wins":0,"pointDiff":-2,"played":1,"scheduled":2}
+]
+}
+]

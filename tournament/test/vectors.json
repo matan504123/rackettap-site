@@ -1,0 +1,805 @@
+{
+ "version": 1,
+ "note": "Hand-derived from spec §3.1/§5.3/§6; cross-check against the Swift vectors file (Task 2).",
+ "cases": [
+  {
+   "name": "untrusted creator, unknown match and invalid scores are dropped",
+   "definition": {
+    "schemaVersion": 1,
+    "id": "vec4",
+    "name": "Four",
+    "pointsPerMatch": 32,
+    "players": [
+     {
+      "id": "A",
+      "name": "Player A"
+     },
+     {
+      "id": "B",
+      "name": "Player B"
+     },
+     {
+      "id": "C",
+      "name": "Player C"
+     },
+     {
+      "id": "D",
+      "name": "Player D"
+     }
+    ],
+    "courts": [
+     {
+      "id": "c1",
+      "name": "Court 1"
+     }
+    ],
+    "rounds": [
+     {
+      "index": 0,
+      "matches": [
+       {
+        "id": "m1",
+        "courtID": "c1",
+        "teamA": [
+         "A",
+         "B"
+        ],
+        "teamB": [
+         "C",
+         "D"
+        ]
+       }
+      ],
+      "sittingOut": []
+     },
+     {
+      "index": 1,
+      "matches": [
+       {
+        "id": "m2",
+        "courtID": "c1",
+        "teamA": [
+         "A",
+         "C"
+        ],
+        "teamB": [
+         "B",
+         "D"
+        ]
+       }
+      ],
+      "sittingOut": []
+     },
+     {
+      "index": 2,
+      "matches": [
+       {
+        "id": "m3",
+        "courtID": "c1",
+        "teamA": [
+         "A",
+         "D"
+        ],
+        "teamB": [
+         "B",
+         "C"
+        ]
+       }
+      ],
+      "sittingOut": []
+     }
+    ],
+    "trustedWriters": [
+     "_organizer",
+     "_worker"
+    ]
+   },
+   "scores": [
+    {
+     "creator": "_worker",
+     "matchID": "m1",
+     "scoreA": 18,
+     "scoreB": 14,
+     "endedEarly": false,
+     "source": "web",
+     "submittedAt": 100
+    },
+    {
+     "creator": "_stranger",
+     "matchID": "m2",
+     "scoreA": 20,
+     "scoreB": 12,
+     "endedEarly": false,
+     "source": "web",
+     "submittedAt": 110
+    },
+    {
+     "creator": "_worker",
+     "matchID": "m9",
+     "scoreA": 18,
+     "scoreB": 14,
+     "endedEarly": false,
+     "source": "web",
+     "submittedAt": 120
+    },
+    {
+     "creator": "_worker",
+     "matchID": "m3",
+     "scoreA": 18,
+     "scoreB": 15,
+     "endedEarly": false,
+     "source": "web",
+     "submittedAt": 130
+    },
+    {
+     "creator": "_organizer",
+     "matchID": "m2",
+     "scoreA": 18,
+     "scoreB": 14,
+     "endedEarly": true,
+     "source": "web",
+     "submittedAt": 140
+    }
+   ],
+   "expected": {
+    "results": {
+     "m1": [
+      18,
+      14
+     ]
+    },
+    "standings": [
+     {
+      "id": "A",
+      "points": 18,
+      "wins": 1,
+      "diff": 4,
+      "played": 1,
+      "scheduled": 3,
+      "rank": 1
+     },
+     {
+      "id": "B",
+      "points": 18,
+      "wins": 1,
+      "diff": 4,
+      "played": 1,
+      "scheduled": 3,
+      "rank": 1
+     },
+     {
+      "id": "C",
+      "points": 14,
+      "wins": 0,
+      "diff": -4,
+      "played": 1,
+      "scheduled": 3,
+      "rank": 3
+     },
+     {
+      "id": "D",
+      "points": 14,
+      "wins": 0,
+      "diff": -4,
+      "played": 1,
+      "scheduled": 3,
+      "rank": 3
+     }
+    ]
+   }
+  },
+  {
+   "name": "app score beats a later web score; latest web wins among web",
+   "definition": {
+    "schemaVersion": 1,
+    "id": "vec4",
+    "name": "Four",
+    "pointsPerMatch": 32,
+    "players": [
+     {
+      "id": "A",
+      "name": "Player A"
+     },
+     {
+      "id": "B",
+      "name": "Player B"
+     },
+     {
+      "id": "C",
+      "name": "Player C"
+     },
+     {
+      "id": "D",
+      "name": "Player D"
+     }
+    ],
+    "courts": [
+     {
+      "id": "c1",
+      "name": "Court 1"
+     }
+    ],
+    "rounds": [
+     {
+      "index": 0,
+      "matches": [
+       {
+        "id": "m1",
+        "courtID": "c1",
+        "teamA": [
+         "A",
+         "B"
+        ],
+        "teamB": [
+         "C",
+         "D"
+        ]
+       }
+      ],
+      "sittingOut": []
+     },
+     {
+      "index": 1,
+      "matches": [
+       {
+        "id": "m2",
+        "courtID": "c1",
+        "teamA": [
+         "A",
+         "C"
+        ],
+        "teamB": [
+         "B",
+         "D"
+        ]
+       }
+      ],
+      "sittingOut": []
+     },
+     {
+      "index": 2,
+      "matches": [
+       {
+        "id": "m3",
+        "courtID": "c1",
+        "teamA": [
+         "A",
+         "D"
+        ],
+        "teamB": [
+         "B",
+         "C"
+        ]
+       }
+      ],
+      "sittingOut": []
+     }
+    ],
+    "trustedWriters": [
+     "_organizer",
+     "_worker"
+    ]
+   },
+   "scores": [
+    {
+     "creator": "_organizer",
+     "matchID": "m1",
+     "scoreA": 18,
+     "scoreB": 14,
+     "endedEarly": false,
+     "source": "app",
+     "submittedAt": 100
+    },
+    {
+     "creator": "_worker",
+     "matchID": "m1",
+     "scoreA": 10,
+     "scoreB": 22,
+     "endedEarly": false,
+     "source": "web",
+     "submittedAt": 200
+    },
+    {
+     "creator": "_worker",
+     "matchID": "m2",
+     "scoreA": 16,
+     "scoreB": 16,
+     "endedEarly": false,
+     "source": "web",
+     "submittedAt": 100
+    },
+    {
+     "creator": "_worker",
+     "matchID": "m2",
+     "scoreA": 20,
+     "scoreB": 12,
+     "endedEarly": false,
+     "source": "web",
+     "submittedAt": 150
+    }
+   ],
+   "expected": {
+    "results": {
+     "m1": [
+      18,
+      14
+     ],
+     "m2": [
+      20,
+      12
+     ]
+    },
+    "standings": [
+     {
+      "id": "A",
+      "points": 38,
+      "wins": 2,
+      "diff": 12,
+      "played": 2,
+      "scheduled": 3,
+      "rank": 1
+     },
+     {
+      "id": "C",
+      "points": 34,
+      "wins": 1,
+      "diff": 4,
+      "played": 2,
+      "scheduled": 3,
+      "rank": 2
+     },
+     {
+      "id": "B",
+      "points": 30,
+      "wins": 1,
+      "diff": -4,
+      "played": 2,
+      "scheduled": 3,
+      "rank": 3
+     },
+     {
+      "id": "D",
+      "points": 26,
+      "wins": 0,
+      "diff": -12,
+      "played": 2,
+      "scheduled": 3,
+      "rank": 4
+     }
+    ]
+   }
+  },
+  {
+   "name": "latest app score wins; ended-early score counts",
+   "definition": {
+    "schemaVersion": 1,
+    "id": "vec4",
+    "name": "Four",
+    "pointsPerMatch": 32,
+    "players": [
+     {
+      "id": "A",
+      "name": "Player A"
+     },
+     {
+      "id": "B",
+      "name": "Player B"
+     },
+     {
+      "id": "C",
+      "name": "Player C"
+     },
+     {
+      "id": "D",
+      "name": "Player D"
+     }
+    ],
+    "courts": [
+     {
+      "id": "c1",
+      "name": "Court 1"
+     }
+    ],
+    "rounds": [
+     {
+      "index": 0,
+      "matches": [
+       {
+        "id": "m1",
+        "courtID": "c1",
+        "teamA": [
+         "A",
+         "B"
+        ],
+        "teamB": [
+         "C",
+         "D"
+        ]
+       }
+      ],
+      "sittingOut": []
+     },
+     {
+      "index": 1,
+      "matches": [
+       {
+        "id": "m2",
+        "courtID": "c1",
+        "teamA": [
+         "A",
+         "C"
+        ],
+        "teamB": [
+         "B",
+         "D"
+        ]
+       }
+      ],
+      "sittingOut": []
+     },
+     {
+      "index": 2,
+      "matches": [
+       {
+        "id": "m3",
+        "courtID": "c1",
+        "teamA": [
+         "A",
+         "D"
+        ],
+        "teamB": [
+         "B",
+         "C"
+        ]
+       }
+      ],
+      "sittingOut": []
+     }
+    ],
+    "trustedWriters": [
+     "_organizer",
+     "_worker"
+    ]
+   },
+   "scores": [
+    {
+     "creator": "_organizer",
+     "matchID": "m1",
+     "scoreA": 18,
+     "scoreB": 14,
+     "endedEarly": false,
+     "source": "app",
+     "submittedAt": 100
+    },
+    {
+     "creator": "_organizer",
+     "matchID": "m1",
+     "scoreA": 20,
+     "scoreB": 12,
+     "endedEarly": false,
+     "source": "app",
+     "submittedAt": 300
+    },
+    {
+     "creator": "_worker",
+     "matchID": "m1",
+     "scoreA": 10,
+     "scoreB": 22,
+     "endedEarly": false,
+     "source": "web",
+     "submittedAt": 500
+    },
+    {
+     "creator": "_worker",
+     "matchID": "m2",
+     "scoreA": 18,
+     "scoreB": 13,
+     "endedEarly": true,
+     "source": "web",
+     "submittedAt": 100
+    }
+   ],
+   "expected": {
+    "results": {
+     "m1": [
+      20,
+      12
+     ],
+     "m2": [
+      18,
+      13
+     ]
+    },
+    "standings": [
+     {
+      "id": "A",
+      "points": 38,
+      "wins": 2,
+      "diff": 13,
+      "played": 2,
+      "scheduled": 3,
+      "rank": 1
+     },
+     {
+      "id": "B",
+      "points": 33,
+      "wins": 1,
+      "diff": 3,
+      "played": 2,
+      "scheduled": 3,
+      "rank": 2
+     },
+     {
+      "id": "C",
+      "points": 30,
+      "wins": 1,
+      "diff": -3,
+      "played": 2,
+      "scheduled": 3,
+      "rank": 3
+     },
+     {
+      "id": "D",
+      "points": 25,
+      "wins": 0,
+      "diff": -13,
+      "played": 2,
+      "scheduled": 3,
+      "rank": 4
+     }
+    ]
+   }
+  },
+  {
+   "name": "draws count half a win and equal rows share a rank (1,2,2,4,5)",
+   "definition": {
+    "schemaVersion": 1,
+    "id": "vec5",
+    "name": "Four",
+    "pointsPerMatch": 32,
+    "players": [
+     {
+      "id": "A",
+      "name": "Player A"
+     },
+     {
+      "id": "B",
+      "name": "Player B"
+     },
+     {
+      "id": "C",
+      "name": "Player C"
+     },
+     {
+      "id": "D",
+      "name": "Player D"
+     },
+     {
+      "id": "E",
+      "name": "Player E"
+     }
+    ],
+    "courts": [
+     {
+      "id": "c1",
+      "name": "Court 1"
+     }
+    ],
+    "rounds": [
+     {
+      "index": 0,
+      "matches": [
+       {
+        "id": "m1",
+        "courtID": "c1",
+        "teamA": [
+         "A",
+         "B"
+        ],
+        "teamB": [
+         "C",
+         "D"
+        ]
+       }
+      ],
+      "sittingOut": []
+     },
+     {
+      "index": 1,
+      "matches": [
+       {
+        "id": "m2",
+        "courtID": "c1",
+        "teamA": [
+         "A",
+         "E"
+        ],
+        "teamB": [
+         "B",
+         "C"
+        ]
+       }
+      ],
+      "sittingOut": []
+     },
+     {
+      "index": 2,
+      "matches": [
+       {
+        "id": "m3",
+        "courtID": "c1",
+        "teamA": [
+         "A",
+         "C"
+        ],
+        "teamB": [
+         "D",
+         "E"
+        ]
+       }
+      ],
+      "sittingOut": []
+     },
+     {
+      "index": 3,
+      "matches": [
+       {
+        "id": "m4",
+        "courtID": "c1",
+        "teamA": [
+         "B",
+         "D"
+        ],
+        "teamB": [
+         "C",
+         "E"
+        ]
+       }
+      ],
+      "sittingOut": []
+     },
+     {
+      "index": 4,
+      "matches": [
+       {
+        "id": "m5",
+        "courtID": "c1",
+        "teamA": [
+         "A",
+         "D"
+        ],
+        "teamB": [
+         "B",
+         "E"
+        ]
+       }
+      ],
+      "sittingOut": []
+     }
+    ],
+    "trustedWriters": [
+     "_organizer",
+     "_worker"
+    ]
+   },
+   "scores": [
+    {
+     "creator": "_worker",
+     "matchID": "m1",
+     "scoreA": 18,
+     "scoreB": 14,
+     "endedEarly": false,
+     "source": "web",
+     "submittedAt": 1
+    },
+    {
+     "creator": "_worker",
+     "matchID": "m2",
+     "scoreA": 18,
+     "scoreB": 14,
+     "endedEarly": false,
+     "source": "web",
+     "submittedAt": 2
+    },
+    {
+     "creator": "_worker",
+     "matchID": "m3",
+     "scoreA": 18,
+     "scoreB": 14,
+     "endedEarly": false,
+     "source": "web",
+     "submittedAt": 3
+    },
+    {
+     "creator": "_worker",
+     "matchID": "m4",
+     "scoreA": 16,
+     "scoreB": 16,
+     "endedEarly": false,
+     "source": "web",
+     "submittedAt": 4
+    },
+    {
+     "creator": "_worker",
+     "matchID": "m5",
+     "scoreA": 16,
+     "scoreB": 16,
+     "endedEarly": false,
+     "source": "web",
+     "submittedAt": 5
+    }
+   ],
+   "expected": {
+    "results": {
+     "m1": [
+      18,
+      14
+     ],
+     "m2": [
+      18,
+      14
+     ],
+     "m3": [
+      18,
+      14
+     ],
+     "m4": [
+      16,
+      16
+     ],
+     "m5": [
+      16,
+      16
+     ]
+    },
+    "standings": [
+     {
+      "id": "A",
+      "points": 70,
+      "wins": 3.5,
+      "diff": 12,
+      "played": 4,
+      "scheduled": 4,
+      "rank": 1
+     },
+     {
+      "id": "B",
+      "points": 64,
+      "wins": 2,
+      "diff": 0,
+      "played": 4,
+      "scheduled": 4,
+      "rank": 2
+     },
+     {
+      "id": "E",
+      "points": 64,
+      "wins": 2,
+      "diff": 0,
+      "played": 4,
+      "scheduled": 4,
+      "rank": 2
+     },
+     {
+      "id": "C",
+      "points": 62,
+      "wins": 1.5,
+      "diff": -4,
+      "played": 4,
+      "scheduled": 4,
+      "rank": 4
+     },
+     {
+      "id": "D",
+      "points": 60,
+      "wins": 1,
+      "diff": -8,
+      "played": 4,
+      "scheduled": 4,
+      "rank": 5
+     }
+    ]
+   }
+  }
+ ]
+}

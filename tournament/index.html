@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <!-- Same lock-down as live/: scripts only from self + Apple's CloudKit CDN; network only to Apple CloudKit and
+       the two score-entry Workers (prod + dev; keep in sync with WORKER_URLS in tournament.js). GitHub Pages can't set headers, so CSP is a meta tag. -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'none';
+                 script-src 'self' https://cdn.apple-cloudkit.com;
+                 connect-src https://*.apple-cloudkit.com https://api.apple-cloudkit.com https://rackettap-tournament.rackettap.workers.dev https://rackettap-tournament-dev.rackettap.workers.dev;
+                 style-src 'self' 'unsafe-inline';
+                 img-src 'self' data:;
+                 base-uri 'none';
+                 form-action 'none'">
+  <title>RacketTap — Americano Tournament</title>
+  <style>
+    :root { color-scheme: dark; --blue:#0a84ff; --orange:#ff9f0a; --bg:#000; --card:#1c1c1e; --card2:#2c2c2e;
+            --muted:#98989f; --green:#30d158; --red:#ff453a; --line:rgba(255,255,255,.1);
+            --pad: clamp(12px, 3.6vw, 28px); }
+    * { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { margin:0; min-height:100vh; min-height:100dvh; background:var(--bg); color:#fff;
+           font-family:-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+                       "Segoe UI", Roboto, "Helvetica Neue", Arial, system-ui, sans-serif;
+           display:flex; flex-direction:column; align-items:center;
+           padding:max(14px, env(safe-area-inset-top)) max(var(--pad), env(safe-area-inset-right))
+                   max(18px, env(safe-area-inset-bottom)) max(var(--pad), env(safe-area-inset-left));
+           gap:14px; }
+    .brand { display:flex; align-items:center; gap:10px; text-decoration:none; color:#fff; flex:none; }
+    .brand-icon { width:30px; height:30px; border-radius:8px; box-shadow:0 1px 6px rgba(0,0,0,.5); }
+    .brand-name { font-size:20px; font-weight:700; letter-spacing:.01em; }
+    .brand:active { opacity:.55; }
+    main#tournament, #message { display:none; width:100%; max-width:720px; }
+    body[data-state="tournament"] #tournament { display:flex; flex-direction:column; gap:14px; }
+    body[data-state="message"] #message { display:flex; flex:1; flex-direction:column; align-items:center;
+                                          justify-content:center; text-align:center; }
+    #message p { color:var(--muted); max-width:34ch; }
+
+    /* header */
+    .head { display:flex; flex-direction:column; gap:8px; min-width:0; }
+    h1#t-name { margin:0; font-size:clamp(22px, 6vw, 32px); line-height:1.15; font-weight:800;
+                overflow-wrap:anywhere; display:-webkit-box; -webkit-box-orient:vertical;
+                -webkit-line-clamp:2; overflow:hidden; }
+    .progress-row { display:flex; align-items:center; gap:10px; color:var(--muted); font-size:14px; }
+    .bar { flex:1; height:6px; background:var(--card2); border-radius:99px; overflow:hidden; min-width:0; }
+    .bar > i { display:block; height:100%; background:var(--green); border-radius:99px; transition:width .4s; }
+    .banner { border-radius:12px; padding:10px 14px; font-weight:700; font-size:15px; }
+    .banner.final { background:rgba(48,209,88,.15); color:var(--green); }
+    .banner.warn { background:rgba(255,159,10,.15); color:var(--orange); }
+
+    /* tabs */
+    .tabs { display:grid; grid-template-columns:1fr 1fr; background:var(--card); border-radius:12px; padding:3px; }
+    .tab { appearance:none; border:0; background:none; color:var(--muted); font:inherit; font-weight:700;
+           padding:11px 0; border-radius:10px; cursor:pointer; min-height:44px; }
+    .tab[aria-selected="true"] { background:var(--card2); color:#fff; }
+
+    /* rounds */
+    .round { background:var(--card); border-radius:16px; border:1px solid var(--line); overflow:hidden; }
+    .round.current { border-color:var(--blue); }
+    .round > summary { list-style:none; display:flex; align-items:center; gap:8px; padding:14px;
+                       font-weight:800; font-size:17px; cursor:pointer; min-height:48px; }
+    .round > summary::-webkit-details-marker { display:none; }
+    .round > summary .tag { margin-left:auto; font-size:12px; font-weight:800; letter-spacing:.06em;
+                            padding:3px 9px; border-radius:99px; background:var(--card2); color:var(--muted); white-space:nowrap; }
+    .round.current > summary .tag { background:var(--blue); color:#fff; }
+    .round.done > summary .tag { background:rgba(48,209,88,.18); color:var(--green); }
+    .round > summary::before { content:"▸"; color:var(--muted); transition:transform .15s; }
+    .round[open] > summary::before { transform:rotate(90deg); }
+    .matches { display:flex; flex-direction:column; gap:10px; padding:0 12px 12px; }
+    .match { background:#111113; border-radius:12px; padding:10px 12px; display:flex; flex-direction:column; gap:8px; }
+    .match-top { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:13px; font-weight:600; min-width:0; }
+    .match-top .court { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; }
+    .src { margin-left:auto; flex:none; font-size:11px; font-weight:700; letter-spacing:.04em; border-radius:99px;
+           padding:2px 8px; border:1px solid var(--line); white-space:nowrap; }
+    .side { display:flex; align-items:center; gap:10px; min-width:0; border-left:4px solid var(--blue);
+            padding-left:10px; }
+    .side.b { border-left-color:var(--orange); }
+    .names { flex:1; min-width:0; display:flex; align-items:baseline; gap:6px; font-weight:600; font-size:16px; }
+    .names .amp { color:var(--muted); flex:none; }
+    .pn { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .names .pn { flex:0 1 auto; max-width:50%; }
+    .names .pn:last-child { flex:0 1 auto; }
+    .pts { flex:none; min-width:2ch; text-align:right; font-size:26px; font-weight:800; font-variant-numeric:tabular-nums; }
+    .side.a .pts.win { color:var(--blue); } .side.b .pts.win { color:var(--orange); }
+    .pts.dim { color:var(--muted); }
+    .btn { appearance:none; border:0; font:inherit; font-weight:700; border-radius:12px; padding:12px 16px;
+           min-height:46px; cursor:pointer; background:var(--blue); color:#fff; }
+    .btn.secondary { background:var(--card2); }
+    .btn:active { opacity:.7; }
+    .btn[disabled] { opacity:.45; cursor:default; }
+    .locked { color:var(--muted); font-size:13px; }
+    .sitting { color:var(--muted); font-size:13px; padding:0 14px 12px; display:flex; gap:6px; min-width:0; }
+    .sitting .list { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+    /* standings */
+    .table { background:var(--card); border-radius:16px; border:1px solid var(--line); overflow:hidden; }
+    .tr { display:grid; grid-template-columns:24px minmax(0,1fr) 36px 32px 40px 52px; gap:4px; align-items:center;
+          padding:11px 10px; border-top:1px solid var(--line); font-variant-numeric:tabular-nums; }
+    .tr:first-child { border-top:0; }
+    .tr.th { color:var(--muted); font-size:12px; font-weight:700; letter-spacing:.04em; padding-top:9px; padding-bottom:9px; }
+    .tr > :nth-child(n+3) { text-align:right; }
+    .tr .rank { font-weight:800; color:var(--muted); }
+    .tr.first .rank { color:var(--orange); }
+    .tr .pname { font-weight:700; }
+    .tr .big { font-weight:800; }
+    .muted { color:var(--muted); }
+
+    #updated { color:var(--muted); font-size:12px; text-align:center; }
+    .foot { margin-top:auto; padding-top:8px; display:flex; flex-wrap:wrap; gap:6px 12px; justify-content:center;
+            align-items:center; color:var(--muted); font-size:14px; text-align:center; }
+    .foot a { text-decoration:none; }
+    .foot .cta { display:inline-flex; background:var(--blue); color:#fff; padding:10px 18px; border-radius:99px; font-weight:700; }
+
+    /* score-entry sheet */
+    #sheet { position:fixed; inset:0; z-index:10; background:rgba(0,0,0,.6); display:flex; align-items:flex-end;
+             justify-content:center; }
+    #sheet[hidden] { display:none; }
+    .panel { width:100%; max-width:480px; background:var(--card); border-radius:20px 20px 0 0; padding:18px 16px
+             max(18px, env(safe-area-inset-bottom)); display:flex; flex-direction:column; gap:12px;
+             max-height:92dvh; overflow:auto; }
+    @media (min-width:600px) { #sheet { align-items:center; } .panel { border-radius:20px; } }
+    .panel h2 { margin:0; font-size:19px; }
+    .panel .vs { color:var(--muted); font-size:14px; display:flex; flex-direction:column; gap:2px; min-width:0; }
+    .panel .vs div { display:flex; gap:6px; min-width:0; }
+    .panel .vs .pn { max-width:100%; }
+    .dot { flex:none; width:10px; height:10px; border-radius:50%; margin-top:5px; background:var(--blue); }
+    .dot.b { background:var(--orange); }
+    .scores { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    label.f { display:flex; flex-direction:column; gap:5px; font-size:13px; color:var(--muted); font-weight:600; min-width:0; }
+    input[type="text"], input[type="number"], input[type="password"], input[inputmode] {
+      font:inherit; font-size:16px; color:#fff; background:#111113; border:1px solid var(--line); border-radius:12px;
+      padding:12px; min-height:48px; width:100%; min-width:0; }
+    input.score { font-size:28px; font-weight:800; text-align:center; font-variant-numeric:tabular-nums; }
+    input:focus-visible, .btn:focus-visible, .tab:focus-visible, summary:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
+    .check { display:flex; align-items:center; gap:10px; font-size:15px; min-height:44px; }
+    .check input { width:22px; height:22px; accent-color:var(--blue); }
+    .err { color:var(--red); font-size:14px; font-weight:600; min-height:0; }
+    .info { color:var(--orange); font-size:14px; font-weight:600; }
+    .actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
+  </style>
+</head>
+<body data-state="message">
+  <a class="brand" href="../" target="_blank" rel="noopener" aria-label="RacketTap home">
+    <img class="brand-icon" src="../icon.png" alt="">
+    <span class="brand-name">RacketTap</span>
+  </a>
+
+  <main id="tournament">
+    <div class="head">
+      <h1 id="t-name" dir="auto"></h1>
+      <div class="progress-row"><span id="t-progress"></span><div class="bar"><i id="t-bar"></i></div></div>
+      <div id="t-banner" class="banner" hidden></div>
+    </div>
+    <div class="tabs" role="tablist">
+      <button class="tab" role="tab" id="tab-rounds" aria-selected="true" aria-controls="view-rounds">Rounds</button>
+      <button class="tab" role="tab" id="tab-standings" aria-selected="false" aria-controls="view-standings">Standings</button>
+    </div>
+    <section id="view-rounds" role="tabpanel" aria-labelledby="tab-rounds"></section>
+    <section id="view-standings" role="tabpanel" aria-labelledby="tab-standings" hidden></section>
+    <div id="updated"></div>
+  </main>
+
+  <section id="message">
+    <h1 id="msg-title">Loading…</h1>
+    <p id="msg-detail"></p>
+  </section>
+
+  <div id="sheet" hidden><div class="panel" role="dialog" aria-modal="true" aria-labelledby="sheet-title" id="panel"></div></div>
+
+  <div class="foot">
+    <span>Scored with RacketTap.</span>
+    <a class="cta" href="https://apps.apple.com/app/id6769837930" target="_blank" rel="noopener">Get the app — free</a>
+  </div>
+
+  <script src="https://cdn.apple-cloudkit.com/ck/2/cloudkit.js"></script>
+  <script src="standings.js"></script>
+  <script src="tournament.js"></script>
+</body>
+</html>
