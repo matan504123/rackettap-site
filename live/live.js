@@ -413,9 +413,13 @@ function serveLabel(s) {
   if (!s || (s.serverRaw !== "a" && s.serverRaw !== "b")) return null;
   if (s.serverPlayerRaw !== 1 && s.serverPlayerRaw !== 2) return null;
   const name = typeof s.serverName === "string" ? s.serverName.trim() : "";
+  // Americano shows a server only by a real name, and only when BOTH teams are
+  // named (the app's "named" rule); never BLUE 1 / ORANGE 2.
+  if (s.isAmericano) {
+    const named = (t) => typeof t === "string" && t.trim() !== "";
+    return name && named(s.teamAName) && named(s.teamBName) ? name : null;
+  }
   if (name) return name;
-  // Americano shows a server only by a real name; never BLUE 1 / ORANGE 2.
-  if (s.isAmericano) return null;
   return `${s.serverRaw === "a" ? "BLUE" : "ORANGE"} ${s.serverPlayerRaw}`;
 }
 
