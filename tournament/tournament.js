@@ -43,7 +43,6 @@ function h(tag, attrs, ...kids) {
 
 /* Number from a record → plain number string or a dash. */
 function num(v) { return Number.isFinite(+v) && v !== null && v !== "" ? String(+v) : "–"; }
-function formatWins(w) { const whole = Math.floor(w); return w % 1 ? (whole ? String(whole) : "") + "½" : String(w); }
 function formatDiff(d) { return d > 0 ? "+" + d : d < 0 ? "−" + Math.abs(d) : "0"; }
 
 /* ── state ────────────────────────────────────────────────────────────── */
@@ -236,7 +235,7 @@ function matchCard(m, res, pm, cm) {
   const a = res ? res.scoreA : null, b = res ? res.scoreB : null;
   const aWin = res && a > b, bWin = res && b > a;
   const courtName = cm.get(m.courtID) || "Court";
-  const side = (cls, team, mine, win) => h("div", { class: "side " + cls }, teamNames(team, pm),
+  const side = (cls, team, mine, win) => h("div", { class: "side " + cls + (win ? " won" : "") }, teamNames(team, pm),
     h("span", { class: "pts" + (res ? (win || a === b ? " win" : " dim") : " dim") }, res ? num(mine) : "–"));
   const lockedByApp = res && res.source === "app";
   let action = null;
@@ -246,8 +245,10 @@ function matchCard(m, res, pm, cm) {
           res ? "Change score" : "Enter score");
   }
   return h("div", { class: "match", "data-match": m.id },
-    h("div", { class: "match-top" }, h("span", { class: "court", dir: "auto" }, courtName),
-      res ? h("span", { class: "src" }, (res.endedEarly ? "ENDED EARLY · " : "") + (res.source === "app" ? "APP" : "WEB")) : null),
+    h("div", { class: "match-top" }, h("span", { class: "chip court" }, h("span", { class: "court", dir: "auto" }, courtName)),
+      h("span", { class: "chip " + (!res ? "st-todo" : res.endedEarly ? "st-early" : "st-done") },
+        !res ? "Not played yet" : res.endedEarly ? "Ended early" : "Done"),
+      res ? h("span", { class: "src" }, res.source === "app" ? "APP" : "WEB") : null),
     side("a", m.teamA, a, aWin), side("b", m.teamB, b, bWin), action);
 }
 
@@ -256,16 +257,17 @@ function renderStandings() {
   const rows = Standings.computeStandings(def, results);
   const box = $("view-standings");
   box.replaceChildren(h("div", { class: "table" },
-    h("div", { class: "tr th" }, h("span", {}, "#"), h("span", {}, "PLAYER"), h("span", {}, "PTS"), h("span", {}, "W"), h("span", {}, "+/−"), h("span", {}, "PLAYED")),
-    rows.map((r) => h("div", { class: "tr" + (r.rank === 1 ? " first" : "") },
-      h("span", { class: "rank" }, num(r.rank)),
-      h("span", { class: "pname" }, nameSpan(r.name || "Player"), isFinished() && r.rank === 1 ? " 🏆" : null),
-      h("span", { class: "big" }, num(r.points)),
-      h("span", {}, formatWins(r.wins)),
-      h("span", { class: "muted" }, formatDiff(r.diff)),
-      h("span", { class: "muted" }, `${num(r.played)}/${num(r.scheduled)}`)))));
-  // keep name + trophy on one truncated line
-  box.querySelectorAll(".pname").forEach((el) => { el.style.display = "flex"; el.style.alignItems = "center"; el.style.gap = "4px"; el.style.minWidth = "0"; });
+    h("div", { class: "tr th" }, h("span", {}, "#"), h("span", {}, "PLAYER"), h("span", {}, "W"), h("span", {}, "L"), h("span", {}, "P"), h("span", {}, "+/-")),
+    rows.map((r) => {
+      const medal = r.played > 0 && r.rank <= 3;
+      return h("div", { class: "tr" + (medal ? " m" + r.rank : "") },
+        medal ? h("span", { class: "medal" }, num(r.rank)) : h("span", { class: "rank" }, num(r.rank)),
+        h("span", { class: "pname" }, nameSpan(r.name || "Player"), isFinished() && r.rank === 1 && r.played > 0 ? " 🏆" : null),
+        h("span", { class: "wl" }, num(r.wins)),
+        h("span", { class: "wl" }, num(r.losses)),
+        h("span", { class: "big" }, num(r.points)),
+        h("span", { class: "diff " + (r.diff > 0 ? "pos" : r.diff < 0 ? "neg" : "muted") }, formatDiff(r.diff)));
+    })));
 }
 
 function showTab(name) {

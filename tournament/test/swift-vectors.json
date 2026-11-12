@@ -14,10 +14,10 @@
     "r1c1":{"matchID":"r1c1","scoreA":18,"scoreB":14,"endedEarly":false,"source":"app","submittedAt":"2026-11-11T10:00:10Z","creator":"org"}
   },
  "expectedStandings":[
-  {"playerID":"p1","rank":1,"points":18,"wins":1,"pointDiff":4,"played":1,"scheduled":1},
-  {"playerID":"p2","rank":1,"points":18,"wins":1,"pointDiff":4,"played":1,"scheduled":1},
-  {"playerID":"p3","rank":3,"points":14,"wins":0,"pointDiff":-4,"played":1,"scheduled":1},
-  {"playerID":"p4","rank":3,"points":14,"wins":0,"pointDiff":-4,"played":1,"scheduled":1}
+  {"playerID":"p1","rank":1,"points":18,"wins":1,"losses":0,"pointDiff":4,"played":1,"scheduled":1},
+  {"playerID":"p2","rank":1,"points":18,"wins":1,"losses":0,"pointDiff":4,"played":1,"scheduled":1},
+  {"playerID":"p3","rank":3,"points":14,"wins":0,"losses":1,"pointDiff":-4,"played":1,"scheduled":1},
+  {"playerID":"p4","rank":3,"points":14,"wins":0,"losses":1,"pointDiff":-4,"played":1,"scheduled":1}
 ]
 },
 {
@@ -41,14 +41,14 @@
     "r2c2":{"matchID":"r2c2","scoreA":20,"scoreB":12,"endedEarly":false,"source":"web","submittedAt":"2026-11-11T10:01:04Z","creator":"worker"}
   },
  "expectedStandings":[
-  {"playerID":"p2","rank":1,"points":40,"wins":2,"pointDiff":16,"played":2,"scheduled":2},
-  {"playerID":"p5","rank":2,"points":34,"wins":1.5,"pointDiff":4,"played":2,"scheduled":2},
-  {"playerID":"p7","rank":2,"points":34,"wins":1.5,"pointDiff":4,"played":2,"scheduled":2},
-  {"playerID":"p1","rank":4,"points":34,"wins":1,"pointDiff":4,"played":2,"scheduled":2},
-  {"playerID":"p4","rank":5,"points":32,"wins":1,"pointDiff":0,"played":2,"scheduled":2},
-  {"playerID":"p6","rank":6,"points":28,"wins":0.5,"pointDiff":-8,"played":2,"scheduled":2},
-  {"playerID":"p8","rank":6,"points":28,"wins":0.5,"pointDiff":-8,"played":2,"scheduled":2},
-  {"playerID":"p3","rank":8,"points":26,"wins":0,"pointDiff":-12,"played":2,"scheduled":2}
+  {"playerID":"p2","rank":1,"points":40,"wins":2,"losses":0,"pointDiff":16,"played":2,"scheduled":2},
+  {"playerID":"p1","rank":2,"points":34,"wins":1,"losses":1,"pointDiff":4,"played":2,"scheduled":2},
+  {"playerID":"p5","rank":2,"points":34,"wins":1,"losses":0,"pointDiff":4,"played":2,"scheduled":2},
+  {"playerID":"p7","rank":2,"points":34,"wins":1,"losses":0,"pointDiff":4,"played":2,"scheduled":2},
+  {"playerID":"p4","rank":5,"points":32,"wins":1,"losses":1,"pointDiff":0,"played":2,"scheduled":2},
+  {"playerID":"p6","rank":6,"points":28,"wins":0,"losses":1,"pointDiff":-8,"played":2,"scheduled":2},
+  {"playerID":"p8","rank":6,"points":28,"wins":0,"losses":1,"pointDiff":-8,"played":2,"scheduled":2},
+  {"playerID":"p3","rank":8,"points":26,"wins":0,"losses":2,"pointDiff":-12,"played":2,"scheduled":2}
 ]
 },
 {
@@ -65,10 +65,10 @@
     "r1c1":{"matchID":"r1c1","scoreA":12,"scoreB":10,"endedEarly":true,"source":"web","submittedAt":"2026-11-11T10:02:30Z","creator":"worker","note":"retired"}
   },
  "expectedStandings":[
-  {"playerID":"p1","rank":1,"points":12,"wins":1,"pointDiff":2,"played":1,"scheduled":2},
-  {"playerID":"p2","rank":1,"points":12,"wins":1,"pointDiff":2,"played":1,"scheduled":2},
-  {"playerID":"p3","rank":3,"points":10,"wins":0,"pointDiff":-2,"played":1,"scheduled":2},
-  {"playerID":"p4","rank":3,"points":10,"wins":0,"pointDiff":-2,"played":1,"scheduled":2}
+  {"playerID":"p1","rank":1,"points":12,"wins":1,"losses":0,"pointDiff":2,"played":1,"scheduled":2},
+  {"playerID":"p2","rank":1,"points":12,"wins":1,"losses":0,"pointDiff":2,"played":1,"scheduled":2},
+  {"playerID":"p3","rank":3,"points":10,"wins":0,"losses":1,"pointDiff":-2,"played":1,"scheduled":2},
+  {"playerID":"p4","rank":3,"points":10,"wins":0,"losses":1,"pointDiff":-2,"played":1,"scheduled":2}
 ]
 }
 ]

@@ -59,12 +59,13 @@
     return out;
   }
 
-  /* Standings rows in rank order: {id, name, points, wins, diff, played, scheduled, rank}.
-     Rank: points desc, wins desc (draw = 1/2), diff desc; equal on all three share a rank (1,2,2,4). */
+  /* Standings rows in rank order: {id, name, points, wins, losses, diff, played, scheduled, rank}.
+     A draw is neither a win nor a loss. Order: points desc, diff desc, wins desc, then player order;
+     rows equal on all three share a rank (1,2,2,4). */
   function computeStandings(def, results) {
     const rows = new Map();
     (def.players || []).forEach((p, i) => rows.set(p.id,
-      { id: p.id, name: p.name, points: 0, wins: 0, diff: 0, played: 0, scheduled: 0, rank: 0, _i: i }));
+      { id: p.id, name: p.name, points: 0, wins: 0, losses: 0, diff: 0, played: 0, scheduled: 0, rank: 0, _i: i }));
     for (const r of def.rounds || []) for (const m of r.matches || []) {
       const res = results[m.id];
       const sides = [[m.teamA, res && res.scoreA, res && res.scoreB], [m.teamB, res && res.scoreB, res && res.scoreA]];
@@ -76,11 +77,11 @@
         row.played += 1;
         row.points += mine;
         row.diff += mine - theirs;
-        row.wins += mine > theirs ? 1 : mine === theirs ? 0.5 : 0;
+        if (mine > theirs) row.wins += 1; else if (mine < theirs) row.losses += 1;
       }
     }
     const list = [...rows.values()].sort((a, b) =>
-      b.points - a.points || b.wins - a.wins || b.diff - a.diff || a._i - b._i);
+      b.points - a.points || b.diff - a.diff || b.wins - a.wins || a._i - b._i);
     list.forEach((row, i) => {
       const prev = list[i - 1];
       const tied = prev && prev.points === row.points && prev.wins === row.wins && prev.diff === row.diff;
