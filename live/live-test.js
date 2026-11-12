@@ -148,6 +148,8 @@ function serveLabel(s) {
   if (s.serverPlayerRaw !== 1 && s.serverPlayerRaw !== 2) return null;
   const name = typeof s.serverName === "string" ? s.serverName.trim() : "";
   if (name) return name;
+  // Americano shows a server only by a real name; never BLUE 1 / ORANGE 2.
+  if (s.isAmericano) return null;
   return `${s.serverRaw === "a" ? "BLUE" : "ORANGE"} ${s.serverPlayerRaw}`;
 }
 /* ── End copy ─────────────────────────────────────────────────────────── */
@@ -159,6 +161,9 @@ const serveCases = [
   ["17. Serve: null serverPlayerRaw → null", () => serveLabel({ serverRaw: "a", serverPlayerRaw: null }), null],
   ["18. Serve: out-of-range player → null", () => serveLabel({ serverRaw: "a", serverPlayerRaw: 3 }), null],
   ["19. Serve: no serving team → null", () => serveLabel({ serverPlayerRaw: 1 }), null],
+  ["20. Serve: Americano named → the name", () => serveLabel({ isAmericano: true, serverRaw: "a", serverPlayerRaw: 2, serverName: "Matan" }), "Matan"],
+  ["21. Serve: Americano unnamed → null (no BLUE 1)", () => serveLabel({ isAmericano: true, serverRaw: "a", serverPlayerRaw: 1 }), null],
+  ["22. Serve: Americano blank name → null", () => serveLabel({ isAmericano: true, serverRaw: "b", serverPlayerRaw: 2, serverName: "  " }), null],
 ];
 for (const [name, fn, expected] of serveCases) cases.push({ name, fn, expected });
 
