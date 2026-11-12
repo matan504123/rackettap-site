@@ -1,7 +1,7 @@
 /* RacketTap — Americano tournament page.
  *
  * Reads the public CloudKit `Tournament` record (definition JSON) and its `TournamentScore` records, shows rounds +
- * live standings, and lets someone with the 4-digit PIN enter a court's final score (POST to the Cloudflare Worker).
+ * live standings, and lets someone with the tournament PIN (6 digits; 4 for older tournaments) enter a court's final score (POST to the Cloudflare Worker).
  * The tournament id is the URL FRAGMENT (…/tournament/#<id>) so it never reaches server logs or Referer headers.
  *
  * Every record value is user text or untrusted data: it is only ever put in the DOM through textContent (h() below),
@@ -311,7 +311,7 @@ function buildSheet(m, res) {
   inA.addEventListener("input", complement(inA, inB));
   inB.addEventListener("input", complement(inB, inA));
   const nameIn = h("input", { id: "in-name", type: "text", maxlength: "40", autocomplete: "off", placeholder: "Optional", value: lsGet(NAME_KEY) || "" });
-  const pinIn = h("input", { id: "in-pin", type: "password", inputmode: "numeric", pattern: "[0-9]*", maxlength: "4", autocomplete: "off", placeholder: "4 digits" });
+  const pinIn = h("input", { id: "in-pin", type: "password", inputmode: "numeric", pattern: "[0-9]*", maxlength: "6", autocomplete: "off", placeholder: "6 digits" });
   const err = h("div", { class: "err", id: "sheet-err", role: "alert" });
   const info = h("div", { class: "info", id: "sheet-info" });
   const submit = h("button", { class: "btn", type: "button", id: "sheet-submit" }, "Save score");
@@ -335,7 +335,9 @@ const ERR_TEXT = {
   404: "Tournament not found.",
   409: "Scored by the app — ask the organizer to change it",
   413: "That entry is too large — shorten the name.",
+  426: "The organizer needs to update RacketTap and open the tournament once.",
   429: "Too many attempts. Wait ten minutes and try again.",
+  503: "Score entry is busy right now. Try again in a few minutes.",
 };
 const OFFLINE_TEXT = "Can't reach the server. Check your connection and try again.";
 
@@ -373,7 +375,7 @@ async function submitScore(m, f) {
   let pin = lsGet(pinKey());
   if (!pin) {
     pin = f.pinIn.value.trim();
-    if (!/^\d{4}$/.test(pin)) { f.err.textContent = "Enter the 4-digit tournament PIN."; return; }
+    if (!Standings.validPin(pin)) { f.err.textContent = "Enter the tournament PIN (6 digits, or 4 for older tournaments)."; return; }
   }
   sheetState.busy = true; f.submit.disabled = true;
   try {

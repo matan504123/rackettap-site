@@ -92,6 +92,10 @@
   /* Tournament ids are base64url (22 chars today). Anything else never reaches fetch, query, storage or the Worker. */
   function validTournamentID(id) { return typeof id === "string" && /^[A-Za-z0-9_-]{16,64}$/.test(id); }
 
+  /* Tournament PIN: 6 digits (v2+) or 4 (tournaments made before v2). Same rule as the worker (validate.js). */
+  function validPin(pin) {
+    return typeof pin === "string" && /^(?:[0-9]{4}|[0-9]{6})$/.test(pin);
+  }
   /* TournamentScore.tournamentKey = base64url-nopad(SHA-256(utf8(tournamentID))). Keeps raw ids out of the
      enumerable queryable field. Async (WebCrypto). */
   async function tournamentKey(id) {
@@ -100,7 +104,7 @@
     return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
   }
 
-  const api = { tournamentKey, validTournamentID, validScore, parseScoreRecord, resolveScores, computeStandings };
+  const api = { tournamentKey, validTournamentID, validScore, validPin, parseScoreRecord, resolveScores, computeStandings };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.TournamentStandings = api;
 })(typeof window !== "undefined" ? window : globalThis);

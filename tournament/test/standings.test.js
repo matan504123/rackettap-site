@@ -74,3 +74,8 @@ test("tournamentKey is base64url(SHA-256(utf8(id)))", async () => {
   assert.equal(await S.tournamentKey("abc"), "ungWv48Bz-pBQUDeXa4iI7ADYaOWF3qctBD_YfIAFa0");
   assert.match(await S.tournamentKey("Abc123_-Abc123_-Abc123"), /^[A-Za-z0-9_-]{43}$/);
 });
+
+test("validPin: 4 or 6 ASCII digits only (same rule as the worker)", () => {
+  for (const p of ["0000", "1234", "000000", "123456"]) assert.equal(S.validPin(p), true, p);
+  for (const p of ["", "123", "12345", "1234567", "12a4", " 1234", "1234 ", "١٢٣٤", 1234, null]) assert.equal(S.validPin(p), false, String(p));
+});
