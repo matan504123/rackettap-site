@@ -1,7 +1,7 @@
 /* RacketTap — Americano tournament page.
  *
  * Reads the public CloudKit `Tournament` record (definition JSON) and its `TournamentScore` records, shows rounds +
- * live standings, and lets someone with the 4-digit PIN enter a court's final score (POST to the Cloudflare Worker).
+ * live standings, and lets someone with the tournament PIN (6 digits; 4 for older tournaments) enter a court's final score (POST to the Cloudflare Worker).
  * The tournament id is the URL FRAGMENT (…/tournament/#<id>) so it never reaches server logs or Referer headers.
  *
  * Every record value is user text or untrusted data: it is only ever put in the DOM through textContent (h() below),
@@ -43,7 +43,6 @@ function h(tag, attrs, ...kids) {
 
 /* Number from a record → plain number string or a dash. */
 function num(v) { return Number.isFinite(+v) && v !== null && v !== "" ? String(+v) : "–"; }
-function formatWins(w) { const whole = Math.floor(w); return w % 1 ? (whole ? String(whole) : "") + "½" : String(w); }
 function formatDiff(d) { return d > 0 ? "+" + d : d < 0 ? "−" + Math.abs(d) : "0"; }
 
 /* ── state ────────────────────────────────────────────────────────────── */
@@ -236,7 +235,7 @@ function matchCard(m, res, pm, cm) {
   const a = res ? res.scoreA : null, b = res ? res.scoreB : null;
   const aWin = res && a > b, bWin = res && b > a;
   const courtName = cm.get(m.courtID) || "Court";
-  const side = (cls, team, mine, win) => h("div", { class: "side " + cls }, teamNames(team, pm),
+  const side = (cls, team, mine, win) => h("div", { class: "side " + cls + (win ? " won" : "") }, teamNames(team, pm),
     h("span", { class: "pts" + (res ? (win || a === b ? " win" : " dim") : " dim") }, res ? num(mine) : "–"));
   const lockedByApp = res && res.source === "app";
   let action = null;
@@ -246,8 +245,10 @@ function matchCard(m, res, pm, cm) {
           res ? "Change score" : "Enter score");
   }
   return h("div", { class: "match", "data-match": m.id },
-    h("div", { class: "match-top" }, h("span", { class: "court", dir: "auto" }, courtName),
-      res ? h("span", { class: "src" }, (res.endedEarly ? "ENDED EARLY · " : "") + (res.source === "app" ? "APP" : "WEB")) : null),
+    h("div", { class: "match-top" }, h("span", { class: "chip court" }, h("span", { class: "court", dir: "auto" }, courtName)),
+      h("span", { class: "chip " + (!res ? "st-todo" : res.endedEarly ? "st-early" : "st-done") },
+        !res ? "Not played yet" : res.endedEarly ? "Ended early" : "Done"),
+      res ? h("span", { class: "src" }, res.source === "app" ? "APP" : "WEB") : null),
     side("a", m.teamA, a, aWin), side("b", m.teamB, b, bWin), action);
 }
 
@@ -256,16 +257,17 @@ function renderStandings() {
   const rows = Standings.computeStandings(def, results);
   const box = $("view-standings");
   box.replaceChildren(h("div", { class: "table" },
-    h("div", { class: "tr th" }, h("span", {}, "#"), h("span", {}, "PLAYER"), h("span", {}, "PTS"), h("span", {}, "W"), h("span", {}, "+/−"), h("span", {}, "PLAYED")),
-    rows.map((r) => h("div", { class: "tr" + (r.rank === 1 ? " first" : "") },
-      h("span", { class: "rank" }, num(r.rank)),
-      h("span", { class: "pname" }, nameSpan(r.name || "Player"), isFinished() && r.rank === 1 ? " 🏆" : null),
-      h("span", { class: "big" }, num(r.points)),
-      h("span", {}, formatWins(r.wins)),
-      h("span", { class: "muted" }, formatDiff(r.diff)),
-      h("span", { class: "muted" }, `${num(r.played)}/${num(r.scheduled)}`)))));
-  // keep name + trophy on one truncated line
-  box.querySelectorAll(".pname").forEach((el) => { el.style.display = "flex"; el.style.alignItems = "center"; el.style.gap = "4px"; el.style.minWidth = "0"; });
+    h("div", { class: "tr th" }, h("span", {}, "#"), h("span", {}, "PLAYER"), h("span", {}, "W"), h("span", {}, "L"), h("span", {}, "P"), h("span", {}, "+/-")),
+    rows.map((r) => {
+      const medal = r.played > 0 && r.rank <= 3;
+      return h("div", { class: "tr" + (medal ? " m" + r.rank : "") },
+        medal ? h("span", { class: "medal" }, num(r.rank)) : h("span", { class: "rank" }, num(r.rank)),
+        h("span", { class: "pname" }, nameSpan(r.name || "Player"), isFinished() && r.rank === 1 && r.played > 0 ? " 🏆" : null),
+        h("span", { class: "wl" }, num(r.wins)),
+        h("span", { class: "wl" }, num(r.losses)),
+        h("span", { class: "big" }, num(r.points)),
+        h("span", { class: "diff " + (r.diff > 0 ? "pos" : r.diff < 0 ? "neg" : "muted") }, formatDiff(r.diff)));
+    })));
 }
 
 function showTab(name) {
@@ -311,7 +313,7 @@ function buildSheet(m, res) {
   inA.addEventListener("input", complement(inA, inB));
   inB.addEventListener("input", complement(inB, inA));
   const nameIn = h("input", { id: "in-name", type: "text", maxlength: "40", autocomplete: "off", placeholder: "Optional", value: lsGet(NAME_KEY) || "" });
-  const pinIn = h("input", { id: "in-pin", type: "password", inputmode: "numeric", pattern: "[0-9]*", maxlength: "4", autocomplete: "off", placeholder: "4 digits" });
+  const pinIn = h("input", { id: "in-pin", type: "password", inputmode: "numeric", pattern: "[0-9]*", maxlength: "6", autocomplete: "off", placeholder: "6 digits" });
   const err = h("div", { class: "err", id: "sheet-err", role: "alert" });
   const info = h("div", { class: "info", id: "sheet-info" });
   const submit = h("button", { class: "btn", type: "button", id: "sheet-submit" }, "Save score");
@@ -335,7 +337,9 @@ const ERR_TEXT = {
   404: "Tournament not found.",
   409: "Scored by the app — ask the organizer to change it",
   413: "That entry is too large — shorten the name.",
+  426: "The organizer needs to update RacketTap and open the tournament once.",
   429: "Too many attempts. Wait ten minutes and try again.",
+  503: "Score entry is busy right now. Try again in a few minutes.",
 };
 const OFFLINE_TEXT = "Can't reach the server. Check your connection and try again.";
 
@@ -373,7 +377,7 @@ async function submitScore(m, f) {
   let pin = lsGet(pinKey());
   if (!pin) {
     pin = f.pinIn.value.trim();
-    if (!/^\d{4}$/.test(pin)) { f.err.textContent = "Enter the 4-digit tournament PIN."; return; }
+    if (!Standings.validPin(pin)) { f.err.textContent = "Enter the tournament PIN (6 digits, or 4 for older tournaments)."; return; }
   }
   sheetState.busy = true; f.submit.disabled = true;
   try {

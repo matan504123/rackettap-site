@@ -407,11 +407,18 @@ function render(record) {
 
 /* Who is serving, as shown under the score. Needs serverRaw ("a"/"b") and
  * serverPlayerRaw (1/2); anything else → null (today's rendering).
- * Prefers serverName (resolved by the app); otherwise BLUE 1 / ORANGE 2. */
+ * Prefers serverName (resolved by the app); otherwise BLUE 1 / ORANGE 2
+ * (Americano: name or nothing). */
 function serveLabel(s) {
   if (!s || (s.serverRaw !== "a" && s.serverRaw !== "b")) return null;
   if (s.serverPlayerRaw !== 1 && s.serverPlayerRaw !== 2) return null;
   const name = typeof s.serverName === "string" ? s.serverName.trim() : "";
+  // Americano shows a server only by a real name, and only when BOTH teams are
+  // named (the app's "named" rule); never BLUE 1 / ORANGE 2.
+  if (s.isAmericano) {
+    const named = (t) => typeof t === "string" && t.trim() !== "";
+    return name && named(s.teamAName) && named(s.teamBName) ? name : null;
+  }
   if (name) return name;
   return `${s.serverRaw === "a" ? "BLUE" : "ORANGE"} ${s.serverPlayerRaw}`;
 }

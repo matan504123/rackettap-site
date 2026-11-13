@@ -14,7 +14,7 @@ for (const v of vectors.cases) {
     for (const [id, r] of Object.entries(results)) got[id] = [r.scoreA, r.scoreB];
     assert.deepEqual(got, v.expected.results);
     const rows = S.computeStandings(v.definition, results).map(
-      (r) => ({ id: r.id, points: r.points, wins: r.wins, diff: r.diff, played: r.played, scheduled: r.scheduled, rank: r.rank }));
+      (r) => ({ id: r.id, points: r.points, wins: r.wins, losses: r.losses, diff: r.diff, played: r.played, scheduled: r.scheduled, rank: r.rank }));
     assert.deepEqual(rows, v.expected.standings);
   });
 }
@@ -54,7 +54,7 @@ for (const v of swiftCases) {
     for (const [id, r] of Object.entries(v.expectedResults)) want[id] = { scoreA: r.scoreA, scoreB: r.scoreB, endedEarly: r.endedEarly, source: r.source };
     assert.deepEqual(got, want);
     const rows = S.computeStandings(v.definition, results).map((r) => ({ playerID: r.id, rank: r.rank, points: r.points,
-      wins: r.wins, pointDiff: r.diff, played: r.played, scheduled: r.scheduled }));
+      wins: r.wins, losses: r.losses, pointDiff: r.diff, played: r.played, scheduled: r.scheduled }));
     assert.deepEqual(rows, v.expectedStandings);
   });
 }
@@ -73,4 +73,56 @@ test("validTournamentID accepts base64url ids only", () => {
 test("tournamentKey is base64url(SHA-256(utf8(id)))", async () => {
   assert.equal(await S.tournamentKey("abc"), "ungWv48Bz-pBQUDeXa4iI7ADYaOWF3qctBD_YfIAFa0");
   assert.match(await S.tournamentKey("Abc123_-Abc123_-Abc123"), /^[A-Za-z0-9_-]{43}$/);
+});
+
+test("validPin: 4 or 6 ASCII digits only (same rule as the worker)", () => {
+  for (const p of ["0000", "1234", "000000", "123456"]) assert.equal(S.validPin(p), true, p);
+  for (const p of ["", "123", "12345", "1234567", "12a4", " 1234", "1234 ", "١٢٣٤", 1234, null]) assert.equal(S.validPin(p), false, String(p));
+});
+
+/* ---- standings rules (mirror of TournamentStandingsTests in the app's package) ---- */
+function def8() {
+  return { pointsPerMatch: 32, players: [1, 2, 3, 4, 5, 6, 7, 8].map((i) => ({ id: "p" + i, name: "P" + i })),
+    rounds: [
+      { index: 1, matches: [{ id: "r1c1", courtID: "c1", teamA: ["p1", "p2"], teamB: ["p3", "p4"] },
+                            { id: "r1c2", courtID: "c2", teamA: ["p5", "p6"], teamB: ["p7", "p8"] }], sittingOut: [] },
+      { index: 2, matches: [{ id: "r2c1", courtID: "c1", teamA: ["p1", "p3"], teamB: ["p5", "p7"] }], sittingOut: ["p2", "p4", "p6", "p8"] }] };
+}
+const res = (o) => Object.fromEntries(Object.entries(o).map(([k, [a, b]]) => [k, { scoreA: a, scoreB: b }]));
+const row = (rows, id) => rows.find((r) => r.id === id);
+
+test("a 16-16 draw is neither a win nor a loss (W0 L0, P16, +/- 0 for all four)", () => {
+  const rows = S.computeStandings(def8(), res({ r1c1: [16, 16] }));
+  for (const id of ["p1", "p2", "p3", "p4"]) {
+    const r = row(rows, id);
+    assert.deepEqual([r.wins, r.losses, r.points, r.diff, r.played], [0, 0, 16, 0, 1]);
+  }
+});
+
+test("ranking: points beat diff", () => {
+  const rows = S.computeStandings(def8(), res({ r1c1: [20, 12], r1c2: [20, 0], r2c1: [1, 30] }));
+  assert.equal(row(rows, "p1").points, 21); assert.equal(row(rows, "p1").diff, -21);
+  assert.ok(row(rows, "p1").rank < row(rows, "p6").rank);
+});
+test("ranking: equal points, bigger diff first", () => {
+  const rows = S.computeStandings(def8(), res({ r1c1: [20, 12], r1c2: [20, 18] }));
+  assert.ok(row(rows, "p2").rank < row(rows, "p6").rank);
+});
+test("ranking: equal points and diff, more wins first", () => {
+  const rows = S.computeStandings(def8(), res({ r1c1: [26, 30], r1c2: [20, 10], r2c1: [20, 6] }));
+  const p2 = row(rows, "p2"), p5 = row(rows, "p5");
+  assert.deepEqual([p2.points, p2.diff, p2.wins, p5.points, p5.diff, p5.wins], [26, -4, 0, 26, -4, 1]);
+  assert.ok(p5.rank < p2.rank);
+});
+test("ranking: full tie shares a rank and keeps player order", () => {
+  const rows = S.computeStandings(def8(), res({ r1c1: [18, 14], r1c2: [18, 14] }));
+  assert.deepEqual(rows.slice(0, 4).map((r) => r.id), ["p1", "p2", "p5", "p6"]);
+  assert.ok(rows.slice(0, 4).every((r) => r.rank === 1) && rows.slice(4).every((r) => r.rank === 5));
+});
+test("a player who sat out a scored round is unaffected; ended-early counts like any score", () => {
+  const rows = S.computeStandings(def8(), res({ r1c1: [18, 14], r2c1: [20, 12] }));
+  const p2 = row(rows, "p2");
+  assert.deepEqual([p2.played, p2.scheduled, p2.wins, p2.points], [1, 1, 1, 18]);
+  const early = S.computeStandings(def8(), res({ r1c1: [10, 6] }));
+  assert.deepEqual([row(early, "p1").wins, row(early, "p1").diff, row(early, "p3").losses], [1, 4, 1]);
 });
