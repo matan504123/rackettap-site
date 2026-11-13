@@ -124,7 +124,7 @@
     const p = ((def && def.players) || []).find((x) => x.id === id);
     if (!p) return id;
     const former = (Array.isArray(p.formerNames) ? p.formerNames : [])
-      .filter((f) => f && Number.isFinite(f.untilRound) && f.untilRound >= round)
+      .filter((f) => f && typeof f.name === "string" && f.name !== "" && Number.isFinite(f.untilRound) && f.untilRound >= 1 && f.untilRound >= round)
       .sort((x, y) => x.untilRound - y.untilRound)[0];
     return former ? former.name : p.name;
   }

@@ -177,3 +177,12 @@ test("isFlipped + orient: host on team B flips the display; the swap is its own 
   assert.deepEqual(S.orient(true, ...shown), [21, 11]);                     // submitted back in schedule orientation
   assert.deepEqual(S.orient(false, 21, 11), [21, 11]);
 });
+test("playerName: unsorted formerNames, invalid entries ignored, non-array formerNames absent", () => {
+  const d = { players: [
+    { id: "p", name: "Now", formerNames: [{ name: "Late", untilRound: 5 }, { name: "Early", untilRound: 2 }, { name: "", untilRound: 3 }, { name: "Zero", untilRound: 0 }] },
+    { id: "q", name: "Cur", formerNames: "oops" } ] };
+  assert.equal(S.playerName(d, "p", 1), "Early");
+  assert.equal(S.playerName(d, "p", 3), "Late");   // empty-name entry (untilRound 3) skipped
+  assert.equal(S.playerName(d, "p", 6), "Now");
+  assert.equal(S.playerName(d, "q", 1), "Cur");
+});
