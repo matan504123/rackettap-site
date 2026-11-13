@@ -26,6 +26,25 @@ const OPTIMISTIC_MS = 60000;
 const MAX_SCORE_PAGES = 20;
 const Standings = window.TournamentStandings;
 
+/* Round open/close animation: native ::details-content where supported (CSS), a small JS fallback otherwise. */
+const CSS_DETAILS_CONTENT = !!(window.CSS && CSS.supports && CSS.supports("selector(::details-content)"));
+const REDUCED_MOTION = window.matchMedia ? matchMedia("(prefers-reduced-motion: reduce)") : { matches: false };
+function animateDetails(det) {
+  const body = [...det.children].filter((c) => c.tagName !== "SUMMARY");
+  const opening = !det.open;
+  if (REDUCED_MOTION.matches || !det.animate || !body.length) { det.open = opening; return; }
+  const wrap = h("div", { style: "overflow:hidden" }); body.forEach((c) => wrap.append(c)); det.append(wrap);
+  const settle = () => { body.forEach((c) => det.append(c)); wrap.remove(); };
+  if (opening) {
+    det.open = true;
+    const full = wrap.scrollHeight;
+    wrap.animate([{ height: "0px", opacity: 0 }, { height: full + "px", opacity: 1 }], { duration: 200, easing: "ease" }).finished.then(settle, settle);
+  } else {
+    const full = wrap.scrollHeight;
+    wrap.animate([{ height: full + "px", opacity: 1 }, { height: "0px", opacity: 0 }], { duration: 200, easing: "ease" }).finished.then(() => { det.open = false; settle(); }, () => { det.open = false; settle(); });
+  }
+}
+
 const $ = (id) => document.getElementById(id);
 
 /* DOM helper: attrs → properties/attributes, children → text nodes or elements. Text can't inject markup. */
@@ -166,19 +185,21 @@ function handleFetchError(err) {
 }
 
 /* ── rendering ────────────────────────────────────────────────────────── */
-function playerMap(def) { const m = new Map(); def.players.forEach((p) => m.set(p.id, p.name || "Player")); return m; }
+/* Name of a player as shown in a round (former names for swapped-out players); blank names read "Player". */
+function nameIn(def, id, round) { return Standings.playerName(def, id, round) || "Player"; }
 function courtMap(def) { const m = new Map(); (def.courts || []).forEach((c) => m.set(c.id, c.name)); return m; }
 
 function nameSpan(text) { return h("span", { class: "pn", dir: "auto", title: text }, text); }
-function teamNames(names, pm) {
-  const ids = names.map((pid) => pm.get(pid) || "Player");
+function teamNames(team, def, round) {
+  const ids = team.map((pid) => nameIn(def, pid, round));
   return h("span", { class: "names" }, nameSpan(ids[0]), ids.length > 1 ? h("span", { class: "amp" }, "&") : null,
            ids.length > 1 ? nameSpan(ids[1]) : null);
 }
 
 function isFinished() { return data && data.status === "finished"; }
+function isSetup() { return data && data.status === "setup"; }
 function isExpired() { return !!(data && data.expiresAt && data.expiresAt < Date.now()); }
-function entryClosed() { return isFinished() || isExpired(); }
+function entryClosed() { return isFinished() || isExpired() || isSetup(); }
 
 function roundIsDone(round, results) { return round.matches.every((m) => results[m.id]); }
 
@@ -201,6 +222,7 @@ function render() {
   const expired = isExpired();
   if (isFinished()) { banner.hidden = false; banner.className = "banner final"; banner.textContent = "Tournament finished — final standings"; }
   else if (expired) { banner.hidden = false; banner.className = "banner warn"; banner.textContent = "This tournament has expired."; }
+  else if (isSetup()) { banner.hidden = false; banner.className = "banner warn"; banner.textContent = "Not started yet"; }
   else banner.hidden = true;
 
   renderRounds();
@@ -210,7 +232,7 @@ function render() {
 
 function renderRounds() {
   const { def, results } = data;
-  const pm = playerMap(def), cm = courtMap(def);
+  const cm = courtMap(def);
   const current = def.rounds.findIndex((r) => !roundIsDone(r, results));
   const order = Standings.roundOrder(def.rounds.length, current);   // current round first
   const box = $("view-rounds");
@@ -220,21 +242,32 @@ function renderRounds() {
     const done = roundIsDone(round, results);
     const isCurrent = i === current;
     const open = toggledRounds.has(i) ? toggledRounds.get(i) : isCurrent;
-    const sitting = (round.sittingOut || []).map((pid) => pm.get(pid) || "Player");
+    const rn = Standings.roundNumber(round, i);
+    const sitting = (round.sittingOut || []).map((pid) => nameIn(def, pid, rn));
     const det = h("details", { class: "round" + (isCurrent ? " current" : "") + (done ? " done" : ""), open: open || null },
-      h("summary", {}, `Round ${num(Standings.roundNumber(round, i))}`, h("span", { class: "tag" }, isCurrent ? "CURRENT" : done ? "DONE" : "UPCOMING")),
-      h("div", { class: "matches" }, round.matches.map((m) => matchCard(m, results[m.id], pm, cm))),
+      h("summary", {}, `Round ${num(rn)}`, h("span", { class: "tag" }, isCurrent ? "CURRENT" : done ? "DONE" : "UPCOMING")),
+      h("div", { class: "matches" }, round.matches.map((m) => matchCard(m, results[m.id], def, rn, cm))),
       sitting.length ? h("div", { class: "sitting" }, h("span", {}, "Sitting out:"), h("span", { class: "list", dir: "auto" }, sitting.join(", "))) : null);
-    det.addEventListener("toggle", () => toggledRounds.set(i, det.open));
+    // The user's own choice is recorded on the summary click (not on `toggle`, which also fires for the attribute
+    // we set at render time and would pin every round as "user-toggled"). A re-render rebuilds the element already in
+    // its final state, so nothing animates or flips unless the user toggled it.
+    det.firstChild.addEventListener("click", (e) => {
+      toggledRounds.set(i, !det.open);
+      if (!CSS_DETAILS_CONTENT) { e.preventDefault(); animateDetails(det); }
+    });
     return det;
   })));
 }
 
-function matchCard(m, res, pm, cm) {
-  const a = res ? res.scoreA : null, b = res ? res.scoreB : null;
+/* The host (owner) is always blue. When the host is on schedule team B, B is drawn on the blue side with its score
+   first; the data stays in schedule orientation everywhere else. */
+function matchCard(m, res, def, rn, cm) {
+  const flipped = Standings.isFlipped(def, rn, m);
+  const [teamA, teamB] = Standings.orient(flipped, m.teamA, m.teamB);
+  const [a, b] = res ? Standings.orient(flipped, res.scoreA, res.scoreB) : [null, null];
   const aWin = res && a > b, bWin = res && b > a;
   const courtName = cm.get(m.courtID) || "Court";
-  const side = (cls, team, mine, win) => h("div", { class: "side " + cls + (win ? " won" : "") }, teamNames(team, pm),
+  const side = (cls, team, mine, win) => h("div", { class: "side " + cls + (win ? " won" : "") }, teamNames(team, def, rn),
     h("span", { class: "pts" + (res ? (win || a === b ? " win" : " dim") : " dim") }, res ? num(mine) : "–"));
   const lockedByApp = res && res.source === "app";
   let action = null;
@@ -248,7 +281,7 @@ function matchCard(m, res, pm, cm) {
       h("span", { class: "chip " + (!res ? "st-todo" : res.endedEarly ? "st-early" : "st-done") },
         !res ? "Not played yet" : res.endedEarly ? "Ended early" : "Done"),
       res ? h("span", { class: "src" }, res.source === "app" ? "APP" : "WEB") : null),
-    side("a", m.teamA, a, aWin), side("b", m.teamB, b, bWin), action);
+    side("a", teamA, a, aWin), side("b", teamB, b, bWin), action);
 }
 
 function renderStandings() {
@@ -279,30 +312,39 @@ function showTab(name) {
 
 /* ── score entry sheet ────────────────────────────────────────────────── */
 function findMatch(mid) {
-  for (const r of data.def.rounds) for (const m of r.matches) if (m.id === mid) return m;
+  for (let i = 0; i < data.def.rounds.length; i++) {
+    const r = data.def.rounds[i];
+    for (const m of r.matches) if (m.id === mid) return { m, rn: Standings.roundNumber(r, i) };
+  }
   return null;
 }
 
 function openSheet(matchID) {
   if (!data || entryClosed()) return;
-  const m = findMatch(matchID);
-  if (!m) return;
+  const found = findMatch(matchID);
+  if (!found) return;
+  const { m, rn } = found;
   const res = data.results[matchID];
   if (res && res.source === "app") return;
   sheetState = { matchID, confirmed: false, busy: false, pinNeeded: !lsGet(pinKey()) };
-  buildSheet(m, res);
+  buildSheet(m, res, rn);
   $("sheet").hidden = false;
   const first = $("in-a"); if (first) first.focus();
 }
 
 function closeSheet() { $("sheet").hidden = true; sheetState = null; $("panel").replaceChildren(); }
 
-function buildSheet(m, res) {
+/* The sheet shows the same orientation as the card (host blue/first) but the form values are DISPLAYED scores:
+   submitScore maps them back to schedule orientation (scoreA = schedule teamA) before posting. */
+function buildSheet(m, res, rn) {
+  const flipped = Standings.isFlipped(data.def, rn, m);
+  const [teamA, teamB] = Standings.orient(flipped, m.teamA, m.teamB);
+  const shown = res ? Standings.orient(flipped, res.scoreA, res.scoreB) : ["", ""];
+  sheetState.flipped = flipped;
   const ppm = data.def.pointsPerMatch;
-  const pm = playerMap(data.def);
-  const teamLine = (cls, team) => h("div", {}, h("span", { class: "dot " + cls }), nameSpan(team.map((p) => pm.get(p) || "Player").join(" & ")));
-  const inA = h("input", { id: "in-a", class: "score", type: "text", inputmode: "numeric", pattern: "[0-9]*", maxlength: "3", autocomplete: "off", "aria-label": "Score for the first team", value: res ? res.scoreA : "" });
-  const inB = h("input", { id: "in-b", class: "score", type: "text", inputmode: "numeric", pattern: "[0-9]*", maxlength: "3", autocomplete: "off", "aria-label": "Score for the second team", value: res ? res.scoreB : "" });
+  const teamLine = (cls, team) => h("div", {}, h("span", { class: "dot " + cls }), nameSpan(team.map((p) => nameIn(data.def, p, rn)).join(" & ")));
+  const inA = h("input", { id: "in-a", class: "score", type: "text", inputmode: "numeric", pattern: "[0-9]*", maxlength: "3", autocomplete: "off", "aria-label": "Score for the first team", value: shown[0] });
+  const inB = h("input", { id: "in-b", class: "score", type: "text", inputmode: "numeric", pattern: "[0-9]*", maxlength: "3", autocomplete: "off", "aria-label": "Score for the second team", value: shown[1] });
   const early = h("input", { id: "in-early", type: "checkbox", checked: res && res.endedEarly ? true : null });
   const complement = (from, to) => () => {
     if (early.checked) return;
@@ -316,11 +358,11 @@ function buildSheet(m, res) {
   const err = h("div", { class: "err", id: "sheet-err", role: "alert" });
   const info = h("div", { class: "info", id: "sheet-info" });
   const submit = h("button", { class: "btn", type: "button", id: "sheet-submit" }, "Save score");
-  submit.addEventListener("click", () => submitScore(m, { inA, inB, early, nameIn, pinIn, err, info, submit }));
+  submit.addEventListener("click", () => submitScore(m, rn, { inA, inB, early, nameIn, pinIn, err, info, submit }));
   const cancel = h("button", { class: "btn secondary", type: "button", onclick: closeSheet }, "Cancel");
   $("panel").replaceChildren(
     h("h2", { id: "sheet-title" }, "Enter final score"),
-    h("div", { class: "vs" }, teamLine("a", m.teamA), teamLine("b", m.teamB)),
+    h("div", { class: "vs" }, teamLine("a", teamA), teamLine("b", teamB)),
     h("div", { class: "scores" }, h("label", { class: "f" }, "First team", inA), h("label", { class: "f" }, "Second team", inB)),
     h("label", { class: "check" }, early, `Ended early (total below ${ppm})`),
     h("label", { class: "f" }, "Your name", nameIn),
@@ -354,14 +396,14 @@ async function workerPost(path, body) {
 }
 function statusText(code) { return code === 0 ? OFFLINE_TEXT : ERR_TEXT[code] || `Something went wrong (error ${code}). Try again.`; }
 
-async function submitScore(m, f) {
+async function submitScore(m, rn, f) {
   if (!sheetState || sheetState.busy) return;
   const ppm = data.def.pointsPerMatch;
   f.err.textContent = ""; f.info.textContent = "";
   const early = f.early.checked;
   const sa = f.inA.value.trim(), sb = f.inB.value.trim();
   if (!/^\d{1,3}$/.test(sa) || !/^\d{1,3}$/.test(sb)) { f.err.textContent = "Enter both scores as whole numbers."; return; }
-  const a = +sa, b = +sb;
+  const [a, b] = Standings.orient(sheetState.flipped, +sa, +sb);   // displayed -> schedule orientation (scoreA = teamA)
   if (!Standings.validScore(a, b, ppm, early)) {
     f.err.textContent = early ? `Ended early: the scores must add up to less than ${ppm}.` : `The scores must add up to ${ppm}.`;
     return;
@@ -369,7 +411,8 @@ async function submitScore(m, f) {
   const existing = data.results[m.id];
   if (existing && !sheetState.confirmed) {
     sheetState.confirmed = true;
-    f.info.textContent = `This match already has ${existing.scoreA}–${existing.scoreB}. Press Replace score to overwrite it.`;
+    const [ea, eb] = Standings.orient(sheetState.flipped, existing.scoreA, existing.scoreB);
+    f.info.textContent = `This match already has ${ea}–${eb}. Press Replace score to overwrite it.`;
     f.submit.textContent = "Replace score";
     return;
   }
@@ -399,7 +442,7 @@ async function submitScore(m, f) {
     }
     if (code === 401) {
       lsDel(pinKey());
-      if (sheetState) { sheetState.pinNeeded = true; buildSheet(m, { scoreA: a, scoreB: b, endedEarly: early }); sheetState.confirmed = !!data.results[m.id]; if (sheetState.confirmed) $("sheet-submit").textContent = "Replace score"; }
+      if (sheetState) { sheetState.pinNeeded = true; buildSheet(m, { scoreA: a, scoreB: b, endedEarly: early }, rn); sheetState.confirmed = !!data.results[m.id]; if (sheetState.confirmed) $("sheet-submit").textContent = "Replace score"; }
       const e = $("sheet-err"); if (e) e.textContent = "That PIN isn't accepted. Enter it again.";
       return;
     }

@@ -69,6 +69,11 @@
                             padding:3px 9px; border-radius:99px; background:var(--card2); color:var(--muted); white-space:nowrap; }
     .round.current > summary .tag { background:var(--green); color:#04210d; }
     .round.done > summary .tag { background:rgba(64,200,224,.18); color:var(--teal); }
+    /* open/close animation (~200 ms height + opacity). Where ::details-content is unsupported, tournament.js animates. */
+    :root { interpolate-size:allow-keywords; }
+    .round::details-content { height:0; opacity:0; overflow:clip;
+      transition:height .2s ease, opacity .2s ease, content-visibility .2s allow-discrete; }
+    .round[open]::details-content { height:auto; opacity:1; }
     .round > summary::before { content:"▸"; color:var(--muted); transition:transform .15s; }
     .round[open] > summary::before { transform:rotate(90deg); }
     .matches { display:flex; flex-direction:column; gap:10px; padding:0 12px 12px; }
@@ -156,7 +161,7 @@
     .info { color:var(--orange); font-size:14px; font-weight:600; }
     .actions { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
-    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after, .round::details-content { animation:none !important; transition:none !important; } }
   </style>
 </head>
 <body data-state="message">
