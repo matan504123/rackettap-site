@@ -212,8 +212,7 @@ function renderRounds() {
   const { def, results } = data;
   const pm = playerMap(def), cm = courtMap(def);
   const current = def.rounds.findIndex((r) => !roundIsDone(r, results));
-  const order = def.rounds.map((_, i) => i);
-  if (current > 0) { order.splice(current, 1); order.unshift(current); }   // current round first
+  const order = Standings.roundOrder(def.rounds.length, current);   // current round first
   const box = $("view-rounds");
   box.replaceChildren();
   box.append(h("div", { style: "display:flex;flex-direction:column;gap:12px" }, order.map((i) => {
@@ -223,7 +222,7 @@ function renderRounds() {
     const open = toggledRounds.has(i) ? toggledRounds.get(i) : isCurrent;
     const sitting = (round.sittingOut || []).map((pid) => pm.get(pid) || "Player");
     const det = h("details", { class: "round" + (isCurrent ? " current" : "") + (done ? " done" : ""), open: open || null },
-      h("summary", {}, `Round ${num(round.index + 1)}`, h("span", { class: "tag" }, isCurrent ? "CURRENT" : done ? "DONE" : "UPCOMING")),
+      h("summary", {}, `Round ${num(Standings.roundNumber(round, i))}`, h("span", { class: "tag" }, isCurrent ? "CURRENT" : done ? "DONE" : "UPCOMING")),
       h("div", { class: "matches" }, round.matches.map((m) => matchCard(m, results[m.id], pm, cm))),
       sitting.length ? h("div", { class: "sitting" }, h("span", {}, "Sitting out:"), h("span", { class: "list", dir: "auto" }, sitting.join(", "))) : null);
     det.addEventListener("toggle", () => toggledRounds.set(i, det.open));

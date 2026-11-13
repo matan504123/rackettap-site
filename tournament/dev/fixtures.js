@@ -14,7 +14,7 @@
         const q = rot.slice(c * 4, c * 4 + 4);
         matches.push({ id: `${id}-r${r}c${c}`, courtID: "c" + (c + 1), teamA: [q[0], q[3]], teamB: [q[1], q[2]] });
       }
-      rounds.push({ index: r, matches, sittingOut: rot.slice(courts * 4) });
+      rounds.push({ index: r + 1, matches, sittingOut: rot.slice(courts * 4) });
     }
     return Object.assign({ schemaVersion: 1, id, name, createdAt: "2026-11-11T10:00:00Z", pointsPerMatch: 32, seed: 7,
       players, courts: [{ id: "c1", name: "Court 1" }, { id: "c2", name: "Court 2" }], rounds, trustedWriters: [ORG, "_worker-fixture"] }, extra || {});

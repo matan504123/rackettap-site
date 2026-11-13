@@ -126,3 +126,19 @@ test("a player who sat out a scored round is unaffected; ended-early counts like
   const early = S.computeStandings(def8(), res({ r1c1: [10, 6] }));
   assert.deepEqual([row(early, "p1").wins, row(early, "p1").diff, row(early, "p3").losses], [1, 4, 1]);
 });
+
+/* ---- round labels: definition `rounds[].index` is 1-BASED (Swift TournamentScheduler) ---- */
+test("roundNumber shows the 1-based index as-is (Round 2 is labelled 2, not 3)", () => {
+  const d = def8();
+  assert.deepEqual(d.rounds.map((r, i) => S.roundNumber(r, i)), [1, 2]);
+});
+test("roundNumber falls back to position+1 when index is missing or invalid", () => {
+  assert.equal(S.roundNumber({}, 3), 4);
+  assert.equal(S.roundNumber({ index: 0 }, 2), 3);
+  assert.equal(S.roundNumber({ index: "2" }, 0), 1);
+});
+test("roundOrder puts the current round first, the rest in schedule order", () => {
+  assert.deepEqual(S.roundOrder(7, 1), [1, 0, 2, 3, 4, 5, 6]);
+  assert.deepEqual(S.roundOrder(7, 0), [0, 1, 2, 3, 4, 5, 6]);
+  assert.deepEqual(S.roundOrder(3, -1), [0, 1, 2]);   // all done
+});
