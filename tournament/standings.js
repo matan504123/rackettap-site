@@ -105,7 +105,19 @@
     return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
   }
 
-  const api = { tournamentKey, validTournamentID, validScore, validPin, parseScoreRecord, resolveScores, computeStandings };
+  /* Definition `rounds[].index` is 1-based (Swift TournamentScheduler.makeRound(index: index + 1)); show it as-is.
+     Fall back to position+1 if it is missing or not a positive integer. */
+  function roundNumber(round, position) {
+    return Number.isInteger(round && round.index) && round.index >= 1 ? round.index : position + 1;
+  }
+  /* Display order of round positions: the current round first, the others in schedule order. */
+  function roundOrder(count, current) {
+    const order = Array.from({ length: count }, (_, i) => i);
+    if (current > 0) { order.splice(current, 1); order.unshift(current); }
+    return order;
+  }
+
+  const api = { roundNumber, roundOrder, tournamentKey, validTournamentID, validScore, validPin, parseScoreRecord, resolveScores, computeStandings };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.TournamentStandings = api;
 })(typeof window !== "undefined" ? window : globalThis);
