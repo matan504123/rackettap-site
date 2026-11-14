@@ -353,19 +353,19 @@ function buildSheet(m, res, rn) {
   };
   inA.addEventListener("input", complement(inA, inB));
   inB.addEventListener("input", complement(inB, inA));
-  const nameIn = h("input", { id: "in-name", type: "text", maxlength: "40", autocomplete: "off", placeholder: "Optional", value: lsGet(NAME_KEY) || "" });
+  const noteIn = h("input", { id: "in-name", type: "text", maxlength: "40", autocomplete: "off", placeholder: "Optional", value: lsGet(NAME_KEY) || "" });
   const pinIn = h("input", { id: "in-pin", type: "password", inputmode: "numeric", pattern: "[0-9]*", maxlength: "6", autocomplete: "off", placeholder: "6 digits" });
   const err = h("div", { class: "err", id: "sheet-err", role: "alert" });
   const info = h("div", { class: "info", id: "sheet-info" });
   const submit = h("button", { class: "btn", type: "button", id: "sheet-submit" }, "Save score");
-  submit.addEventListener("click", () => submitScore(m, rn, { inA, inB, early, nameIn, pinIn, err, info, submit }));
+  submit.addEventListener("click", () => submitScore(m, rn, { inA, inB, early, noteIn, pinIn, err, info, submit }));
   const cancel = h("button", { class: "btn secondary", type: "button", onclick: closeSheet }, "Cancel");
   $("panel").replaceChildren(
     h("h2", { id: "sheet-title" }, "Enter final score"),
     h("div", { class: "vs" }, teamLine("a", teamA), teamLine("b", teamB)),
     h("div", { class: "scores" }, h("label", { class: "f" }, "First team", inA), h("label", { class: "f" }, "Second team", inB)),
     h("label", { class: "check" }, early, `Ended early (total below ${ppm})`),
-    h("label", { class: "f" }, "Your name", nameIn),
+    h("label", { class: "f" }, "Your name", noteIn),
     sheetState.pinNeeded ? h("label", { class: "f" }, "Tournament PIN", pinIn) : null,
     info, err,
     h("div", { class: "actions" }, cancel, submit));
@@ -428,7 +428,7 @@ async function submitScore(m, rn, f) {
       if (vs !== 200) { f.err.textContent = statusText(vs); return; }
       lsSet(pinKey(), pin);
     }
-    const note = f.nameIn.value.trim().slice(0, 40);
+    const note = f.noteIn.value.trim().slice(0, 40);
     if (note) lsSet(NAME_KEY, note);
     const body = { tournamentID, matchID: m.id, scoreA: a, scoreB: b, endedEarly: early, pin };
     if (note) body.note = note;
