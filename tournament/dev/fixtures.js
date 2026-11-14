@@ -46,6 +46,14 @@
   midScores.push(sRec(mid, mid.rounds[4].matches[0].id, 32, 0, { creator: "_stranger" }));   // untrusted: must be ignored
   F.mid = { rec: tRec(mid, "running"), scores: midScores };
 
+  /* Part 1: host p3 (Sofia) plays team B in some rounds (shown blue/first); p2 swapped Mikko -> Bea from round 3;
+     the host is swapped out after round 5 (hostUntilRound), so rounds 6-7 have no host. */
+  const swapDef = mkDef("swap", "Swap & Host Americano", eight, 7, { hostPlayerID: "p3", hostUntilRound: 5 });
+  swapDef.players[1].name = "Bea"; swapDef.players[1].formerNames = [{ name: "Mikko", untilRound: 2 }];
+  F.swap = { rec: tRec(swapDef, "running"), scores: scoreRounds(swapDef, 3, () => ({})) };
+  const setupDef = mkDef("setup", "Not Started Americano", eight, 7, { hostPlayerID: "p1" });
+  F.setup = { rec: tRec(setupDef, "setup"), scores: [] };
+
   const fin = mkDef("finished", "Club Championship Americano", eight, 7);
   F.finished = { rec: tRec(fin, "finished"), scores: scoreRounds(fin, 7, () => ({})) };
 

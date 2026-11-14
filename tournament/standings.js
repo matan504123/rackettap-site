@@ -117,7 +117,33 @@
     return order;
   }
 
-  const api = { roundNumber, roundOrder, tournamentKey, validTournamentID, validScore, validPin, parseScoreRecord, resolveScores, computeStandings };
+  /* Name of player `id` as shown in round `round` (1-based round number). Mirrors Swift
+     TournamentDefinition.playerName(_:inRound:): the earliest former name whose untilRound >= round, else the
+     current name; an unknown id comes back as the id itself. */
+  function playerName(def, id, round) {
+    const p = ((def && def.players) || []).find((x) => x.id === id);
+    if (!p) return id;
+    const former = (Array.isArray(p.formerNames) ? p.formerNames : [])
+      .filter((f) => f && typeof f.name === "string" && f.name !== "" && Number.isFinite(f.untilRound) && f.untilRound >= 1 && f.untilRound >= round)
+      .sort((x, y) => x.untilRound - y.untilRound)[0];
+    return former ? former.name : p.name;
+  }
+  /* Host (the owner, shown blue) in `round`: hostPlayerID, unless the host was swapped out earlier
+     (hostUntilRound set and round past it) -> null. Mirrors Swift hostID(inRound:). */
+  function hostID(def, round) {
+    if (!def || !def.hostPlayerID) return null;
+    const until = def.hostUntilRound;
+    return until === undefined || until === null || round <= until ? def.hostPlayerID : null;
+  }
+  /* True when the host plays on team B of `match` in `round`: the page then shows team B on the blue side. */
+  function isFlipped(def, round, match) {
+    const host = hostID(def, round);
+    return !!host && match.teamB.includes(host) && !match.teamA.includes(host);
+  }
+  /* Displayed (first, second) scores <-> schedule (scoreA, scoreB). The swap is its own inverse. */
+  function orient(flipped, x, y) { return flipped ? [y, x] : [x, y]; }
+
+  const api = { playerName, hostID, isFlipped, orient, roundNumber, roundOrder, tournamentKey, validTournamentID, validScore, validPin, parseScoreRecord, resolveScores, computeStandings };
   if (typeof module !== "undefined" && module.exports) module.exports = api;
   else root.TournamentStandings = api;
 })(typeof window !== "undefined" ? window : globalThis);

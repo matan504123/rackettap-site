@@ -142,3 +142,47 @@ test("roundOrder puts the current round first, the rest in schedule order", () =
   assert.deepEqual(S.roundOrder(7, 0), [0, 1, 2, 3, 4, 5, 6]);
   assert.deepEqual(S.roundOrder(3, -1), [0, 1, 2]);   // all done
 });
+
+/* Part 1: names by round, host by round, orientation. Mirrors Swift TournamentDefinition (PadelScoringTests). */
+const swapped = {
+  players: [
+    { id: "p1", name: "Ann" },
+    { id: "p2", name: "Cid", formerNames: [{ name: "Ann2", untilRound: 2 }, { name: "Bea", untilRound: 4 }] },
+  ],
+  hostPlayerID: "p1", hostUntilRound: 3,
+};
+test("playerName: earliest former name whose untilRound >= round, else current, unknown id -> id", () => {
+  assert.equal(S.playerName(swapped, "p2", 1), "Ann2");
+  assert.equal(S.playerName(swapped, "p2", 2), "Ann2");
+  assert.equal(S.playerName(swapped, "p2", 3), "Bea");
+  assert.equal(S.playerName(swapped, "p2", 4), "Bea");
+  assert.equal(S.playerName(swapped, "p2", 5), "Cid");
+  assert.equal(S.playerName(swapped, "p1", 9), "Ann");   // no former names
+  assert.equal(S.playerName(swapped, "zz", 1), "zz");
+});
+test("hostID: hostPlayerID until hostUntilRound inclusive, then null; no until = always; no host = null", () => {
+  assert.equal(S.hostID(swapped, 3), "p1");
+  assert.equal(S.hostID(swapped, 4), null);
+  assert.equal(S.hostID({ hostPlayerID: "p1" }, 99), "p1");
+  assert.equal(S.hostID({ players: [] }, 1), null);
+});
+test("isFlipped + orient: host on team B flips the display; the swap is its own inverse", () => {
+  const m = { teamA: ["p3", "p4"], teamB: ["p1", "p2"] };
+  assert.equal(S.isFlipped(swapped, 3, m), true);
+  assert.equal(S.isFlipped(swapped, 4, m), false);                          // host swapped out
+  assert.equal(S.isFlipped({ players: [] }, 1, m), false);                  // no host
+  assert.equal(S.isFlipped(swapped, 1, { teamA: ["p1", "p2"], teamB: ["p3", "p4"] }), false);
+  const shown = S.orient(true, 21, 11);                                     // schedule A=21,B=11 shown flipped
+  assert.deepEqual(shown, [11, 21]);
+  assert.deepEqual(S.orient(true, ...shown), [21, 11]);                     // submitted back in schedule orientation
+  assert.deepEqual(S.orient(false, 21, 11), [21, 11]);
+});
+test("playerName: unsorted formerNames, invalid entries ignored, non-array formerNames absent", () => {
+  const d = { players: [
+    { id: "p", name: "Now", formerNames: [{ name: "Late", untilRound: 5 }, { name: "Early", untilRound: 2 }, { name: "", untilRound: 3 }, { name: "Zero", untilRound: 0 }] },
+    { id: "q", name: "Cur", formerNames: "oops" } ] };
+  assert.equal(S.playerName(d, "p", 1), "Early");
+  assert.equal(S.playerName(d, "p", 3), "Late");   // empty-name entry (untilRound 3) skipped
+  assert.equal(S.playerName(d, "p", 6), "Now");
+  assert.equal(S.playerName(d, "q", 1), "Cur");
+});
